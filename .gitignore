@@ -1,0 +1,18 @@
+# Ignore temporary files
+*~
+[#]*
+*[#]
+
+/*
+
+# Keep meta files
+!.gitignore
+!README.md
+
+# Track only data and source codes of latest version
+!Divergence.py
+!RealWorld
+!Synthetic
+
+# Untrack abundoned data
+/Synthetic/Centralized(3x)
