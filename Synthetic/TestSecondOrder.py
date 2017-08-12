@@ -3,92 +3,144 @@ import Divergence
 import statistics
 import random
 import scipy.stats as stats
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import math
+import sys
 
 
 input_dir = "Correct"
 input_dir_err = "Equalized"
 
 error_rate = 0.1
-sigma_coefficient = 3  # Don't think about this now
-time_span = 600
+#sigma_coefficient = 3  # Don't think about this now
+time_span = 300
 
-print("\nTest Centralized Cheating...")
+print("\nTest %s Cheating..." % input_dir_err)
 # Collecting History
-history = []
+evidence = []
 for i in range(30):
     reader = csv.reader(open("%s/%d.csv" % (input_dir, i), 'r'))
     tmp_freq, dropped = Divergence.histogram(list(int(row[2]) for row in reader), time_span)
-    history += [list(tmp_freq.values())]
+    evidence += [list(tmp_freq.values())]
+
+evidence_err = []
+for i in range(30 - max(10, int(30 * error_rate)), 30):
+    reader = csv.reader(open("%s/%d.csv" % (input_dir_err, i), 'r'))
+    tmp_freq, dropped = Divergence.histogram(list(int(row[2]) for row in reader), time_span)
+    evidence_err += [list(tmp_freq.values())]
 
 # Run algorithm with centralized cheating data
-jsds = []
-jsds_cen = []
+jsd_history = []
+jsd_record = {}
 correct_cnt = 0
 correct_recognized = 0
-centralized_cnt = 0
-centralized_recognized = 0
+error_cnt = 0
+error_recognized = 0
 for i in range(30, 325):
     # Calculate Step
     tmp = []
-    for data in history:
+    for data in evidence:
         tmp += data
     sigma = statistics.stdev(tmp)
-    step = 0.5 * sigma * (statistics.mean(list(len(data) for data in history)) ** -0.2)
+    step = 0.5 * sigma * (statistics.mean(list(len(data) for data in evidence)) ** -0.2)
 
     # Calculate evidence distributions and estimated population distribution
     dists = []
-    for data in history:
+    for data in evidence:
         dropped, tmp_dist = Divergence.histogram(data, step)
         dists += [tmp_dist]
     dist_pop = Divergence.blendDistributions(dists)
-    jsd_hisotry = []
+    jsd_evidence = []
     for tmp_dist in dists:
-        jsd_hisotry += [Divergence.jsd(dist_pop, tmp_dist)]
-    jsd_mean = statistics.mean(jsd_hisotry)
-    jsd_sigma = statistics.stdev(jsd_hisotry)
+        jsd_evidence += [Divergence.jsd(dist_pop, tmp_dist)]
+    jsd_mean = statistics.mean(jsd_evidence)
+    jsd_sigma = statistics.stdev(jsd_evidence)
 
-    # Read and calculate correct, centralized and equalized distribution
-    reader = csv.reader(open("%s/%d.csv" % (input_dir, i), 'r'))
-    freq, dropped = Divergence.histogram(list((int(row[2]) for row in reader)), time_span)
-    new_data = list(freq.values())
-    dropped, dist = Divergence.histogram(new_data, step)
-    reader = csv.reader(open("%s/%d.csv" % (input_dir_err, i), 'r'))
-    freq_cen, dropped = Divergence.histogram(list((int(row[2]) for row in reader)), time_span)
-    new_data_cen = list(freq_cen.values())
-    dropped, dist_cen = Divergence.histogram(new_data_cen, step)
+    jsd_evidence_err = []
+    for data in evidence_err:
+        dropped, tmp_dist = Divergence.histogram(data, step)
+        jsd_evidence_err += [Divergence.jsd(dist_pop, tmp_dist)]
+    jsd_mean_err = statistics.mean(jsd_evidence_err)
+    jsd_sigma_err = statistics.stdev(jsd_evidence_err)
+
+    w = jsd_sigma_err * math.sqrt(-math.log(1 - error_rate))
+    w_err = jsd_sigma * math.sqrt(-math.log(error_rate))
+    threshold = (jsd_mean * w + jsd_mean_err * w_err) \
+                / (w + w_err)
+    print("Test File: %d.csv(%d/325) Threshold jsd: %g(PD: %g)"
+          % (i, i, threshold, stats.norm.pdf(threshold, jsd_mean, jsd_sigma)))
+    jsd_record["evidence"] = list(jsd_evidence)
+    jsd_record["evidence_err"] = list(jsd_evidence_err)
+    jsd_record["threshold"] = threshold
 
     # Choose to be anomaly or not
     if random.uniform(0.0, 1.0) < error_rate:
         # Check anomaly data
-        centralized_cnt += 1
-        tmp_jsd = Divergence.jsd(dist_pop, dist_cen)
-        jsds_cen += [tmp_jsd]
+        error_cnt += 1
+        reader = csv.reader(open("%s/%d.csv" % (input_dir_err, i), 'r'))
+        freq_err, dropped = Divergence.histogram(list((int(row[2]) for row in reader)), time_span)
+        new_data_err = list(freq_err.values())
+        dropped, dist_err = Divergence.histogram(new_data_err, step)
+        tmp_jsd = Divergence.jsd(dist_pop, dist_err)
+        sys.stderr.write("Erroneous jsd: %g\n" % tmp_jsd)
+        sys.stderr.flush()
 
-        if (tmp_jsd >= (jsd_mean + sigma_coefficient * jsd_sigma)) or \
-                (tmp_jsd <= (jsd_mean - sigma_coefficient * jsd_sigma)):
-            centralized_recognized += 1
+        if tmp_jsd > threshold:
+            error_recognized += 1
+            del evidence_err[0]
+            evidence_err += [new_data_err]
+            jsd_record["error"] = tmp_jsd
+            jsd_record["correct"] = -1
         else:
             # Slide window forward
-            del history[0]
-            history += [new_data_cen]
-
+            del evidence[0]
+            evidence += [new_data_err]
+            jsd_record["error"] = -1
+            jsd_record["correct"] = tmp_jsd
     else:
         # Check correct data
         correct_cnt += 1
+        reader = csv.reader(open("%s/%d.csv" % (input_dir, i), 'r'))
+        freq, dropped = Divergence.histogram(list((int(row[2]) for row in reader)), time_span)
+        new_data = list(freq.values())
+        dropped, dist = Divergence.histogram(new_data, step)
         tmp_jsd = Divergence.jsd(dist_pop, dist)
-        jsds += [tmp_jsd]
 
-        if (tmp_jsd <= (jsd_mean + sigma_coefficient * jsd_sigma)) and \
-                (tmp_jsd >= (jsd_mean - sigma_coefficient * jsd_sigma)):
+        if tmp_jsd <= threshold:
             # Slide window forward
             correct_recognized += 1
-            del history[0]
-            history += [new_data]
+            del evidence[0]
+            evidence += [new_data]
+            jsd_record["error"] = -1
+            jsd_record["correct"] = tmp_jsd
+        else:
+            del evidence_err[0]
+            evidence_err += [new_data]
+            jsd_record["error"] = tmp_jsd
+            jsd_record["correct"] = -1
 
-    threshold = stats.norm.pdf(jsd_mean + sigma_coefficient * jsd_sigma, jsd_mean, jsd_sigma)
-    print("Test File: %d.csv(%d/325) Threshold: %g(%f sigma)" % (i, i, threshold, sigma_coefficient))
+    jsd_history += [dict(jsd_record)]
 
 # Record results
-print("\nCorrect: %f(%d/%d); Centralized: %f(%d/%d)\n" %
-      (100 * correct_recognized / correct_cnt, correct_recognized, correct_cnt,
-       100 * centralized_recognized / centralized_cnt, centralized_recognized, centralized_cnt))
+try:
+    print("\nCorrect: %f(%d/%d); %s: %f(%d/%d)\n" %
+      (100 * correct_recognized / correct_cnt, correct_recognized, correct_cnt, input_dir_err,
+       100 * error_recognized / error_cnt, error_recognized, error_cnt))
+except ZeroDivisionError as e:
+    print(e)
+
+# Show JSD History
+figure = plt.figure(figsize=(6000 / 300, 3000 / 300), dpi=300)
+plt.axis("off")
+for i in range(len(jsd_history)):
+    record = jsd_history[i]
+    plt.plot([i] * len(record["evidence"]), record["evidence"], 'r.', ms=0.5)
+    plt.plot([i] * len(record["evidence_err"]), record["evidence_err"], 'b.', ms=0.5)
+    plt.plot(i, record["threshold"], 'gx', ms=3)
+    if record["correct"] == -1:
+        plt.plot(i, record["error"], 'bx', ms=3)
+    else:
+        plt.plot(i, record["correct"], 'rx', ms=3)
+figure.savefig("TestSecondOrder.png")
