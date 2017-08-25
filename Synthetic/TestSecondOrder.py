@@ -10,8 +10,26 @@ import math
 import sys
 
 
+def linearBalancedThreshold(ua, sa, ub, sb, alpha):
+    A = sb * sb - sa * sa
+    B = -2 * (ua * sb * sb - ub * sa * sa)
+    C = ua * ua * sb * sb - ub * ub * sa * sa - 2 * sa * sa * sb * sb * math.log(((1 - alpha) * sb) / (alpha * sa))
+    D = B * B - 4 * A * C
+    sol1 = (-B + math.sqrt(D)) / (2 * A)
+    sol2 = (-B - math.sqrt(D)) / (2 * A)
+    # if ua <= sol1 <= ub:
+    #     return sol1
+    # elif ua <= sol2 <= ub:
+    #     return sol2
+    # else:
+    #     return (ua * sb + ub * sa) / (sa + sb)
+    if ua <= sol1 <= ub:
+        return sol1
+    else:
+        return sol2
+
 input_dir = "Correct"
-input_dir_err = "Equalized"
+input_dir_err = "Centralized"
 
 error_rate = 0.1
 #sigma_coefficient = 3  # Don't think about this now
@@ -67,10 +85,21 @@ for i in range(30, 325):
 
     w = jsd_sigma_err * math.sqrt(-math.log(1 - error_rate))
     w_err = jsd_sigma * math.sqrt(-math.log(error_rate))
-    threshold = (jsd_mean * w + jsd_mean_err * w_err) \
-                / (w + w_err)
-    print("Test File: %d.csv(%d/325) Threshold jsd: %g(PD: %g)"
-          % (i, i, threshold, stats.norm.pdf(threshold, jsd_mean, jsd_sigma)))
+    threshold = (jsd_mean * w + jsd_mean_err * w_err) / (w + w_err)
+    #threshold = linearBalancedThreshold(jsd_mean, jsd_sigma, jsd_mean_err, jsd_sigma_err, error_rate)
+    #print("Test File: %d.csv(%d/325) Threshold jsd: %g(PD: %g)"
+    #      % (i, i, threshold, stats.norm.pdf(threshold, jsd_mean, jsd_sigma)))
+    ch = '-'
+    if jsd_mean <= threshold <= jsd_mean_err:
+        t = (jsd_mean * jsd_sigma_err + jsd_mean_err * jsd_sigma) / (jsd_sigma_err + jsd_sigma)
+        if threshold < t:
+            ch = '<'
+        else:
+            ch = '>'
+    else:
+        ch = 'X'
+    print("Test File: %d.csv(%d/325) Threshold jsd: %g(PD: %g) %s"
+          % (i, i, threshold, stats.norm.pdf(threshold, jsd_mean, jsd_sigma), ch))
     jsd_record["evidence"] = list(jsd_evidence)
     jsd_record["evidence_err"] = list(jsd_evidence_err)
     jsd_record["threshold"] = threshold
