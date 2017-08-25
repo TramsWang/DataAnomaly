@@ -14,5 +14,10 @@
 !RealWorld
 !Synthetic
 
+# Track latex source code
+!Paper
+Paper/**/*.aux
+Paper/**/*.log
+
 # Untrack abundoned data
 /Synthetic/Centralized(3x)

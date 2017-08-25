@@ -1,0 +1,219 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[left=0.20cm, right=0.20cm, top=0.50cm, bottom=0.50cm]{geometry}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage[table,xcdraw]{xcolor}
+
+\begin{document}
+	
+	\section{Linear Weight}
+		$$T = \frac{\sigma_B \mu_A + \sigma_A \mu_B}{\sigma_B + \sigma_A}$$
+		
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				&             & \multicolumn{4}{c|}{True Negative}                            & \multicolumn{4}{c|}{True Positive}                                \\ \hline
+				& Centralized & 41.09 & 32.95 & 40.70 & {\color[HTML]{FE0000} \textbf{38.25}} & 100.00 & 100.00 & 100.00 & {\color[HTML]{FE0000} \textbf{100.00}} \\ \cline{2-10} 
+				\multirow{-2}{*}{1st Order} & Equalized   & 37.69 & 38.89 & 41.26 & {\color[HTML]{FE0000} \textbf{39.28}} & 62.96  & 64.00  & 53.85  & {\color[HTML]{FE0000} \textbf{60.27}}  \\ \hline
+				& Centralized & 55.68 & 46.59 & 47.96 & {\color[HTML]{FE0000} \textbf{50.08}} & 100.00 & 100.00 & 100.00 & {\color[HTML]{FE0000} \textbf{100.00}} \\ \cline{2-10} 
+				\multirow{-2}{*}{2nd Order} & Equalized   & 46.95 & 44.36 & 50.96 & {\color[HTML]{FE0000} \textbf{47.42}} & 100.00 & 100.00 & 100.00 & {\color[HTML]{FE0000} \textbf{100.00}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
+	\section{\textcolor{blue}{Square-Root Weight}}
+		$$T = \frac{\sqrt{\sigma_B} \mu_A + \sqrt{\sigma_A} \mu_B}{\sqrt{\sigma_B} + \sqrt{\sigma_A}}$$
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				&             & \multicolumn{4}{c|}{True Negative}                            & \multicolumn{4}{c|}{True Positive}                                \\ \hline
+				& Centralized & 97.22 & 98.15 & 97.45 & {\color[HTML]{FE0000} \textbf{97.61}} & 100.00 & 100.00 & 100.00 & {\color[HTML]{FE0000} \textbf{100.00}} \\ \cline{2-10} 
+				\multirow{-2}{*}{1st Order} & Equalized   & 68.50 & 70.59 & 68.87 & {\color[HTML]{FE0000} \textbf{69.32}} & 19.51  & 30.43  & 39.47  & {\color[HTML]{FE0000} \textbf{29.80}}  \\ \hline
+				& Centralized & 71.22 & 73.86 & 78.68 & {\color[HTML]{FE0000} \textbf{74.59}} & 95.83  & 96.77  & 91.89  & {\color[HTML]{FE0000} \textbf{94.83}}  \\ \cline{2-10} 
+				\multirow{-2}{*}{2nd Order} & Equalized   & 77.57 & 81.27 & 80.59 & {\color[HTML]{FE0000} \textbf{79.81}} & 100.00 & 100.00 & 100.00 & {\color[HTML]{FE0000} \textbf{100.00}} \\ \hline
+			\end{tabular}
+		\end{table}
+		
+	\section{Logarithmic Weight}
+		$$T = \frac{(ln\sigma_B)\mu_A + (ln\sigma_A)\mu_B}{ln\sigma_B + ln\sigma_A}$$
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				&             & \multicolumn{4}{c|}{True Negative}                            & \multicolumn{4}{c|}{True Positive}                            \\ \hline
+				& Centralized & 99.23 & 99.25 & 99.63 & {\color[HTML]{FE0000} \textbf{99.37}} & 55.88 & 53.57 & 70.37 & {\color[HTML]{FE0000} \textbf{59.94}} \\ \cline{2-10} 
+				\multirow{-2}{*}{1st Order} & Equalized   & 95.80 & 95.04 & 95.11 & {\color[HTML]{FE0000} \textbf{95.32}} & 9.09  & 3.03  & 3.45  & {\color[HTML]{FE0000} \textbf{5.19}}  \\ \hline
+				& Centralized & 91.37 & 94.74 & 90.49 & {\color[HTML]{FE0000} \textbf{92.20}} & 97.50 & 68.97 & 93.75 & {\color[HTML]{FE0000} \textbf{86.74}} \\ \cline{2-10} 
+				\multirow{-2}{*}{2nd Order} & Equalized   & 97.70 & 99.26 & 99.26 & {\color[HTML]{FE0000} \textbf{98.74}} & 85.29 & 95.83 & 96.00 & {\color[HTML]{FE0000} \textbf{92.37}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
+	\section{Square-Log Weight}
+		$$T = \frac{(\sqrt{|ln\sigma_B|})\mu_A + (\sqrt{|ln\sigma_A|})\mu_B}{\sqrt{|ln\sigma_B|} + \sqrt{|ln\sigma_A|}}$$
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				&             & \multicolumn{4}{c|}{True Negative}                            & \multicolumn{4}{c|}{True Positive}                              \\ \hline
+				& Centralized & 99.24 & 99.26 & 99.25 & {\color[HTML]{FE0000} \textbf{99.25}} & 53.13  & 52.17 & 56.67  & {\color[HTML]{FE0000} \textbf{53.99}} \\ \cline{2-10} 
+				\multirow{-2}{*}{1st Order} & Equalized   & 93.89 & 94.81 & 95.45 & {\color[HTML]{FE0000} \textbf{94.72}} & 3.03   & 8.00  & 6.45   & {\color[HTML]{FE0000} \textbf{5.83}}  \\ \hline
+				& Centralized & 91.92 & 89.92 & 88.01 & {\color[HTML]{FE0000} \textbf{89.95}} & 65.71  & 92.59 & 85.71  & {\color[HTML]{FE0000} \textbf{81.34}} \\ \cline{2-10} 
+				\multirow{-2}{*}{2nd Order} & Equalized   & 95.88 & 99.23 & 97.76 & {\color[HTML]{FE0000} \textbf{97.62}} & 100.00 & 88.89 & 100.00 & {\color[HTML]{FE0000} \textbf{96.30}} \\ \hline
+			\end{tabular}
+		\end{table}
+		
+	\section{Log-Square Weight}
+		$$T = \frac{(ln\sqrt{\sigma_B})\mu_A + (ln\sqrt{\sigma_A})\mu_B}{ln\sqrt{\sigma_B} + ln\sqrt{\sigma_A}}$$
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				&             & \multicolumn{4}{c|}{True Negative}                            & \multicolumn{4}{c|}{True Positive}                             \\ \hline
+				& Centralized & 99.25 & 99.25 & 99.62 & {\color[HTML]{FE0000} \textbf{99.37}} & 51.85 & 40.74  & 43.33 & {\color[HTML]{FE0000} \textbf{45.31}} \\ \cline{2-10} 
+				\multirow{-2}{*}{1st Order} & Equalized   & 95.45 & 93.51 & 94.93 & {\color[HTML]{FE0000} \textbf{94.63}} & 6.45  & 6.06   & 5.26  & {\color[HTML]{FE0000} \textbf{5.92}}  \\ \hline
+				& Centralized & 91.70 & 93.21 & 89.27 & {\color[HTML]{FE0000} \textbf{91.39}} & 83.33 & 100.00 & 94.12 & {\color[HTML]{FE0000} \textbf{92.48}} \\ \cline{2-10} 
+				\multirow{-2}{*}{2nd Order} & Equalized   & 99.62 & 99.63 & 97.37 & {\color[HTML]{FE0000} \textbf{98.87}} & 93.10 & 80.77  & 96.55 & {\color[HTML]{FE0000} \textbf{90.14}} \\ \hline
+			\end{tabular}
+		\end{table}
+		
+	\section{Linear Additional Weight}
+		$$T = \frac{\sigma_B (1 - \alpha) \mu_A + \sigma_A \alpha \mu_B}{\sigma_B (1 - \alpha) + \sigma_A \alpha}$$
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				&             & \multicolumn{4}{c|}{True Negative}                            & \multicolumn{4}{c|}{True Positive}                                \\ \hline
+				& Centralized & 20.44 & 23.11 & 22.05 & {\color[HTML]{FE0000} \textbf{21.87}} & 100.00 & 100.00 & 96.88  & {\color[HTML]{FE0000} \textbf{98.96}}  \\ \cline{2-10} 
+				\multirow{-2}{*}{1st Order} & Equalized   & 22.26 & 22.93 & 23.79 & {\color[HTML]{FE0000} \textbf{22.99}} & 76.19  & 75.86  & 80.77  & {\color[HTML]{FE0000} \textbf{77.61}}  \\ \hline
+				& Centralized & 17.10 & 17.60 & 16.54 & {\color[HTML]{FE0000} \textbf{17.08}} & 100.00 & 100.00 & 100.00 & {\color[HTML]{FE0000} \textbf{100.00}} \\ \cline{2-10} 
+				\multirow{-2}{*}{2nd Order} & Equalized   & 17.18 & 17.23 & 17.36 & {\color[HTML]{FE0000} \textbf{17.26}} & 100.00 & 100.00 & 100.00 & {\color[HTML]{FE0000} \textbf{100.00}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
+	\section{Square-Root Additional Weight}
+		$$T = \frac{(\sigma_B \sqrt{1 - \alpha}) \mu_A + (\sigma_A \sqrt{\alpha}) \mu_B}{\sigma_B \sqrt{1 - \alpha} + \sigma_A \sqrt{\alpha}}$$
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				&             & \multicolumn{4}{c|}{True Negative}                            & \multicolumn{4}{c|}{True Positive}                                \\ \hline
+				& Centralized & 25.77 & 24.34 & 29.30 & {\color[HTML]{FE0000} \textbf{26.47}} & 100.00 & 100.00 & 100.00 & {\color[HTML]{FE0000} \textbf{100.00}} \\ \cline{2-10} 
+				\multirow{-2}{*}{1st Order} & Equalized   & 27.31 & 26.64 & 27.76 & {\color[HTML]{FE0000} \textbf{27.24}} & 83.33  & 77.78  & 78.13  & {\color[HTML]{FE0000} \textbf{79.75}}  \\ \hline
+				& Centralized & 20.91 & 18.96 & 19.10 & {\color[HTML]{FE0000} \textbf{19.66}} & 100.00 & 100.00 & 100.00 & {\color[HTML]{FE0000} \textbf{100.00}} \\ \cline{2-10} 
+				\multirow{-2}{*}{2nd Order} & Equalized   & 17.74 & 17.16 & 17.91 & {\color[HTML]{FE0000} \textbf{17.60}} & 100.00 & 100.00 & 100.00 & {\color[HTML]{FE0000} \textbf{100.00}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
+	\section{Logarithmic Additional Weight}
+		$$
+		T = \frac{\big[\sigma_B ln(1 - \alpha)\big] \mu_A
+			+ \big[\sigma_A ln\alpha\big] \mu_B}
+		{\sigma_B ln(1 - \alpha) + \sigma_A ln\alpha}
+		$$
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				&             & \multicolumn{4}{c|}{True Negative}                               & \multicolumn{4}{c|}{True Positive}                            \\ \hline
+				& Centralized & 99.62  & 99.62 & 99.61  & {\color[HTML]{FE0000} \textbf{99.62}}  & 23.53 & 25.00 & 19.44 & {\color[HTML]{FE0000} \textbf{22.66}} \\ \cline{2-10} 
+				\multirow{-2}{*}{1st Order} & Equalized   & 96.85  & 96.18 & 97.73  & {\color[HTML]{FE0000} \textbf{96.92}}  & 4.88  & 3.03  & 12.90 & {\color[HTML]{FE0000} \textbf{6.94}}  \\ \hline
+				& Centralized & 97.72  & 96.63 & 98.87  & {\color[HTML]{FE0000} \textbf{97.74}}  & 25.00 & 42.86 & 48.28 & {\color[HTML]{FE0000} \textbf{38.71}} \\ \cline{2-10} 
+				\multirow{-2}{*}{2nd Order} & Equalized   & 100.00 & 99.62 & 100.00 & {\color[HTML]{FE0000} \textbf{100.00}} & 47.83 & 37.93 & 46.15 & {\color[HTML]{FE0000} \textbf{43.97}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
+	\section{\textcolor{blue}{Square-Log Additional Weight}}
+		$$
+		T = \frac{\mu_A \sigma_B \sqrt{-ln(1 - \alpha)}
+			+ \mu_B \sigma_A \sqrt{-ln\alpha}}
+		{\sigma_B \sqrt{-ln(1 - \alpha)} + \sigma_A \sqrt{-ln\alpha}}
+		$$
+		\begin{table}[!ht]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				&             & \multicolumn{4}{c|}{True Negative}                            & \multicolumn{4}{c|}{True Positive}                              \\ \hline
+				& Centralized & 98.47 & 98.48 & 98.13 & {\color[HTML]{FE0000} \textbf{98.36}} & 82.35 & 100.00 & 100.00 & {\color[HTML]{FE0000} \textbf{94.12}} \\ \cline{2-10} 
+				\multirow{-2}{*}{1st Order} & Equalized   & 88.93 & 89.02 & 89.63 & {\color[HTML]{FE0000} \textbf{89.19}} & 9.09  & 22.58  & 16.00  & {\color[HTML]{FE0000} \textbf{15.89}} \\ \hline
+				& Centralized & 96.28 & 95.09 & 95.44 & {\color[HTML]{FE0000} \textbf{95.60}} & 73.08 & 66.67  & 84.38  & {\color[HTML]{FE0000} \textbf{74.71}} \\ \cline{2-10} 
+				\multirow{-2}{*}{2nd Order} & Equalized   & 99.26 & 98.49 & 96.67 & {\color[HTML]{FE0000} \textbf{98.14}} & 91.30 & 100.00 & 96.00  & {\color[HTML]{FE0000} \textbf{95.77}} \\ \hline
+			\end{tabular}
+		\end{table}
+		
+	\section{Log-Square Additional Weight}
+		$$
+		T = \frac{\mu_A \sigma_B ln\sqrt{1 - \alpha}
+			+ \mu_B \sigma_A ln\sqrt{\alpha}}
+		{\sigma_B ln\sqrt{1 - \alpha} + \sigma_A ln\sqrt{\alpha}}
+		$$
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				&             & \multicolumn{4}{c|}{True Negative}                              & \multicolumn{4}{c|}{True Positive}                            \\ \hline
+				& Centralized & 99.24  & 99.63 & 99.63  & {\color[HTML]{FE0000} \textbf{99.50}} & 18.18 & 21.43 & 18.52 & {\color[HTML]{FE0000} \textbf{19.38}} \\ \cline{2-10} 
+				\multirow{-2}{*}{1st Order} & Equalized   & 95.91  & 96.01 & 95.20  & {\color[HTML]{FE0000} \textbf{95.70}} & 0.00  & 0.00  & 0.00  & {\color[HTML]{FE0000} \textbf{0.00}}  \\ \hline
+				& Centralized & 98.48  & 98.43 & 99.63  & {\color[HTML]{FE0000} \textbf{98.85}} & 25.00 & 27.50 & 37.04 & {\color[HTML]{FE0000} \textbf{29.85}} \\ \cline{2-10} 
+				\multirow{-2}{*}{2nd Order} & Equalized   & 100.00 & 99.27 & 100.00 & {\color[HTML]{FE0000} \textbf{99.76}} & 32.14 & 54.55 & 31.03 & {\color[HTML]{FE0000} \textbf{39.24}} \\ \hline
+			\end{tabular}
+		\end{table}
+		
+	\section{Square-Log Combined Weight}
+		$$
+		T = \frac{\mu_A \sqrt{|ln\big[\sigma_B (1 - \alpha)\big]|}
+			+ \mu_B \sqrt{|ln(\sigma_A \alpha)|}}
+		{\sqrt{|ln\big[\sigma_B (1 - \alpha)\big]|} + \sqrt{|ln(\sigma_A \alpha)|}}
+		$$
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				&             & \multicolumn{4}{c|}{True Negative}                            & \multicolumn{4}{c|}{True Positive}                             \\ \hline
+				& Centralized & 99.26 & 99.22 & 99.62 & {\color[HTML]{FE0000} \textbf{99.37}} & 50.00  & 59.46 & 39.39 & {\color[HTML]{FE0000} \textbf{49.62}} \\ \cline{2-10} 
+				\multirow{-2}{*}{1st Order} & Equalized   & 94.70 & 94.70 & 95.20 & {\color[HTML]{FE0000} \textbf{94.87}} & 12.90  & 0.00  & 4.17  & {\color[HTML]{FE0000} \textbf{5.69}}  \\ \hline
+				& Centralized & 94.98 & 95.17 & 89.59 & {\color[HTML]{FE0000} \textbf{93.25}} & 87.50  & 88.46 & 92.31 & {\color[HTML]{FE0000} \textbf{89.42}} \\ \cline{2-10} 
+				\multirow{-2}{*}{2nd Order} & Equalized   & 97.00 & 99.23 & 95.96 & {\color[HTML]{FE0000} \textbf{97.40}} & 100.00 & 76.47 & 95.65 & {\color[HTML]{FE0000} \textbf{90.71}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
+	\section{Log-Square Combined Weight}
+		$$
+		T = \frac{\mu_A ln\sqrt{\sigma_B (1 - \alpha)}
+			+ \mu_B ln\sqrt{\sigma_A \alpha}}
+		{ln\sqrt{\sigma_B (1 - \alpha)} + ln\sqrt{\sigma_A \alpha}}
+		$$
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				&             & \multicolumn{4}{c|}{True Negative}                            & \multicolumn{4}{c|}{True Positive}                            \\ \hline
+				& Centralized & 99.26 & 99.62 & 99.64 & {\color[HTML]{FE0000} \textbf{99.51}} & 36.00 & 45.71 & 38.89 & {\color[HTML]{FE0000} \textbf{40.20}} \\ \cline{2-10} 
+				\multirow{-2}{*}{1st Order} & Equalized   & 95.57 & 95.17 & 95.51 & {\color[HTML]{FE0000} \textbf{95.42}} & 4.17  & 0.00  & 3.57  & {\color[HTML]{FE0000} \textbf{2.58}}  \\ \hline
+				& Centralized & 94.31 & 93.94 & 94.30 & {\color[HTML]{FE0000} \textbf{94.18}} & 87.10 & 63.52 & 78.13 & {\color[HTML]{FE0000} \textbf{76.25}} \\ \cline{2-10} 
+				\multirow{-2}{*}{2nd Order} & Equalized   & 99.62 & 98.89 & 99.62 & {\color[HTML]{FE0000} \textbf{99.38}} & 78.79 & 70.83 & 75.86 & {\color[HTML]{FE0000} \textbf{75.16}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
+	\section{\textcolor{blue}{Linear Balanced}}
+		$$T = \mathop{\arg\min}_{\mu_A \le T \le \mu_B}\ \alpha \cdot \int_{-\infty}^{T}P_B(x)dx + (1 - \alpha) \cdot \int_{T}^{+\infty}P_A(x)dx$$
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				&             & \multicolumn{4}{c|}{True Negative}                            & \multicolumn{4}{c|}{True Positive}                                \\ \hline
+				& Centralized & 95.47 & 88.81 & 85.50 & {\color[HTML]{FE0000} \textbf{89.93}} & 100.00 & 96.30  & 100.00 & {\color[HTML]{FE0000} \textbf{98.77}}  \\ \cline{2-10} 
+				\multirow{-2}{*}{1st Order} & Equalized   & 73.99 & 80.52 & 79.85 & {\color[HTML]{FE0000} \textbf{78.12}} & 40.91  & 30.14  & 11.11  & {\color[HTML]{FE0000} \textbf{27.39}}  \\ \hline
+				& Centralized & 77.70 & 78.88 & 76.87 & {\color[HTML]{FE0000} \textbf{77.82}} & 96.15  & 84.09  & 96.30  & {\color[HTML]{FE0000} \textbf{92.18}}  \\ \cline{2-10} 
+				\multirow{-2}{*}{2nd Order} & Equalized   & 72.35 & 78.83 & 77.17 & {\color[HTML]{FE0000} \textbf{76.12}} & 100.00 & 100.00 & 100.00 & {\color[HTML]{FE0000} \textbf{100.00}} \\ \hline
+			\end{tabular}
+		\end{table}
+		
+	\section*{Total}
+	
+\end{document}
