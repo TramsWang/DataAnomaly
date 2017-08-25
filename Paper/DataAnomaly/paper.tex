@@ -33,12 +33,14 @@
 
 		\begin{figure}[!t]
 			\centering
-			\includegraphics[width=0.75\linewidth]{fig/Example}
+			\includegraphics[width=\linewidth]{fig/ExampleEcdf.png}
 			\caption{Example Cumulative Distribution Function of Original And Modified Data}
-			\label{fig:example}
+			\label{fig:example-ecdf}
 		\end{figure}
 		
-		According to our observation, typical data manipulations on numerical data will lead to the drift of its distribution. For example, in a sampled data set from Melbourne city pedestrian volume along main streets\footnote{https://data.melbourne.vic.gov.au/Transport-Movement/Pedestrian-volume-updated-monthly-/b2ak-trbp}, 20\% records were randomly selected and modified, the value set as a tenth of the original. The empirical cumulative distribution function of the two data sets are shown in Fig.~\ref{fig:example}, where there is clearly a gap between these distributions. These anomalies inside data pipelines will severely affect mining and learning algorithms and further change the final decision given by the entire system.
+		According to our observation, typical data manipulations on numerical data will lead to the drift of its distribution. For example, a Taobao online seller's transaction records can be ``click farmed'' to increase the volume of sales. Fig.~\ref{fig:example-ecdf} shows the sales distribution within one day. The curve for cheated data is emulated according to a popular method for click farming. It can be observed that there exists clearly a gap between these two distributions. 		
+		%For example, in a sampled data set from Melbourne city pedestrian volume along main streets\footnote{https://data.melbourne.vic.gov.au/Transport-Movement/Pedestrian-volume-updated-monthly-/b2ak-trbp}, 20\% records were randomly selected and modified, the value set as a tenth of the original. The empirical cumulative distribution function of the two data sets are shown in Fig.~\ref{fig:example}, where there is clearly a gap between these distributions.
+		These anomalies inside data pipelines will severely affect mining and learning algorithms and further change the final decision given by the entire system.
 		
 		In order to address issues resulted from data manipulation and pipeline errors, we propose a novel mechanism to detect and locate corrupted data within a data pipeline via statistical distance. As far as we know, this algorithm is the first attempt against data anomaly via statistical distance. Evaluations are performed on synthetic and real-world data sets, demonstrating the correctness and effectiveness of the mechanism.
 		
