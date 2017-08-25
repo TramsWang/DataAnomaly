@@ -18,6 +18,9 @@
 !Paper
 Paper/**/*.aux
 Paper/**/*.log
+Paper/**/*.out
+Paper/**/*.bbl
+Paper/**/*.blg
 
 # Untrack abundoned data
 /Synthetic/Centralized(3x)
