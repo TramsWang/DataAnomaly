@@ -29,7 +29,7 @@ def linearBalancedThreshold(ua, sa, ub, sb, alpha):
         return sol2
 
 input_dir = "Correct"
-input_dir_err = "Centralized"
+input_dir_err = "Equalized"
 
 error_rate = 0.1
 #sigma_coefficient = 3  # Don't think about this now
@@ -83,10 +83,10 @@ for i in range(30, 325):
     jsd_mean_err = statistics.mean(jsd_evidence_err)
     jsd_sigma_err = statistics.stdev(jsd_evidence_err)
 
-    w = jsd_sigma_err * math.sqrt(-math.log(1 - error_rate))
-    w_err = jsd_sigma * math.sqrt(-math.log(error_rate))
-    threshold = (jsd_mean * w + jsd_mean_err * w_err) / (w + w_err)
-    #threshold = linearBalancedThreshold(jsd_mean, jsd_sigma, jsd_mean_err, jsd_sigma_err, error_rate)
+    #w = jsd_sigma_err * math.sqrt(-math.log(1 - error_rate))
+    #w_err = jsd_sigma * math.sqrt(-math.log(error_rate))
+    #threshold = (jsd_mean * w + jsd_mean_err * w_err) / (w + w_err)
+    threshold = linearBalancedThreshold(jsd_mean, jsd_sigma, jsd_mean_err, jsd_sigma_err, error_rate)
     #print("Test File: %d.csv(%d/325) Threshold jsd: %g(PD: %g)"
     #      % (i, i, threshold, stats.norm.pdf(threshold, jsd_mean, jsd_sigma)))
     ch = '-'
@@ -159,6 +159,16 @@ try:
        100 * error_recognized / error_cnt, error_recognized, error_cnt))
 except ZeroDivisionError as e:
     print(e)
+
+tp = error_recognized
+fp = correct_cnt - correct_recognized
+tn = correct_recognized
+fn = error_cnt - error_recognized
+
+pre = tp / (tp + fp)
+rec = tp / (tp + fn)
+f1 = 2 * pre * rec / (pre + rec)
+print("tp=%d, fp=%d, tn=%d, fn=%d, f1=%f\n" % (tp, fp, tn, fn, f1))
 
 # Show JSD History
 figure = plt.figure(figsize=(6000 / 300, 3000 / 300), dpi=300)

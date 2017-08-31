@@ -25,6 +25,25 @@
 				\multirow{-2}{*}{2nd Order} & Equalized   & 46.95 & 44.36 & 50.96 & {\color[HTML]{FE0000} \textbf{47.42}} & 100.00 & 100.00 & 100.00 & {\color[HTML]{FE0000} \textbf{100.00}} \\ \hline
 			\end{tabular}
 		\end{table}
+		
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				& \multicolumn{5}{c|}{1st Order}                                                      & \multicolumn{5}{c|}{2nd Order}                               \\ \hline
+				& TP & FP  & TN  & FN                        & F1 Score                               & TP & FP  & TN  & FN & F1 Score                               \\ \hline
+				& 34 & 172 & 89  & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.2833}} & 37 & 111 & 146 & 1  & {\color[HTML]{FE0000} \textbf{0.3978}} \\ \cline{2-11} 
+				& 33 & 166 & 96  & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.2845}} & 39 & 141 & 115 & 0  & {\color[HTML]{FE0000} \textbf{0.3562}} \\ \cline{2-11} 
+				& 23 & 178 & 94  & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.2054}} & 27 & 122 & 146 & 0  & {\color[HTML]{FE0000} \textbf{0.3068}} \\ \cline{2-11} 
+				& 31 & 148 & 116 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.2952}} & 34 & 116 & 145 & 0  & {\color[HTML]{FE0000} \textbf{0.3696}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Centralized} & 26 & 173 & 96  & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.2311}} & 34 & 146 & 115 & 0  & {\color[HTML]{FE0000} \textbf{0.3178}} \\ \hline
+				& 18 & 168 & 99  & {\color[HTML]{333333} 10} & {\color[HTML]{FE0000} \textbf{0.1682}} & 25 & 134 & 136 & 0  & {\color[HTML]{FE0000} \textbf{0.2717}} \\ \cline{2-11} 
+				& 17 & 170 & 99  & {\color[HTML]{333333} 9}  & {\color[HTML]{FE0000} \textbf{0.1596}} & 31 & 136 & 128 & 0  & {\color[HTML]{FE0000} \textbf{0.3131}} \\ \cline{2-11} 
+				& 14 & 161 & 108 & {\color[HTML]{333333} 12} & {\color[HTML]{FE0000} \textbf{0.1393}} & 30 & 140 & 125 & 0  & {\color[HTML]{FE0000} \textbf{0.3000}} \\ \cline{2-11} 
+				& 25 & 157 & 98  & {\color[HTML]{333333} 15} & {\color[HTML]{FE0000} \textbf{0.2252}} & 28 & 115 & 152 & 0  & {\color[HTML]{FE0000} \textbf{0.3275}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Equalized}   & 18 & 145 & 117 & {\color[HTML]{333333} 15} & {\color[HTML]{FE0000} \textbf{0.1837}} & 23 & 136 & 136 & 0  & {\color[HTML]{FE0000} \textbf{0.2527}} \\ \hline
+			\end{tabular}
+		\end{table}
 	
 	\section{\textcolor{blue}{Square-Root Weight}}
 		$$T = \frac{\sqrt{\sigma_B} \mu_A + \sqrt{\sigma_A} \mu_B}{\sqrt{\sigma_B} + \sqrt{\sigma_A}}$$
@@ -37,6 +56,25 @@
 				\multirow{-2}{*}{1st Order} & Equalized   & 68.50 & 70.59 & 68.87 & {\color[HTML]{FE0000} \textbf{69.32}} & 19.51  & 30.43  & 39.47  & {\color[HTML]{FE0000} \textbf{29.80}}  \\ \hline
 				& Centralized & 71.22 & 73.86 & 78.68 & {\color[HTML]{FE0000} \textbf{74.59}} & 95.83  & 96.77  & 91.89  & {\color[HTML]{FE0000} \textbf{94.83}}  \\ \cline{2-10} 
 				\multirow{-2}{*}{2nd Order} & Equalized   & 77.57 & 81.27 & 80.59 & {\color[HTML]{FE0000} \textbf{79.81}} & 100.00 & 100.00 & 100.00 & {\color[HTML]{FE0000} \textbf{100.00}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				& \multicolumn{5}{c|}{1st Order}                                                     & \multicolumn{5}{c|}{2nd Order}                              \\ \hline
+				& TP & FP & TN  & FN                        & F1 Score                               & TP & FP & TN  & FN & F1 Score                               \\ \hline
+				& 30 & 6  & 259 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.9091}} & 20 & 48 & 227 & 0  & {\color[HTML]{FE0000} \textbf{0.4545}} \\ \cline{2-11} 
+				& 35 & 8  & 252 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.8974}} & 24 & 25 & 246 & 0  & {\color[HTML]{FE0000} \textbf{0.6575}} \\ \cline{2-11} 
+				& 27 & 7  & 261 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.8852}} & 30 & 48 & 217 & 0  & {\color[HTML]{FE0000} \textbf{0.5556}} \\ \cline{2-11} 
+				& 36 & 6  & 253 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.9231}} & 33 & 48 & 214 & 0  & {\color[HTML]{FE0000} \textbf{0.5789}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Centralized} & 23 & 7  & 256 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.8679}} & 32 & 48 & 215 & 0  & {\color[HTML]{FE0000} \textbf{0.5714}} \\ \hline
+				& 7  & 73 & 194 & {\color[HTML]{333333} 21} & {\color[HTML]{FE0000} \textbf{0.1296}} & 33 & 23 & 239 & 0  & {\color[HTML]{FE0000} \textbf{0.7416}} \\ \cline{2-11} 
+				& 11 & 68 & 190 & {\color[HTML]{333333} 26} & {\color[HTML]{FE0000} \textbf{0.1897}} & 27 & 45 & 223 & 0  & {\color[HTML]{FE0000} \textbf{0.5455}} \\ \cline{2-11} 
+				& 10 & 90 & 171 & {\color[HTML]{333333} 24} & {\color[HTML]{FE0000} \textbf{0.1493}} & 27 & 66 & 202 & 0  & {\color[HTML]{FE0000} \textbf{0.4500}} \\ \cline{2-11} 
+				& 9  & 81 & 181 & {\color[HTML]{333333} 24} & {\color[HTML]{FE0000} \textbf{0.1463}} & 31 & 30 & 234 & 0  & {\color[HTML]{FE0000} \textbf{0.6739}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Equalized}   & 5  & 83 & 193 & {\color[HTML]{333333} 14} & {\color[HTML]{FE0000} \textbf{0.0935}} & 24 & 46 & 225 & 0  & {\color[HTML]{FE0000} \textbf{0.5106}} \\ \hline
 			\end{tabular}
 		\end{table}
 		
@@ -54,6 +92,25 @@
 			\end{tabular}
 		\end{table}
 	
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				& \multicolumn{5}{c|}{1st Order}                                                     & \multicolumn{5}{c|}{2nd Order}                              \\ \hline
+				& TP & FP & TN  & FN                        & F1 Score                               & TP & FP & TN  & FN & F1 Score                               \\ \hline
+				& 13 & 2  & 264 & {\color[HTML]{333333} 16} & {\color[HTML]{FE0000} \textbf{0.5909}} & 23 & 24 & 246 & 2  & {\color[HTML]{FE0000} \textbf{0.6389}} \\ \cline{2-11} 
+				& 10 & 2  & 270 & {\color[HTML]{333333} 13} & {\color[HTML]{FE0000} \textbf{0.5714}} & 24 & 16 & 250 & 5  & {\color[HTML]{FE0000} \textbf{0.6957}} \\ \cline{2-11} 
+				& 29 & 2  & 242 & {\color[HTML]{333333} 22} & {\color[HTML]{FE0000} \textbf{0.7073}} & 23 & 24 & 245 & 3  & {\color[HTML]{FE0000} \textbf{0.6301}} \\ \cline{2-11} 
+				& 14 & 2  & 262 & {\color[HTML]{333333} 17} & {\color[HTML]{FE0000} \textbf{0.5957}} & 23 & 32 & 234 & 1  & {\color[HTML]{FE0000} \textbf{0.6292}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Centralized} & 14 & 1  & 263 & {\color[HTML]{333333} 17} & {\color[HTML]{FE0000} \textbf{0.6087}} & 21 & 23 & 248 & 3  & {\color[HTML]{FE0000} \textbf{0.6176}} \\ \hline
+				& 1  & 13 & 260 & {\color[HTML]{333333} 21} & {\color[HTML]{FE0000} \textbf{0.0556}} & 35 & 9  & 250 & 1  & {\color[HTML]{FE0000} \textbf{0.8750}} \\ \cline{2-11} 
+				& 1  & 13 & 260 & {\color[HTML]{333333} 21} & {\color[HTML]{FE0000} \textbf{0.0556}} & 22 & 5  & 267 & 1  & {\color[HTML]{FE0000} \textbf{0.8800}} \\ \cline{2-11} 
+				& 2  & 12 & 254 & {\color[HTML]{333333} 17} & {\color[HTML]{FE0000} \textbf{0.0930}} & 27 & 2  & 261 & 5  & {\color[HTML]{FE0000} \textbf{0.8852}} \\ \cline{2-11} 
+				& 5  & 13 & 246 & {\color[HTML]{333333} 31} & {\color[HTML]{FE0000} \textbf{0.1852}} & 33 & 8  & 253 & 1  & {\color[HTML]{FE0000} \textbf{0.8800}}  \\ \cline{2-11} 
+				\multirow{-5}{*}{Equalized}   & 3  & 13 & 253 & {\color[HTML]{333333} 26} & {\color[HTML]{FE0000} \textbf{0.1333}} & 26 & 6  & 261 & 2  & {\color[HTML]{FE0000} \textbf{0.8667}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
 	\section{Square-Log Weight}
 		$$T = \frac{(\sqrt{|ln\sigma_B|})\mu_A + (\sqrt{|ln\sigma_A|})\mu_B}{\sqrt{|ln\sigma_B|} + \sqrt{|ln\sigma_A|}}$$
 		\begin{table}[!h]
@@ -65,6 +122,25 @@
 				\multirow{-2}{*}{1st Order} & Equalized   & 93.89 & 94.81 & 95.45 & {\color[HTML]{FE0000} \textbf{94.72}} & 3.03   & 8.00  & 6.45   & {\color[HTML]{FE0000} \textbf{5.83}}  \\ \hline
 				& Centralized & 91.92 & 89.92 & 88.01 & {\color[HTML]{FE0000} \textbf{89.95}} & 65.71  & 92.59 & 85.71  & {\color[HTML]{FE0000} \textbf{81.34}} \\ \cline{2-10} 
 				\multirow{-2}{*}{2nd Order} & Equalized   & 95.88 & 99.23 & 97.76 & {\color[HTML]{FE0000} \textbf{97.62}} & 100.00 & 88.89 & 100.00 & {\color[HTML]{FE0000} \textbf{96.30}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				& \multicolumn{5}{c|}{1st Order}                                                     & \multicolumn{5}{c|}{2nd Order}                              \\ \hline
+				& TP & FP & TN  & FN                        & F1 Score                               & TP & FP & TN  & FN & F1 Score                               \\ \hline
+				& 21 & 1  & 260 & {\color[HTML]{333333} 13} & {\color[HTML]{FE0000} \textbf{0.7500}} & 29 & 26 & 240 & 0  & {\color[HTML]{FE0000} \textbf{0.6905}} \\ \cline{2-11} 
+				& 15 & 1  & 267 & {\color[HTML]{333333} 12} & {\color[HTML]{FE0000} \textbf{0.6977}} & 28 & 41 & 221 & 5  & {\color[HTML]{FE0000} \textbf{0.5490}} \\ \cline{2-11} 
+				& 9  & 2  & 263 & {\color[HTML]{333333} 21} & {\color[HTML]{FE0000} \textbf{0.4390}} & 29 & 14 & 249 & 3  & {\color[HTML]{FE0000} \textbf{0.7733}} \\ \cline{2-11} 
+				& 11 & 2  & 264 & {\color[HTML]{333333} 18} & {\color[HTML]{FE0000} \textbf{0.5238}} & 28 & 28 & 236 & 3  & {\color[HTML]{FE0000} \textbf{0.6437}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Centralized} & 8  & 2  & 274 & {\color[HTML]{333333} 11} & {\color[HTML]{FE0000} \textbf{0.5517}} & 31 & 18 & 243 & 3  & {\color[HTML]{FE0000} \textbf{0.7470}} \\ \hline
+				& 1  & 16 & 249 & {\color[HTML]{333333} 29} & {\color[HTML]{FE0000} \textbf{0.0426}} & 21 & 11 & 263 & 0  & {\color[HTML]{FE0000} \textbf{0.7925}} \\ \cline{2-11} 
+				& 5  & 10 & 249 & {\color[HTML]{333333} 31} & {\color[HTML]{FE0000} \textbf{0.1961}} & 24 & 15 & 256 & 0  & {\color[HTML]{FE0000} \textbf{0.7619}} \\ \cline{2-11} 
+				& 1  & 18 & 250 & {\color[HTML]{333333} 26} & {\color[HTML]{FE0000} \textbf{0.0435}} & 35 & 8  & 252 & 0  & {\color[HTML]{FE0000} \textbf{0.8974}} \\ \cline{2-11} 
+				& 2  & 13 & 243 & {\color[HTML]{333333} 37} & {\color[HTML]{FE0000} \textbf{0.0741}} & 25 & 5  & 263 & 2  & {\color[HTML]{FE0000} \textbf{0.8772}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Equalized}   & 3  & 12 & 250 & {\color[HTML]{333333} 30} & {\color[HTML]{FE0000} \textbf{0.1250}} & 32 & 4  & 253 & 6  & {\color[HTML]{FE0000} \textbf{0.8649}} \\ \hline
 			\end{tabular}
 		\end{table}
 		
@@ -79,6 +155,25 @@
 				\multirow{-2}{*}{1st Order} & Equalized   & 95.45 & 93.51 & 94.93 & {\color[HTML]{FE0000} \textbf{94.63}} & 6.45  & 6.06   & 5.26  & {\color[HTML]{FE0000} \textbf{5.92}}  \\ \hline
 				& Centralized & 91.70 & 93.21 & 89.27 & {\color[HTML]{FE0000} \textbf{91.39}} & 83.33 & 100.00 & 94.12 & {\color[HTML]{FE0000} \textbf{92.48}} \\ \cline{2-10} 
 				\multirow{-2}{*}{2nd Order} & Equalized   & 99.62 & 99.63 & 97.37 & {\color[HTML]{FE0000} \textbf{98.87}} & 93.10 & 80.77  & 96.55 & {\color[HTML]{FE0000} \textbf{90.14}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				& \multicolumn{5}{c|}{1st Order}                                                     & \multicolumn{5}{c|}{2nd Order}                              \\ \hline
+				& TP & FP & TN  & FN                        & F1 Score                               & TP & FP & TN  & FN & F1 Score                               \\ \hline
+				& 11 & 2  & 263 & {\color[HTML]{333333} 19} & {\color[HTML]{FE0000} \textbf{0.5116}} & 25 & 20 & 248 & 2  & {\color[HTML]{FE0000} \textbf{0.6944}} \\ \cline{2-11} 
+				& 7  & 1  & 262 & {\color[HTML]{333333} 25} & {\color[HTML]{FE0000} \textbf{0.3500}} & 25 & 18 & 250 & 2  & {\color[HTML]{FE0000} \textbf{0.7143}} \\ \cline{2-11} 
+				& 11 & 2  & 272 & {\color[HTML]{333333} 10} & {\color[HTML]{FE0000} \textbf{0.6471}} & 29 & 16 & 248 & 2  & {\color[HTML]{FE0000} \textbf{0.7632}} \\ \cline{2-11} 
+				& 11 & 2  & 264 & {\color[HTML]{333333} 18} & {\color[HTML]{FE0000} \textbf{0.5238}} & 23 & 20 & 244 & 8  & {\color[HTML]{FE0000} \textbf{0.6216}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Centralized} & 15 & 2  & 248 & {\color[HTML]{333333} 30} & {\color[HTML]{FE0000} \textbf{0.4839}} & 27 & 20 & 242 & 6  & {\color[HTML]{FE0000} \textbf{0.6750}} \\ \hline
+				& 2  & 12 & 253 & {\color[HTML]{333333} 28} & {\color[HTML]{FE0000} \textbf{0.0909}} & 25 & 4  & 264 & 2  & {\color[HTML]{FE0000} \textbf{0.8929}} \\ \cline{2-11} 
+				& 0  & 17 & 249 & {\color[HTML]{333333} 29} & {\color[HTML]{FE0000} \textbf{0.0000}} & 28 & 11 & 255 & 1  & {\color[HTML]{FE0000} \textbf{0.8235}} \\ \cline{2-11} 
+				& 1  & 13 & 250 & {\color[HTML]{333333} 31} & {\color[HTML]{FE0000} \textbf{0.0435}} & 23 & 4  & 263 & 5  & {\color[HTML]{FE0000} \textbf{0.8364}} \\ \cline{2-11} 
+				& 2  & 14 & 254 & {\color[HTML]{333333} 25} & {\color[HTML]{FE0000} \textbf{0.0930}} & 21 & 5  & 267 & 2  & {\color[HTML]{FE0000} \textbf{0.8571}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Equalized}   & 1  & 13 & 261 & {\color[HTML]{333333} 20} & {\color[HTML]{FE0000} \textbf{0.0571}} & 25 & 1  & 266 & 3  & {\color[HTML]{FE0000} \textbf{0.9259}} \\ \hline
 			\end{tabular}
 		\end{table}
 		
@@ -96,6 +191,25 @@
 			\end{tabular}
 		\end{table}
 	
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				& \multicolumn{5}{c|}{1st Order}                                                     & \multicolumn{5}{c|}{2nd Order}                              \\ \hline
+				& TP & FP  & TN & FN                        & F1 Score                               & TP & FP  & TN & FN & F1 Score                               \\ \hline
+				& 34 & 202 & 59 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.2519}} & 29 & 222 & 44 & 0  & {\color[HTML]{FE0000} \textbf{0.2071}} \\ \cline{2-11} 
+				& 30 & 202 & 63 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.2290}} & 33 & 217 & 45 & 0  & {\color[HTML]{FE0000} \textbf{0.2332}} \\ \cline{2-11} 
+				& 24 & 216 & 55 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.1818}} & 33 & 216 & 46 & 0  & {\color[HTML]{FE0000} \textbf{0.2340}} \\ \cline{2-11} 
+				& 31 & 201 & 63 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.2357}} & 33 & 216 & 46 & 0  & {\color[HTML]{FE0000} \textbf{0.2340}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Centralized} & 36 & 202 & 57 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.2628}} & 40 & 207 & 48 & 0  & {\color[HTML]{FE0000} \textbf{0.2787}} \\ \hline
+				& 23 & 208 & 55 & {\color[HTML]{333333} 9}  & {\color[HTML]{FE0000} \textbf{0.1749}} & 25 & 228 & 42 & 0  & {\color[HTML]{FE0000} \textbf{0.1799}} \\ \cline{2-11} 
+				& 20 & 206 & 59 & {\color[HTML]{333333} 10} & {\color[HTML]{FE0000} \textbf{0.1563}} & 25 & 225 & 45 & 0  & {\color[HTML]{FE0000} \textbf{0.1818}} \\ \cline{2-11} 
+				& 22 & 203 & 65 & {\color[HTML]{333333} 5}  & {\color[HTML]{FE0000} \textbf{0.1746}} & 17 & 234 & 44 & 0  & {\color[HTML]{FE0000} \textbf{0.1269}} \\ \cline{2-11} 
+				& 15 & 217 & 55 & {\color[HTML]{333333} 8}  & {\color[HTML]{FE0000} \textbf{0.1176}} & 34 & 220 & 41 & 0  & {\color[HTML]{FE0000} \textbf{0.2361}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Equalized}   & 22 & 210 & 53 & {\color[HTML]{333333} 10} & {\color[HTML]{FE0000} \textbf{0.1667}} & 23 & 228 & 44 & 0  & {\color[HTML]{FE0000} \textbf{0.1679}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
 	\section{Square-Root Additional Weight}
 		$$T = \frac{(\sigma_B \sqrt{1 - \alpha}) \mu_A + (\sigma_A \sqrt{\alpha}) \mu_B}{\sigma_B \sqrt{1 - \alpha} + \sigma_A \sqrt{\alpha}}$$
 		\begin{table}[!h]
@@ -107,6 +221,25 @@
 				\multirow{-2}{*}{1st Order} & Equalized   & 27.31 & 26.64 & 27.76 & {\color[HTML]{FE0000} \textbf{27.24}} & 83.33  & 77.78  & 78.13  & {\color[HTML]{FE0000} \textbf{79.75}}  \\ \hline
 				& Centralized & 20.91 & 18.96 & 19.10 & {\color[HTML]{FE0000} \textbf{19.66}} & 100.00 & 100.00 & 100.00 & {\color[HTML]{FE0000} \textbf{100.00}} \\ \cline{2-10} 
 				\multirow{-2}{*}{2nd Order} & Equalized   & 17.74 & 17.16 & 17.91 & {\color[HTML]{FE0000} \textbf{17.60}} & 100.00 & 100.00 & 100.00 & {\color[HTML]{FE0000} \textbf{100.00}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				& \multicolumn{5}{c|}{1st Order}                                                    & \multicolumn{5}{c|}{2nd Order}                              \\ \hline
+				& TP & FP  & TN & FN                       & F1 Score                               & TP & FP  & TN & FN & F1 Score                               \\ \hline
+				& 33 & 193 & 63 & {\color[HTML]{333333} 0} & {\color[HTML]{FE0000} \textbf{0.2548}} & 28 & 219 & 48 & 0  & {\color[HTML]{FE0000} \textbf{0.2036}} \\ \cline{2-11} 
+				& 24 & 199 & 72 & {\color[HTML]{333333} 0} & {\color[HTML]{FE0000} \textbf{0.1943}} & 36 & 207 & 52 & 0  & {\color[HTML]{FE0000} \textbf{0.2581}} \\ \cline{2-11} 
+				& 38 & 183 & 74 & {\color[HTML]{333333} 0} & {\color[HTML]{FE0000} \textbf{0.2934}} & 36 & 206 & 53 & 0  & {\color[HTML]{FE0000} \textbf{0.2590}} \\ \cline{2-11} 
+				& 25 & 201 & 69 & {\color[HTML]{333333} 0} & {\color[HTML]{FE0000} \textbf{0.1992}} & 35 & 205 & 55 & 0  & {\color[HTML]{FE0000} \textbf{0.2545}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Centralized} & 28 & 199 & 68 & {\color[HTML]{333333} 0} & {\color[HTML]{FE0000} \textbf{0.2196}} & 26 & 216 & 53 & 0  & {\color[HTML]{FE0000} \textbf{0.1940}} \\ \hline
+				& 26 & 190 & 76 & {\color[HTML]{333333} 3} & {\color[HTML]{FE0000} \textbf{0.2122}} & 22 & 224 & 49 & 0  & {\color[HTML]{FE0000} \textbf{0.1642}} \\ \cline{2-11} 
+				& 17 & 201 & 70 & {\color[HTML]{333333} 7} & {\color[HTML]{FE0000} \textbf{0.1405}} & 25 & 222 & 48 & 0  & {\color[HTML]{FE0000} \textbf{0.1838}} \\ \cline{2-11} 
+				& 22 & 191 & 77 & {\color[HTML]{333333} 5} & {\color[HTML]{FE0000} \textbf{0.1833}} & 26 & 220 & 49 & 0  & {\color[HTML]{FE0000} \textbf{0.1912}} \\ \cline{2-11} 
+				& 16 & 200 & 73 & {\color[HTML]{333333} 6} & {\color[HTML]{FE0000} \textbf{0.1345}} & 26 & 224 & 45 & 0  & {\color[HTML]{FE0000} \textbf{0.1884}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Equalized}   & 17 & 202 & 71 & {\color[HTML]{333333} 5} & {\color[HTML]{FE0000} \textbf{0.1411}} & 29 & 219 & 47 & 0  & {\color[HTML]{FE0000} \textbf{0.2094}} \\ \hline
 			\end{tabular}
 		\end{table}
 	
@@ -128,6 +261,25 @@
 			\end{tabular}
 		\end{table}
 	
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				& \multicolumn{5}{c|}{1st Order}                                                     & \multicolumn{5}{c|}{2nd Order}                              \\ \hline
+				& TP & FP & TN  & FN                        & F1 Score                               & TP & FP & TN  & FN & F1 Score                               \\ \hline
+				& 6  & 2  & 267 & {\color[HTML]{333333} 18} & {\color[HTML]{FE0000} \textbf{0.3750}} & 7  & 5  & 264 & 19 & {\color[HTML]{FE0000} \textbf{0.3684}} \\ \cline{2-11} 
+				& 10 & 2  & 270 & {\color[HTML]{333333} 13} & {\color[HTML]{FE0000} \textbf{0.5714}} & 7  & 4  & 263 & 21 & {\color[HTML]{FE0000} \textbf{0.3590}} \\ \cline{2-11} 
+				& 8  & 1  & 262 & {\color[HTML]{333333} 24} & {\color[HTML]{FE0000} \textbf{0.3902}} & 12 & 5  & 265 & 13 & {\color[HTML]{FE0000} \textbf{0.5714}} \\ \cline{2-11} 
+				& 11 & 1  & 259 & {\color[HTML]{333333} 24} & {\color[HTML]{FE0000} \textbf{0.4681}} & 7  & 4  & 263 & 21 & {\color[HTML]{FE0000} \textbf{0.3590}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Centralized} & 12 & 1  & 262 & {\color[HTML]{333333} 20} & {\color[HTML]{FE0000} \textbf{0.5333}} & 12 & 2  & 265 & 16 & {\color[HTML]{FE0000} \textbf{0.5714}} \\ \hline
+				& 0  & 11 & 252 & {\color[HTML]{333333} 32} & {\color[HTML]{FE0000} \textbf{0.0000}} & 12 & 0  & 262 & 21 & {\color[HTML]{FE0000} \textbf{0.5333}} \\ \cline{2-11} 
+				& 0  & 11 & 253 & {\color[HTML]{333333} 31} & {\color[HTML]{FE0000} \textbf{0.0000}} & 10 & 0  & 270 & 15 & {\color[HTML]{FE0000} \textbf{0.5714}} \\ \cline{2-11} 
+				& 1  & 12 & 258 & {\color[HTML]{333333} 24} & {\color[HTML]{FE0000} \textbf{0.0526}} & 18 & 0  & 254 & 23 & {\color[HTML]{FE0000} \textbf{0.6101}} \\ \cline{2-11} 
+				& 2  & 9  & 261 & {\color[HTML]{333333} 23} & {\color[HTML]{FE0000} \textbf{0.1111}} & 10 & 0  & 267 & 18 & {\color[HTML]{FE0000} \textbf{0.5263}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Equalized}   & 2  & 9  & 257 & {\color[HTML]{333333} 27} & {\color[HTML]{FE0000} \textbf{0.1000}} & 13 & 0  & 260 & 22 & {\color[HTML]{FE0000} \textbf{0.5417}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
 	\section{\textcolor{blue}{Square-Log Additional Weight}}
 		$$
 		T = \frac{\mu_A \sigma_B \sqrt{-ln(1 - \alpha)}
@@ -143,6 +295,25 @@
 				\multirow{-2}{*}{1st Order} & Equalized   & 88.93 & 89.02 & 89.63 & {\color[HTML]{FE0000} \textbf{89.19}} & 9.09  & 22.58  & 16.00  & {\color[HTML]{FE0000} \textbf{15.89}} \\ \hline
 				& Centralized & 96.28 & 95.09 & 95.44 & {\color[HTML]{FE0000} \textbf{95.60}} & 73.08 & 66.67  & 84.38  & {\color[HTML]{FE0000} \textbf{74.71}} \\ \cline{2-10} 
 				\multirow{-2}{*}{2nd Order} & Equalized   & 99.26 & 98.49 & 96.67 & {\color[HTML]{FE0000} \textbf{98.14}} & 91.30 & 100.00 & 96.00  & {\color[HTML]{FE0000} \textbf{95.77}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				& \multicolumn{5}{c|}{1st Order}                                                     & \multicolumn{5}{c|}{2nd Order}                              \\ \hline
+				& TP & FP & TN  & FN                        & F1 Score                               & TP & FP & TN  & FN & F1 Score                               \\ \hline
+				& 24 & 2  & 266 & {\color[HTML]{333333} 3}  & {\color[HTML]{FE0000} \textbf{0.9057}} & 19 & 12 & 252 & 12 & {\color[HTML]{FE0000} \textbf{0.6129}} \\ \cline{2-11} 
+				& 28 & 3  & 264 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.9492}} & 29 & 14 & 248 & 4  & {\color[HTML]{FE0000} \textbf{0.7632}} \\ \cline{2-11} 
+				& 27 & 4  & 264 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.9310}} & 23 & 14 & 253 & 5  & {\color[HTML]{FE0000} \textbf{0.7077}} \\ \cline{2-11} 
+				& 26 & 3  & 265 & {\color[HTML]{333333} 1}  & {\color[HTML]{FE0000} \textbf{0.9286}} & 17 & 13 & 256 & 9  & {\color[HTML]{FE0000} \textbf{0.6071}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Centralized} & 31 & 4  & 257 & {\color[HTML]{333333} 3}  & {\color[HTML]{FE0000} \textbf{0.8986}} & 18 & 14 & 257 & 6  & {\color[HTML]{FE0000} \textbf{0.6429}} \\ \hline
+				& 8  & 25 & 242 & {\color[HTML]{333333} 20} & {\color[HTML]{FE0000} \textbf{0.2623}} & 24 & 10 & 261 & 0  & {\color[HTML]{FE0000} \textbf{0.8276}} \\ \cline{2-11} 
+				& 4  & 27 & 243 & {\color[HTML]{333333} 21} & {\color[HTML]{FE0000} \textbf{0.1429}} & 30 & 6  & 258 & 1  & {\color[HTML]{FE0000} \textbf{0.8955}} \\ \cline{2-11} 
+				& 3  & 32 & 239 & {\color[HTML]{333333} 21} & {\color[HTML]{FE0000} \textbf{0.1017}} & 34 & 9  & 252 & 0  & {\color[HTML]{FE0000} \textbf{0.8831}} \\ \cline{2-11} 
+				& 4  & 29 & 229 & {\color[HTML]{333333} 33} & {\color[HTML]{FE0000} \textbf{0.1143}} & 20 & 1  & 262 & 12 & {\color[HTML]{FE0000} \textbf{0.7547}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Equalized}   & 1  & 33 & 235 & {\color[HTML]{333333} 26} & {\color[HTML]{FE0000} \textbf{0.0328}} & 34 & 2  & 257 & 2  & {\color[HTML]{FE0000} \textbf{0.9444}} \\ \hline
 			\end{tabular}
 		\end{table}
 		
@@ -161,6 +332,25 @@
 				\multirow{-2}{*}{1st Order} & Equalized   & 95.91  & 96.01 & 95.20  & {\color[HTML]{FE0000} \textbf{95.70}} & 0.00  & 0.00  & 0.00  & {\color[HTML]{FE0000} \textbf{0.00}}  \\ \hline
 				& Centralized & 98.48  & 98.43 & 99.63  & {\color[HTML]{FE0000} \textbf{98.85}} & 25.00 & 27.50 & 37.04 & {\color[HTML]{FE0000} \textbf{29.85}} \\ \cline{2-10} 
 				\multirow{-2}{*}{2nd Order} & Equalized   & 100.00 & 99.27 & 100.00 & {\color[HTML]{FE0000} \textbf{99.76}} & 32.14 & 54.55 & 31.03 & {\color[HTML]{FE0000} \textbf{39.24}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				& \multicolumn{5}{c|}{1st Order}                                                     & \multicolumn{5}{c|}{2nd Order}                              \\ \hline
+				& TP & FP & TN  & FN                        & F1 Score                               & TP & FP & TN  & FN & F1 Score                               \\ \hline
+				& 11 & 1  & 262 & {\color[HTML]{333333} 21} & {\color[HTML]{FE0000} \textbf{0.5000}} & 8  & 5  & 259 & 23 & {\color[HTML]{FE0000} \textbf{0.3636}} \\ \cline{2-11} 
+				& 5  & 1  & 266 & {\color[HTML]{333333} 23} & {\color[HTML]{FE0000} \textbf{0.2941}} & 9  & 3  & 271 & 12 & {\color[HTML]{FE0000} \textbf{0.5455}} \\ \cline{2-11} 
+				& 6  & 2  & 264 & {\color[HTML]{333333} 23} & {\color[HTML]{FE0000} \textbf{0.3243}} & 10 & 2  & 267 & 16 & {\color[HTML]{FE0000} \textbf{0.5263}} \\ \cline{2-11} 
+				& 6  & 1  & 270 & {\color[HTML]{333333} 18} & {\color[HTML]{FE0000} \textbf{0.3871}} & 16 & 3  & 256 & 20 & {\color[HTML]{FE0000} \textbf{0.5818}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Centralized} & 7  & 0  & 267 & {\color[HTML]{333333} 21} & {\color[HTML]{FE0000} \textbf{0.4000}} & 9  & 6  & 261 & 19 & {\color[HTML]{FE0000} \textbf{0.4186}} \\ \hline
+				& 0  & 11 & 262 & {\color[HTML]{333333} 22} & {\color[HTML]{FE0000} \textbf{0.0000}} & 17 & 0  & 254 & 24 & {\color[HTML]{FE0000} \textbf{0.5862}} \\ \cline{2-11} 
+				& 1  & 9  & 257 & {\color[HTML]{333333} 28} & {\color[HTML]{FE0000} \textbf{0.0513}} & 6  & 0  & 269 & 20 & {\color[HTML]{FE0000} \textbf{0.3750}} \\ \cline{2-11} 
+				& 1  & 10 & 258 & {\color[HTML]{333333} 26} & {\color[HTML]{FE0000} \textbf{0.0526}} & 13 & 0  & 264 & 18 & {\color[HTML]{FE0000} \textbf{0.5909}} \\ \cline{2-11} 
+				& 0  & 12 & 255 & {\color[HTML]{333333} 28} & {\color[HTML]{FE0000} \textbf{0.0000}} & 15 & 0  & 255 & 25 & {\color[HTML]{FE0000} \textbf{0.5455}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Equalized}   & 1  & 10 & 238 & {\color[HTML]{333333} 46} & {\color[HTML]{FE0000} \textbf{0.0345}} & 13 & 0  & 264 & 18 & {\color[HTML]{FE0000} \textbf{0.5909}} \\ \hline
 			\end{tabular}
 		\end{table}
 		
@@ -182,6 +372,25 @@
 			\end{tabular}
 		\end{table}
 	
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				& \multicolumn{5}{c|}{1st Order}                                                     & \multicolumn{5}{c|}{2nd Order}                              \\ \hline
+				& TP & FP & TN  & FN                        & F1 Score                               & TP & FP & TN  & FN & F1 Score                               \\ \hline
+				& 25 & 2  & 256 & {\color[HTML]{333333} 12} & {\color[HTML]{FE0000} \textbf{0.7813}} & 22 & 17 & 250 & 6  & {\color[HTML]{FE0000} \textbf{0.6567}} \\ \cline{2-11} 
+				& 15 & 2  & 260 & {\color[HTML]{333333} 18} & {\color[HTML]{FE0000} \textbf{0.6000}} & 23 & 23 & 247 & 2  & {\color[HTML]{FE0000} \textbf{0.6479}} \\ \cline{2-11} 
+				& 12 & 1  & 262 & {\color[HTML]{333333} 20} & {\color[HTML]{FE0000} \textbf{0.5333}} & 24 & 15 & 250 & 6  & {\color[HTML]{FE0000} \textbf{0.6957}} \\ \cline{2-11} 
+				& 13 & 2  & 267 & {\color[HTML]{333333} 13} & {\color[HTML]{FE0000} \textbf{0.6341}} & 28 & 27 & 235 & 5  & {\color[HTML]{FE0000} \textbf{0.6364}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Centralized} & 12 & 0  & 272 & {\color[HTML]{333333} 11} & {\color[HTML]{FE0000} \textbf{0.6857}} & 21 & 29 & 242 & 3  & {\color[HTML]{FE0000} \textbf{0.5676}} \\ \hline
+				& 2  & 12 & 256 & {\color[HTML]{333333} 25} & {\color[HTML]{FE0000} \textbf{0.0976}} & 20 & 3  & 270 & 2  & {\color[HTML]{FE0000} \textbf{0.8889}} \\ \cline{2-11} 
+				& 2  & 12 & 238 & {\color[HTML]{333333} 43} & {\color[HTML]{FE0000} \textbf{0.0678}} & 43 & 7  & 244 & 1  & {\color[HTML]{FE0000} \textbf{0.9149}} \\ \cline{2-11} 
+				& 3  & 11 & 244 & {\color[HTML]{333333} 37} & {\color[HTML]{FE0000} \textbf{0.1111}} & 16 & 1  & 276 & 2  & {\color[HTML]{FE0000} \textbf{0.9143}} \\ \cline{2-11} 
+				& 0  & 17 & 245 & {\color[HTML]{333333} 33} & {\color[HTML]{FE0000} \textbf{0.0000}} & 29 & 7  & 259 & 0  & {\color[HTML]{FE0000} \textbf{0.8923}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Equalized}   & 3  & 11 & 259 & {\color[HTML]{333333} 22} & {\color[HTML]{FE0000} \textbf{0.1538}} & 27 & 5  & 261 & 2  & {\color[HTML]{FE0000} \textbf{0.8852}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
 	\section{Log-Square Combined Weight}
 		$$
 		T = \frac{\mu_A ln\sqrt{\sigma_B (1 - \alpha)}
@@ -200,6 +409,25 @@
 			\end{tabular}
 		\end{table}
 	
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				& \multicolumn{5}{c|}{1st Order}                                                     & \multicolumn{5}{c|}{2nd Order}                              \\ \hline
+				& TP & FP & TN  & FN                        & F1 Score                               & TP & FP & TN  & FN & F1 Score                               \\ \hline
+				& 12 & 1  & 263 & {\color[HTML]{333333} 19} & {\color[HTML]{FE0000} \textbf{0.5455}} & 24 & 14 & 247 & 10 & {\color[HTML]{FE0000} \textbf{0.6667}} \\ \cline{2-11} 
+				& 6  & 1  & 274 & {\color[HTML]{333333} 14} & {\color[HTML]{FE0000} \textbf{0.4444}} & 19 & 20 & 254 & 2  & {\color[HTML]{FE0000} \textbf{0.6333}} \\ \cline{2-11} 
+				& 19 & 0  & 248 & {\color[HTML]{333333} 28} & {\color[HTML]{FE0000} \textbf{0.5758}} & 16 & 17 & 256 & 6  & {\color[HTML]{FE0000} \textbf{0.5818}} \\ \cline{2-11} 
+				& 19 & 1  & 259 & {\color[HTML]{333333} 16} & {\color[HTML]{FE0000} \textbf{0.6909}} & 21 & 17 & 250 & 7  & {\color[HTML]{FE0000} \textbf{0.6364}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Centralized} & 8  & 0  & 269 & {\color[HTML]{333333} 18} & {\color[HTML]{FE0000} \textbf{0.4706}} & 15 & 14 & 261 & 5  & {\color[HTML]{FE0000} \textbf{0.6122}} \\ \hline
+				& 3  & 11 & 258 & {\color[HTML]{333333} 23} & {\color[HTML]{FE0000} \textbf{0.1500}} & 23 & 2  & 264 & 6  & {\color[HTML]{FE0000} \textbf{0.8519}} \\ \cline{2-11} 
+				& 0  & 13 & 247 & {\color[HTML]{333333} 35} & {\color[HTML]{FE0000} \textbf{0.0000}} & 24 & 0  & 261 & 10 & {\color[HTML]{FE0000} \textbf{0.8276}} \\ \cline{2-11} 
+				& 0  & 12 & 257 & {\color[HTML]{333333} 26} & {\color[HTML]{FE0000} \textbf{0.0000}} & 19 & 0  & 272 & 4  & {\color[HTML]{FE0000} \textbf{0.9048}} \\ \cline{2-11} 
+				& 2  & 12 & 255 & {\color[HTML]{333333} 26} & {\color[HTML]{FE0000} \textbf{0.0952}} & 15 & 1  & 266 & 13 & {\color[HTML]{FE0000} \textbf{0.6818}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Equalized}   & 2  & 11 & 255 & {\color[HTML]{333333} 27} & {\color[HTML]{FE0000} \textbf{0.0952}} & 26 & 3  & 264 & 2  & {\color[HTML]{FE0000} \textbf{0.9123}} \\ \hline
+			\end{tabular}
+		\end{table}
+	
 	\section{\textcolor{blue}{Linear Balanced}}
 		$$T = \mathop{\arg\min}_{\mu_A \le T \le \mu_B}\ \alpha \cdot \int_{-\infty}^{T}P_B(x)dx + (1 - \alpha) \cdot \int_{T}^{+\infty}P_A(x)dx$$
 		\begin{table}[!h]
@@ -213,7 +441,100 @@
 				\multirow{-2}{*}{2nd Order} & Equalized   & 72.35 & 78.83 & 77.17 & {\color[HTML]{FE0000} \textbf{76.12}} & 100.00 & 100.00 & 100.00 & {\color[HTML]{FE0000} \textbf{100.00}} \\ \hline
 			\end{tabular}
 		\end{table}
+	
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|}
+				\hline
+				& \multicolumn{5}{c|}{1st Order}                                                     & \multicolumn{5}{c|}{2nd Order}                              \\ \hline
+				& TP & FP & TN  & FN                        & F1 Score                               & TP & FP & TN  & FN & F1 Score                               \\ \hline
+				& 24 & 17 & 254 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.7385}} & 25 & 57 & 210 & 3  & {\color[HTML]{FE0000} \textbf{0.4545}} \\ \cline{2-11} 
+				& 30 & 11 & 254 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.8451}} & 30 & 58 & 206 & 1  & {\color[HTML]{FE0000} \textbf{0.5042}} \\ \cline{2-11} 
+				& 26 & 33 & 236 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.6118}} & 28 & 59 & 203 & 5  & {\color[HTML]{FE0000} \textbf{0.4667}} \\ \cline{2-11} 
+				& 27 & 28 & 240 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.6585}} & 27 & 52 & 216 & 0  & {\color[HTML]{FE0000} \textbf{0.5094}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Centralized} & 32 & 14 & 249 & {\color[HTML]{333333} 0}  & {\color[HTML]{FE0000} \textbf{0.8205}} & 32 & 60 & 203 & 0  & {\color[HTML]{FE0000} \textbf{0.5161}} \\ \hline
+				& 6  & 63 & 199 & {\color[HTML]{333333} 27} & {\color[HTML]{FE0000} \textbf{0.1176}} & 32 & 51 & 212 & 0  & {\color[HTML]{FE0000} \textbf{0.5565}} \\ \cline{2-11} 
+				& 13 & 53 & 214 & {\color[HTML]{333333} 15} & {\color[HTML]{FE0000} \textbf{0.2766}} & 35 & 48 & 212 & 0  & {\color[HTML]{FE0000} \textbf{0.5932}} \\ \cline{2-11} 
+				& 5  & 66 & 194 & {\color[HTML]{333333} 30} & {\color[HTML]{FE0000} \textbf{0.0943}} & 22 & 36 & 237 & 0  & {\color[HTML]{FE0000} \textbf{0.5500}} \\ \cline{2-11} 
+				& 10 & 50 & 212 & {\color[HTML]{333333} 23} & {\color[HTML]{FE0000} \textbf{0.2151}} & 23 & 51 & 221 & 0  & {\color[HTML]{FE0000} \textbf{0.4742}} \\ \cline{2-11} 
+				\multirow{-5}{*}{Equalized}   & 3  & 62 & 208 & {\color[HTML]{333333} 22} & {\color[HTML]{FE0000} \textbf{0.0667}} & 38 & 55 & 202 & 0  & {\color[HTML]{FE0000} \textbf{0.5802}} \\ \hline
+			\end{tabular}
+		\end{table}
 		
 	\section*{Total}
+	
+		\begin{table}[!h]
+			\centering
+			\begin{tabular}{|c|c|c|c|c|c|}
+				\hline
+				& \multicolumn{2}{c|}{1st Order} & \multicolumn{2}{c|}{2nd Order}&\\
+				\hline
+				No. & Centralized & Equalized & Centralized & Equalized & Sum\\
+				\hline
+				1 & 0.2410 & 0.1752 & 0.3496 & 0.2930 & 1.0588\\
+				\hline
+				2 & 0.8965 & 0.1417 & 0.5636 & 0.5843 & 2.1861\\
+				\hline
+				3 & 0.6148 & 0.1045 & 0.6423 & 0.8774 & 2.2390\\
+				\hline
+				4 & 0.5924 & 0.0963 & 0.6807 & 0.8388 & 2.2082\\
+				\hline
+				5 & 0.5033 & 0.0569 & 0.6937 & 0.8672 & 2.1211\\
+				\hline
+				6 & 0.2322 & 0.1580 & 0.2001 & 0.1785 & 0.7688\\
+				\hline
+				7 & 0.2323 & 0.1623 & 0.2338 & 0.1874 & 0.8158\\
+				\hline
+				8 & 0.4676 & 0.0527 & 0.4458 & 0.5566 & 1.5227\\
+				\hline
+				9 & 0.9226 & 0.1508 & 0.6668 & 0.8611 & 2.6013\\
+				\hline
+				10 & 0.3811 & 0.0277 & 0.4872 & 0.5195 & 1.4155\\
+				\hline
+				11 & 0.6469 & 0.0861 & 0.6409 & 0.8991 & 2.2730\\
+				\hline
+				12 & 0.5454 & 0.0681 & 0.6261 & 0.8357 & 2.0753\\
+				\hline
+				13 & 0.7349 & 0.1541 & 0.4902 & 0.5508 & 1.9300\\
+				\hline
+			\end{tabular}
+		\end{table}
+		Order:
+		
+		$9 > 11 > 3 > 4 > 2 > 5 > 12 > 13 > 8 > 10 > 1 > 7 > 6$
+		
+	\section*{Test with Gaussian Data}
+		\centering
+		\begin{tabular}{|c|c|c|}
+			\hline 
+			& F1 & False Rate(\%) \\ 
+			\hline 
+			1 & 0.5810 & 17.12 \\ 
+			\hline 
+			2 & 0.5718 & 18.06 \\ 
+			\hline 
+			3 & 0.3860 & 31.50 \\ 
+			\hline 
+			4 & 0.5515 & 19.31 \\ 
+			\hline 
+			5 & 0.3811 & 30.31 \\ 
+			\hline 
+			6 & 0.3515 & 36.16 \\ 
+			\hline 
+			7 & 0.4510 & 26.54 \\ 
+			\hline 
+			8 & 0.5523 & 13.32 \\ 
+			\hline 
+			9 & 0.5791 & 14.71 \\ 
+			\hline 
+			10 & 0.5578 & 13.23 \\ 
+			\hline 
+			11 & 0.5600 & 17.98 \\ 
+			\hline 
+			12 & 0.2808 & 27.01 \\ 
+			\hline 
+			13 & 0.6072 & 12.69 \\ 
+			\hline 
+		\end{tabular} 
 	
 \end{document}
