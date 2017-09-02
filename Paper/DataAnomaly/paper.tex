@@ -48,10 +48,23 @@
 	
 	\section{Related Work}\label{sec:related-work}
 		\subsection{Data Anomaly Detection}
+			Anomaly detection, also known as outlier detection, has been studied for a long time and discussed in diverse research domains, such as fraud detection, intrusion detection, system monitoring, fault detection and event detection in sensor networks. According to a systematic classification in~\cite{chandola2009anomaly}, anomaly detection algorithms deal with input data in the form of points(or records), sequences, graphs and spatial relationships, where point data is the simplest and well studied, others are attracting more attention in new studies.
+			
+			Prevalent anomalies can be classified into \textit{Point Anomalies}, \textit{Contextual(or Conditional) Anomalies} and \textit{Collective Anomalies}. Point anomalies refers to an individual data instance that is considered anomalous with respect to others. But if it is anomalous only in certain circumstances or a specific context, the data is regarded as contextual anomaly. If a group of related data(e.g. a segment of sequence) instances is anomalous with respect to other groups in the data set(e.g. the entire sequence), it is called a collective anomaly.
+			
+			Detection approaches can be categorized into three types according to whether data is labeled: \textit{Supervised}, \textit{Semi-Supervised} and \textit{Unsupervised} anomaly detection. As the name suggests, supervised detection methods train models on completely labeled data while unsupervised detection leverages data without any labeling. Semi-supervised detection approaches train model on data that has labeled instances for only the normal class. Supervised detection is commonly applied when both normal and anomalous data can be obtained. When it comes to the circumstances that anomalous data is hard to obtain or there exist too many diverse types of anomalies to enumerate, semi-supervised or unsupervised approaches are usually taken into consideration.
+			
+			To make the final decision, detection algorithms mostly yield a score from each input instance, denoting how likely it is anomalous. The algorithm then selects top few as anomalies or compare the score with a threshold. Or, detection algorithms output a label on each instance, then decide whether each label belongs to the normal class.
+			
+			Currently, distance based~\cite{cao2014scalable,cao2017multi} and feature evolving algorithms~\cite{masud2013classification,li2015discovery,shao2014prototype} algorithms seize most attention. Others adopted tree isolation~\cite{zhang2017lshiforest}, model based~\cite{yin2016model} and statistical methods~\cite{zhu2002statstream} in certain applications.
+			
+			(or group anomaly)\cite{yu2015glad}.
 		
 		\subsection{Pipeline Error Detection}
 		
 		\subsection{Provenance}
+		
+		\subsection{Click Farming Detection}
 	
 	\section{Preliminaries}\label{sec:preliminaries}
 		\subsection{Statistical Distance}
