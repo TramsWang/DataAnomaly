@@ -4,6 +4,10 @@
 \addbibresource{paper}
 \usepackage{hyperref}
 \usepackage{graphicx}
+\usepackage{amsmath,amsfonts}
+\usepackage{algorithm,algorithmicx,algpseudocode}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
 
 \title{Locating Data Flow Anomaly With Statistical Distance}
 \author{Ruoyu Wang}
@@ -44,13 +48,13 @@
 		
 		In order to address issues resulted from data manipulation and pipeline errors, we propose a novel mechanism to detect and locate corrupted data within a data pipeline via statistical distance. As far as we know, this algorithm is the first attempt against data anomaly via statistical distance. Evaluations are performed on synthetic and real-world data sets, demonstrating the correctness and effectiveness of the mechanism.
 		
-		The rest of the paper is organised as follow: Section~\ref{sec:related-work} introduces recent works on data anomaly detection and pipeline error detection. Some background knowledge is provided in section~\ref{sec:preliminaries}. Then in section~\ref{sec:algorithm-details}, details of the detection and locating algorithm is proposed. Section~\ref{sec:evaluation} presents evaluation results and further findings of the algorithm. And all contents are concluded in section~\ref{sec:conclusion}.
+		The rest of the paper is organised as follow: Section~\ref{sec:related-work} introduces preliminaries and recent works on data anomaly detection and statistical distance. Algorithm details are proposed in section~\ref{sec:algorithm-details}. Section~\ref{sec:evaluation} presents evaluation results and further findings of the algorithm. And all contents are concluded in section~\ref{sec:conclusion}.
 	
-	\section{Related Work}\label{sec:related-work}
+	\section{Preliminaries and Related Work}\label{sec:related-work}
 		\subsection{Data Anomaly Detection}
 			Anomaly detection, also known as outlier detection, has been studied for a long time and discussed in diverse research domains, such as fraud detection, intrusion detection, system monitoring, fault detection and event detection in sensor networks. According to a systematic classification in~\cite{chandola2009anomaly}, anomaly detection algorithms deal with input data in the form of points(or records), sequences, graphs and spatial relationships, where point data is the simplest and well studied, others are attracting more attention in new studies.
 			
-			Prevalent anomalies can be classified into \textit{Point Anomalies}, \textit{Contextual(or Conditional) Anomalies} and \textit{Collective Anomalies}. Point anomalies refers to an individual data instance that is considered anomalous with respect to others. But if it is anomalous only in certain circumstances or a specific context, the data is regarded as contextual anomaly. If a group of related data(e.g. a segment of sequence) instances is anomalous with respect to other groups in the data set(e.g. the entire sequence), it is called a collective anomaly.
+			Prevalent anomalies can be classified into \textit{Point Anomalies}, \textit{Contextual(or Conditional) Anomalies} and \textit{Collective Anomalies}. Point anomalies refers to an individual data instance that is considered anomalous with respect to others. But if it is anomalous only in certain circumstances or a specific context, the instance is regarded as contextual anomaly. If a group of related data(e.g. a segment of sequence) instances is anomalous with respect to other groups in the data set(e.g. the entire sequence), it is called a collective anomaly.
 			
 			Detection approaches can be categorized into three types according to whether data is labeled: \textit{Supervised}, \textit{Semi-Supervised} and \textit{Unsupervised} anomaly detection. As the name suggests, supervised detection methods train models on completely labeled data while unsupervised detection leverages data without any labeling. Semi-supervised detection approaches train model on data that has labeled instances for only the normal class. Supervised detection is commonly applied when both normal and anomalous data can be obtained. When it comes to the circumstances that anomalous data is hard to obtain or there exist too many diverse types of anomalies to enumerate, semi-supervised or unsupervised approaches are usually taken into consideration.
 			
@@ -58,20 +62,60 @@
 			
 			Currently, distance based~\cite{cao2014scalable,cao2017multi} and feature evolving algorithms~\cite{masud2013classification,li2015discovery,shao2014prototype} algorithms seize most attention. Others adopted tree isolation~\cite{zhang2017lshiforest}, model based~\cite{yin2016model} and statistical methods~\cite{zhu2002statstream} in certain applications.
 			
-			(or group anomaly)\cite{yu2015glad}.
-		
-		\subsection{Pipeline Error Detection}
-		
-		\subsection{Provenance}
+			To detect collective anomalies,~\cite{caudell1993adaptive} adopted the \textit{ART(Adoptive Resonance Theory)} neural networks to detect time-series anomalies. \textit{Box Modeling} is proposed in ~\cite{chan2005modeling}. And \textit{Longest Common Subsequence} was leveraged in ~\cite{budalakoti2006anomaly} as similarity metric for symbolic sequence. Markovian modeling techniques are also popular in this domain\cite{ye2000markov,warrender1999detecting,pavlov2003sequence}. \cite{yu2015glad} depicted groups in social media as combinations of different ``roles'' and compare groups according to the proportion of each role within each group.
 		
 		\subsection{Click Farming Detection}
-	
-	\section{Preliminaries}\label{sec:preliminaries}
-		\subsection{Statistical Distance}
 		
-		\subsection{TDA?}
+		\subsection{Statistical Divergence}
+			Statistical divergence, also called statistical distance, is a function which describes the ``distance'' of one probability distribution to the other on a statistical manifold. Suppose $S$ is a space of probability distributions, then a divergence is a function from $S$ to non-negative real numbers: 
+			\begin{equation}
+				D(\cdot || \cdot): S \times S \rightarrow \mathbb{R^+}
+			\end{equation}
+			
+			Divergence between two distributions $P$ and $Q$, written as $D(P||Q)$, satisfies:
+			
+			\begin{enumerate}
+				\item $D(P||Q) \ge 0, \forall P, Q \in S$
+				\item $D(P||Q) = 0$, if and only if $P=Q$
+			\end{enumerate}
+			
+			There are many ways to calculate divergence, such as f-divergences, M-divergences and S-divergences. Some of them provides better properties which brings conveniences to the design and implementation of our approach.
+			
+			\subsubsection{Kullback-Leibler Divergence}
+			$P,Q$ are discrete probability distributions, $Q(i)=0$ implies $P(i)=0$ for $\forall i$, the \textit{Kullback-Leibler Divergence} from $Q$ to $P$ is defined to be:
+			
+			\begin{equation}
+			KLD(P||Q) = \sum_{Q(i)\ne 0} P(i)log\Big(\frac{P(i)}{Q(i)}\Big)
+			\end{equation}
+			
+			\subsubsection{Jensen-Shannon Divergence}
+			$P,Q$ are discrete probability distributions, \textit{Jensen-Shannon Divergence} between $P$ and $Q$ is defined to be:
+			
+			\begin{equation}
+			JSD(P||Q) = \frac{1}{2}KLD(P||M) + \frac{1}{2}KLD(Q||M)
+			\end{equation}
+			where $\displaystyle M = \frac{1}{2}(P+Q)$.
+			
+			A more generalized form is defined to be:
+			
+			\begin{equation}
+			JSD_{\pi_1, \dots, \pi_n}(P_1, \dots, P_n) = \sum_{i=1}^{n}\frac{1}{\pi_i}KLD(P_i||M)
+			\end{equation}
+			where $\displaystyle M = \sum_{i=1}^{n}\frac{1}{\pi_i}P_i$ and $\displaystyle \sum_{i=1}^{n}\frac{1}{\pi_i} = 1$.
+			
+			Jensen-Shannon divergence has some fine properties:
+			\begin{enumerate}
+				\item $JSD(P||Q) = JSD(Q||P), \forall P, Q\in S$.
+				\item $0 \le JSD_{\pi_1, \dots, \pi_n}(P_1, \dots, P_n) \le log_k(n)$. If a $k$ based algorithm is adopted.
+				\item To calculate $JSD(P||Q)$, it need not necessarily to be true that $Q(i)=0$ implies $P(i)=0$.
+			\end{enumerate}
+		
+			\textbf{[If P, Q are continuous distribution?]}
 	
 	\section{Algorithm Details}\label{sec:algorithm-details}
+		Diverse data sets in the real world show certain structures which may be resulted from hidden patterns or relationships among records in a collection of data. For example, the volume of vehicles in the highway and the business transaction records, they may show a relatively stable distribution in the daily scale. Manipulation on those data(e.g. Fig~\ref{fig:example-ecdf}) results in a drift or distortion of the distribution, which can be captured to trigger the alarm.
+		Although the population parameters(e.g. mean, variance, etc.) are unknown and usually impossible to obtain, it can be sampled and estimated according to the central limitation theorem.
+		
 		\subsection{Technical Points}
 			\textbf{[Can be divided and settled inside later two subsections]}
 			\begin{enumerate}
@@ -83,6 +127,43 @@
 			\end{enumerate}
 			
 		\subsection{Basic Algorithm}
+			Suppose data chunks in the given data set $S$ are groups of instances sampled from a population driven by a static distribution. And we are given in advance an evidence set $E$ which contains $n(n\ge2)$ collections of correct sample data. Then each data collection in $S$ can be checked by the following algorithm.
+			
+			\begin{algorithm}[!ht]
+				\caption{Static Classification}
+				\label{alg:static}
+				\begin{algorithmic}[1]
+					\Require Evidence set $E = \{D_1, \dots, D_n\}$, new data chunk $D'$
+					\Ensure Whether $D'$ is anomaly
+					\For{$i \gets 1$ to $n$ do}
+						\State $P_i \gets$ the distribution of $D_i$
+					\EndFor
+					\State $M \gets \frac{1}{n}\sum_{i=1}^{n}P_i$\label{line:population-estimation}
+					\For{$i \gets 1$ to $n$ do}
+						\State $J_i \gets JSD(P_i||M)$
+					\EndFor
+					\State $N \gets$ normal distribution estimated from $J_1, \dots, J_n$
+					\State $P' \gets$ distribution of $D'$
+					\State $J' \gets JSD(P'||M)$
+					\State $p \gets$ probability density of $J'$ in $N$
+					\If{$p <$ threshold $T$}
+						\State \textbf{Return} True
+					\Else
+						\State \textbf{Return} False
+					\EndIf
+				\end{algorithmic}
+			\end{algorithm}
+		
+			As shown in Algorithm~\ref{alg:static}, $n$ evidence collections are used to estimate the ground truth population distribution $M$. Then $n$ evidence divergences are calculated, composing a gaussian classifier to classify the new distribution sample. Although it is convenient to compute $JSD(P_1, \dots, P_n, P')$ instead of $JSD(P_1||M), \dots, JSD(P_n||M), JSD(P'||M)$. It is not suitable for classification. Jensen-Shannon divergence of $n+1$ distributions will dilute the affection of the abnormal one, in which case the difference between $P'$ being normal and anomalous will become subtle when $n$ goes larger.
+			
+			Similar to the fact that sampling values around a certain parameter will yield a gaussian distribution, sampling divergences around a certain population distribution yields a gaussian distribution $N(\mu, \sigma)$ where $\mu$ is a value slightly larger than zero. $\mu$ can not be zero according to line~\ref{line:population-estimation}. $M$ takes into consideration all existing values in every distribution sample and averages corresponding probabilities. Thus $M$ may consist entries that does not exist in $P_i$ and probability in certain entries in $M$ may vary from that in $P_i$. For example, suppose $P_1(1)=0.5, P_1(2)=0.3, P_1(3)=0.2$; $P_2(1) = 0.3, P_2(2) = 0.4, P_2(3) = 0.3$; $P_3(1)=0.3, P_3(3)=0.5, P_3(4)=0.2$, then $M(1) = \frac{11}{3}, M(2)=\frac{7}{3}, M(3)=\frac{10}{3}, M(4)=\frac{2}{3}$. None of $P_1, P_2, P_3$ is the same with $M$. Although the distance cannot be negative values, normal distribution is the closest to the distribution of all JSD values.
+		
+		\subsection{Histogram}
+			It is possible, in some specific circumstances, to assign a continuous function as the model of a collection of sampled data, which will get more accurate results. However, in the consideration of generality and computational cost, a discrete approximation of the distribution sample will be adopted. It means that every data collection will be counted into a histogram according to a certain order, yielding a discrete probability distribution.
+			
+			When constructing histograms, step size is the most important parameter the algorithm should receive. If the size is too small then the resulting histogram will be over fitting; but if the size is too large then the estimation will be too coarse to depict the original shape. According to statistics theory, when dealing with a sample size of $k$, a step size of $l = c \sigma k^{-0.2}$ will give a best partition, where $c$ is a constant relative to the shape of distribution(e.g. for normal distribution, $c=$).
+		
+		\subsection{Threshold}
 		
 		\subsection{Dynamic Algorithm}
 	
