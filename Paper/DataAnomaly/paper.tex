@@ -126,15 +126,15 @@
 				\item .[to be continued \dots]
 			\end{enumerate}
 			
-		\subsection{Basic Algorithm}
+		\subsection{Divergence-Based Collective Anomaly Detection}
 			Suppose data chunks in the given data set $S$ are groups of instances sampled from a population driven by a static distribution. And we are given in advance an evidence set $E$ which contains $n(n\ge2)$ collections of correct sample data. Then each data collection in $S$ can be checked by the following algorithm.
 			
 			\begin{algorithm}[!ht]
-				\caption{Static Classification}
+				\caption{Basic Classification}
 				\label{alg:static}
 				\begin{algorithmic}[1]
-					\Require Evidence set $E = \{D_1, \dots, D_n\}$, new data chunk $D'$
-					\Ensure Whether $D'$ is anomaly
+					\Require Evidence set $E = \{D_1, \dots, D_n\}$; New data collection $D'$
+					\Ensure Whether $D'$ is anomalous
 					\For{$i \gets 1$ to $n$ do}
 						\State $P_i \gets$ the distribution of $D_i$
 					\EndFor
@@ -158,17 +158,137 @@
 			
 			Similar to the fact that sampling values around a certain parameter will yield a gaussian distribution, sampling divergences around a certain population distribution yields a gaussian distribution $N(\mu, \sigma)$ where $\mu$ is a value slightly larger than zero. $\mu$ can not be zero according to line~\ref{line:population-estimation}. $M$ takes into consideration all existing values in every distribution sample and averages corresponding probabilities. Thus $M$ may consist entries that does not exist in $P_i$ and probability in certain entries in $M$ may vary from that in $P_i$. For example, suppose $P_1(1)=0.5, P_1(2)=0.3, P_1(3)=0.2$; $P_2(1) = 0.3, P_2(2) = 0.4, P_2(3) = 0.3$; $P_3(1)=0.3, P_3(3)=0.5, P_3(4)=0.2$, then $M(1) = \frac{11}{3}, M(2)=\frac{7}{3}, M(3)=\frac{10}{3}, M(4)=\frac{2}{3}$. None of $P_1, P_2, P_3$ is the same with $M$. Although the distance cannot be negative values, normal distribution is the closest to the distribution of all JSD values.
 		
-		\subsection{Histogram}
-			It is possible, in some specific circumstances, to assign a continuous function as the model of a collection of sampled data, which will get more accurate results. However, in the consideration of generality and computational cost, a discrete approximation of the distribution sample will be adopted. It means that every data collection will be counted into a histogram according to a certain order, yielding a discrete probability distribution.
+		\subsection{Distribution Histogram}\label{sec:alg-histogram}
+			Not all data collections can be assumed subject to known distribution models. Parameter approximation will probably lead to errors above our expectation. For example, the distribution of vehicle volume in the highway may not correspond to any of the prevalent distribution model. Few assumption of parameters can be made in advance on such data. For the sake of generality, non-parametric estimation should be applied.
 			
-			When constructing histograms, step size is the most important parameter the algorithm should receive. If the size is too small then the resulting histogram will be over fitting; but if the size is too large then the estimation will be too coarse to depict the original shape. According to statistics theory, when dealing with a sample size of $k$, a step size of $l = c \sigma k^{-0.2}$ will give a best partition, where $c$ is a constant relative to the shape of distribution(e.g. for normal distribution, $c=$).
+			Surely, the kernel density estimation approaches will give a smooth, continuous distribution curve under on any sampled data. The computational cost will be much higher than applying a coarse histogram approximation.
+			Moreover, even if we applied a distribution model upon a collection of sampled data, yielding more accurate results, the computation of divergence will be much more complex on continuous functions than discrete distributions.
+			
+			Histogram methods can not only be applied to non-parametric distributions, but also to miscellaneous data types. From a general point of view, as long as there exits a function mapping the input data instance into a subset of real numbers, this data collection can be counted into a histogram. For example, date, time and single characters.
+			
+			In order to generate a accurate approximation, step size is the most important parameter the algorithm should determine. If the size is too small then the resulting histogram will be over fitting; but if the size is too large then the estimation will be too coarse to depict the original shape. According to statistics theory, when dealing with a sample size of $k$, a step size of $l = c \sigma k^{-0.2}$ will give a best partition, where $c$ is a constant relative to the shape of distribution(e.g. for normal distribution, $c=1.05$).
+			
+		\subsection{Threshold}\label{sec:alg-threshold}
+			One important factor in the algorithm is the value of threshold. A higher threshold rejects more instances, improving the sensitivity of anomalous data while increasing the number of false alarms. A lower threshold provide higher true negative rates yet neglecting more possible threats.
+			
+			A naive but prevalent approach is to set a fixed value as threshold. This approach is easy to implement and may give satisfying results in specific cases. However, a fixed threshold requires analysis of the specific problem, manual observation and tuning of parameters, which involves lots of human labor. The rule of ``$3 \sigma$'' can be used to automatically determine a threshold. But in some cases that the anomalous data intersecting at the boundary with normal instances, the threshold may fail more often to discover those manipulated ones.
+			
+			However, applying divergence as the distance metric among data collection distributions provides a fine property. That is, divergences of normal data collections assemble together, forming a quasi-normal distribution. And those of anomalous data collections lies in the right-hand-side interval on the real number axis. As a result of further observation, the divergence of anomalous data collections also assemble to be a quasi-normal distribution, since statistical distance has been restricted by a strict upper bound.
+			
+			\textbf{[Better give a point drawing for each JSD value]}
+			
+			\begin{figure}[!ht]
+				\centering
+				\includegraphics[width=\linewidth]{fig/ExampleThreshold.png}
+				\caption{Threshold Example}
+				\label{fig:example-threshold}
+			\end{figure}
+			
+			As shown in Fig~\ref{fig:example-threshold}, the black curve($PDF_{normal}(x)$) displays the probability density function(PDF) fitting those JSDs calculated from normal data collections; the blue curve($PDF_{anomalous}(x)$) displays the PDF derived from anomalous data collections. Threshold is to minimize total error(False Negative and False Positive).
+			
+			Suppose:
+			
+			\begin{align}
+				PDF_{normal}(x) &\approx N(\mu_n, \sigma_n)\\
+				PDF_{anomalous}(x) &\approx N(\mu_a, \sigma_a)
+			\end{align}
+			
+			Then the optimal threshold $T$ is:
+			
+			\begin{equation}\label{equ:linear-weight}
+				\small
+				\begin{split}
+					T &= \mathop{\arg\min}_{T} \int_{0}^{T}PDF_{anomalous}(x)dx +
+					 \int_{T}^{log_k2}PDF_{normal}(x)dx\\
+					& \approx \mathop{\arg\min}_{T}
+					\int_{-\infty}^{T}
+					\frac{e^{-\frac{(x - \mu_a)^2}{2\sigma_a^2}}}{\sqrt{2\pi} \sigma_a}dx
+					+ \int_{T}^{+\infty}
+					\frac{e^{-\frac{(x - \mu_n)^2}{2\sigma_n^2}}}{\sqrt{2\pi} \sigma_n}dx\\
+					& = \frac{\mu_n\sigma_a + \mu_a\sigma_n}{\sigma_a + \sigma_n}
+				\end{split}
+			\end{equation}
+			
+			According to equation(\ref{equ:linear-weight}), threshold value can be automatically determined. The optimal threshold will minimize total errors, yielding an optimal outcome. The only requirement for this technique is another evidence set containing data point derived from anomalous data collections.
+			
+			However, this is not accurate enough, since equation(\ref{equ:linear-weight}) implicate an assumption that the chances are the same for a new data collection to be either anomalous or not. If we can determine the probability for a new data collection to be anomalous in any segment of data sequence, the equation should be modified as:
+			
+			\begin{equation}\label{equ:linear-balanced}
+				\small
+				\begin{split}
+					T & = \mathop{\arg\min}_{T} \alpha\int_{0}^{T}PDF_{anomalous}(x)dx +
+				(1-\alpha)\int_{T}^{log_k2}PDF_{normal}(x)dx\\
+					& \approx \mathop{\arg\min}_{T}
+					\alpha\int_{-\infty}^{T}
+					\frac{e^{-\frac{(x - \mu_a)^2}{2\sigma_a^2}}}{\sqrt{2\pi} \sigma_a}dx
+					+ (1-\alpha)\int_{T}^{+\infty}
+					\frac{e^{-\frac{(x - \mu_n)^2}{2\sigma_n^2}}}{\sqrt{2\pi} \sigma_n}dx
+				\end{split}
+			\end{equation}
+			
+			Where $\alpha$ is the anomaly probability. Equation(\ref{equ:linear-balanced}) is much more complicated than (\ref{equ:linear-weight}). It can be reduced to a quadratic equation. But may not have real roots in all cases.
+			
+			From another point of view, equation (\ref{equ:linear-weight}) can be regarded as a weighted averaging between two mean value: $\mu_n$ and $\mu_a$. From this aspect, we can derive some similar approximations:
+			
+			\begin{align}
+				T &= \frac{\mu_n \sqrt{\sigma_a} + \mu_a \sqrt{\sigma_n}}{\sqrt{\sigma_a} + \sqrt{\sigma_n}}
+				\label{equ:sqrt-weight}\\
+				T &= \frac{\mu_n \sigma_a \sqrt{-ln(1 - \alpha)}
+					+ \mu_a \sigma_n \sqrt{-ln\alpha}}
+				{\sigma_a \sqrt{-ln(1 - \alpha)} + \sigma_n \sqrt{-ln\alpha}}
+				\label{equ:sqrt-log-add-weight}\\
+				T &= \frac{\mu_n \sqrt{|ln\big[\sigma_a (1 - \alpha)\big]|}
+					+ \mu_a \sqrt{|ln(\sigma_n \alpha)|}}
+				{\sqrt{|ln\big[\sigma_a (1 - \alpha)\big]|} + \sqrt{|ln(\sigma_n \alpha)|}}
+				\label{equ:sqrt-log-combined-weight}
+			\end{align}
+			
+			Due to the restriction sample capacity, the replacement of JSD distributions by guassian distribution may lose too much accuracy. Compared with equation (\ref{equ:sqrt-weight}), (\ref{equ:sqrt-log-add-weight})and (\ref{equ:sqrt-log-combined-weight}), (\ref{equ:linear-balanced}) may not give a best result.
 		
-		\subsection{Threshold}
-		
-		\subsection{Dynamic Algorithm}
+		\subsection{Dynamic DCAD}
+			Another important factor that should be seriously considered is the assumption in Algorithm~\ref{alg:static}. In most cases, real world data is always in the process of evolution and fluctuation. Therefore, the algorithms should automatically adapt to the trend at any time. To meet the need, a sliding window technique has been applied to the basic algorithm frame work. Considering discussion in section~\ref{sec:alg-histogram} and~\ref{sec:alg-threshold}, a dynamic version is proposed as follow:
+			
+			\begin{algorithm}[!ht]
+				\caption{Dynamic DAD}
+				\label{alg:dynamic}
+				\begin{algorithmic}[1]
+					\Require Normal evidence set $E_N = \{D_{N_1}, \dots, D_{N_n}\}$ by given order; Anomalous evidence set $E_A = \{D_{A_1}, \dots, D_{A_m}\}$ by given order; New data collection $D'$; Estimated anomalous probability $\alpha$
+					\Ensure Whether $D'$ is anomalous
+					\For{$i \gets 1$ to $n$}
+						\State $P_{N_i} \gets$ histogram of $D_{N_i}$
+					\EndFor
+					\For{$i \gets 1$ to $m$}
+						\State $P_{A_i} \gets$ histogram of $D_{A_i}$
+					\EndFor
+					\State $P' \gets$ histogram of $D'$
+					\State $M \gets \frac{1}{n}\sum_{i=1}^{n}P_{N_i}$
+					\For{$i \gets 1$ to $n$}
+						\State $J_{N_i} \gets JSD(P_{N_i}||M)$
+					\EndFor
+					\For{$i \gets 1$ to $m$}
+						\State $J_{A_i} \gets JSD(P_{A_i}||M)$
+					\EndFor
+					\State $J' = JSD(P'|||M)$
+					\State $(\mu_N, \sigma_N) \gets$ estimated from $\{J_{N_1}, \dots, J_{N_n}\}$
+					\State $(\mu_A, \sigma_A) \gets$ estimated from $\{J_{A_1}, \dots, J_{A_m}\}$
+					\State $T \gets$ proper threshold derived from $(\mu_N, \sigma_N)$, $(\mu_A, \sigma_A)$ and $\alpha$
+					\If{$J' < T$}
+						\State $E_N \gets E_N \backslash \{D_{N_0}\} \cup \{D'\}$\label{line:update-normal-evidence}
+						\State \textbf{Return} False
+					\Else
+						\State $E_A \gets E_A \backslash \{D_{A_0}\} \cup \{D'\}$\label{line:update-anomalous-evidence}
+						\State \textbf{Return} True
+					\EndIf
+				\end{algorithmic}
+			\end{algorithm}
+			
+			Algorithm~\ref{alg:dynamic} uses $E_N$ and $E_A$ as two sliding windows, keeping up with latest trend of both normal and anomalous features. Thus, the two window sizes $n$ and $m$ cannot be too large. Otherwise the evolving features will be flattened and aligned to the older ones. For the sake of estimation accuracy, they cannot be too small either. The size should refer to ratio of both data updates and feature evolution.
+			
+			Line~\ref{line:update-normal-evidence} and~\ref{line:update-anomalous-evidence} update the evidence sets, replacing the most outdated one, moving the sliding window forward one step ahead. Moreover, $\alpha$ can also be updated according to a history sequence of return values, if necessary.
 	
 	\section{Evaluation}\label{sec:evaluation}
 		\subsection{Experiment Environment}
+			The algorithm was implemented and interpreted in Python 3.6. All experiments was tested on Ubuntu 17.04.
 		
 		\subsection{Methodology}
 			\textbf{Raise and answer some research questions. Present test background and methods.}
