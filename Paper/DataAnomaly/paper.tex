@@ -349,7 +349,7 @@
 			In order to test the performance of Algorithm~\ref{alg:dynamic}, every single collection was fed into the algorithm by the time order. Each collection input has a probability of $\alpha$ to be anomalous, namely, click farmed. The algorithm checks each collection with 1st or 2nd level histogram and give an answer of true and false. Then a F1 score was computed as the result of the experiment.
 			
 		\subsection{Experiment on Raw Data}
-			We first tested Algorithm~\ref{alg:dynamic} on raw data set in order to see how and why the algorithm works. Due to desensitization process, time stamps in raw data set only tell which hour the transaction was committed. Thus, the histogram was drawn by counting hourly volume of each collection. For $\alpha = 0.2$, we select first 30 days as the evidence set of normal collections; day 21st to 30th were also emulated to be click farmed, composing the evidence set of anomalous collections. The results are shown in Table~\ref{tab:result-raw-1st}, where \textit{true positive rate}, \textit{false positive rate} and \textit{accuracy} were recorded.
+			We first tested Algorithm~\ref{alg:dynamic} on raw data set in order to see whether and why the algorithm works. Due to desensitization process, time stamps in raw data set only tell which hour the transaction was committed. Thus, the histogram was drawn by counting hourly volume of each collection. For $\alpha = 0.2$, we select first 30 days as the evidence set of normal collections; day 21st to 30th were also emulated to be click farmed, composing the evidence set of anomalous collections. Equation(\ref{equ:sqrt-log-add-weight}) was employed as the threshold calculator. The results are shown in Table~\ref{tab:result-raw-1st}, where \textit{true positive rate}, \textit{false positive rate} and \textit{accuracy} were recorded.
 			
 			\begin{table}[!ht]
 				\centering
@@ -403,7 +403,71 @@
 		\subsection{Experiment on Synthetic Data}
 			As is put in the former section, every single record in the transaction set only gives a time stamp aligned at hours. Part of the information was erased with the absence of minutes and seconds. In the following experiments, Every time stamp was assigned a random value for minutes and seconds. Therefore, the synthetic data set should be closer to the real world data.
 			
+			\textbf{How did we get the result?}
 			
+			\begin{table}[!ht]
+				\centering
+				\caption{1st Level}
+				\label{tab:syn-result-1st}
+				\begin{tabular}{|c|c|c|c|c|c|c|}
+					\hline
+					& \multicolumn{3}{c|}{Centralized} & \multicolumn{3}{c|}{Equalized}\\
+					\hline
+					$\alpha$ & TPR(\%) & FPR(\%) & ACC(\%) & TPR(\%) & FPR(\%) & ACC(\%) \\ 
+					\hline
+					0.1 & 86.10 & 1.14 & 97.40 & 5.75 & 12.28 & 79.66 \\ 
+					\hline
+					0.2 & 96.43 & 9.83 & 91.30 & 26.97 & 26.47 & 64.29 \\ 
+					\hline
+					0.3 & 97.95 & 16.49 & 87.68 & 37.46 & 39.46 & 53.67 \\ 
+					\hline
+					0.4 & 99.18 & 31.94 & 81.30 & 57.23 & 48.32 & 53.79 \\ 
+					\hline
+					0.5 & 99.33 & 23.40 & 88.25 & 67.67 & 58.23 & 54.46 \\ 
+					\hline
+					0.6 & 99.62 & 25.70 & 89.83 & 67.03 & 73.78 & 51.64 \\ 
+					\hline
+					0.7 & 100.00 & 32.51 & 90.51 & 69.69 & 76.28 & 56.16 \\ 
+					\hline
+					0.8 & 99.72 & 26.97 & 94.35 & 75.56 & 69.44 & 67.00 \\ 
+					\hline
+					0.9 & 99.63 & 15.73 & 98.19 & 76.59 & 75.18 & 70.73\\
+					\hline
+				\end{tabular} 
+			\end{table}
+			
+			\begin{table}[!ht]
+				\centering
+				\caption{2nd Level}
+				\label{tab:syn-result-2nd}
+				\begin{tabular}{|c|c|c|c|c|c|c|}
+					\hline
+					& \multicolumn{3}{c|}{Centralized} & \multicolumn{3}{c|}{Equalized}\\
+					\hline
+					$\alpha$ & TPR(\%) & FPR(\%) & ACC(\%) & TPR(\%) & FPR(\%) & ACC(\%) \\ 
+					\hline
+					0.1 & 75.60 & 3.90 & 93.74 & 97.84 & 1.64 & 98..31 \\ 
+					\hline
+					0.2 & 91.93 & 18.43 & 93.73 & 99.42 & 7.39 & 94.01 \\ 
+					\hline
+					0.3 & 95.01 & 23.70 & 81.69 & 100.00 & 23.93 & 83.05 \\ 
+					\hline
+					0.4 & 98.09 & 28.66 & 82.49 & 100.00 & 24.59 & 84.75 \\ 
+					\hline
+					0.5 & 98.33 & 36.54 & 80.00 & 100.00 & 23.76 & 88.36 \\ 
+					\hline
+					0.6 & 98.35 & 40.69 & 83.41 & 100.00 & 35.94 & 84.63 \\ 
+					\hline
+					0.7 & 98.54 & 37.97 & 87.80 & 100.00 & 31.27 & 90.84 \\ 
+					\hline
+					0.8 & 98.47 & 40.38 & 91.19 & 100.00 & 33.04 & 92.66 \\ 
+					\hline
+					0.9 & 98.51 & 47.56 & 94.58 & 100.00 & 28.44 & 97.40\\
+					\hline
+				\end{tabular} 
+			\end{table}
+			
+			\textbf{Comment on the result. Explain the trend:(1)$\alpha \uparrow, TPR \uparrow $; (2)$\alpha \uparrow, FPR \uparrow$; (3)$\alpha \uparrow, ACC \downarrow then \uparrow $}
 			
 		\subsection{Threshold Optimization}
 			\textbf{give results of the comparison of different threshold equations}

@@ -29,9 +29,9 @@ def linearBalancedThreshold(ua, sa, ub, sb, alpha):
         return sol2
 
 input_dir = "Correct"
-input_dir_err = "Equalized"
+input_dir_err = "Centralized"
 
-error_rate = 0.1
+error_rate = 0.9
 #sigma_coefficient = 3  # Don't think about this now
 time_span = 300
 
@@ -83,10 +83,9 @@ for i in range(30, 325):
     jsd_mean_err = statistics.mean(jsd_evidence_err)
     jsd_sigma_err = statistics.stdev(jsd_evidence_err)
 
-    #w = jsd_sigma_err * math.sqrt(-math.log(1 - error_rate))
-    #w_err = jsd_sigma * math.sqrt(-math.log(error_rate))
-    #threshold = (jsd_mean * w + jsd_mean_err * w_err) / (w + w_err)
-    threshold = linearBalancedThreshold(jsd_mean, jsd_sigma, jsd_mean_err, jsd_sigma_err, error_rate)
+    w = jsd_sigma_err * math.sqrt(-math.log(1 - error_rate))
+    w_err = jsd_sigma * math.sqrt(-math.log(error_rate))
+    threshold = (jsd_mean * w + jsd_mean_err * w_err) / (w + w_err)
     #print("Test File: %d.csv(%d/325) Threshold jsd: %g(PD: %g)"
     #      % (i, i, threshold, stats.norm.pdf(threshold, jsd_mean, jsd_sigma)))
     ch = '-'
@@ -165,21 +164,21 @@ fp = correct_cnt - correct_recognized
 tn = correct_recognized
 fn = error_cnt - error_recognized
 
-pre = tp / (tp + fp)
-rec = tp / (tp + fn)
-f1 = 2 * pre * rec / (pre + rec)
-print("tp=%d, fp=%d, tn=%d, fn=%d, f1=%f\n" % (tp, fp, tn, fn, f1))
+# pre = tp / (tp + fp)
+# rec = tp / (tp + fn)
+# f1 = 2 * pre * rec / (pre + rec)
+print("tp=%d, fp=%d, tn=%d, fn=%d, f1=%f\n" % (tp, fp, tn, fn, 0))
 
 # Show JSD History
-figure = plt.figure(figsize=(6000 / 300, 3000 / 300), dpi=300)
-plt.axis("off")
-for i in range(len(jsd_history)):
-    record = jsd_history[i]
-    plt.plot([i] * len(record["evidence"]), record["evidence"], 'r.', ms=0.5)
-    plt.plot([i] * len(record["evidence_err"]), record["evidence_err"], 'b.', ms=0.5)
-    plt.plot(i, record["threshold"], 'gx', ms=3)
-    if record["correct"] == -1:
-        plt.plot(i, record["error"], 'bx', ms=3)
-    else:
-        plt.plot(i, record["correct"], 'rx', ms=3)
-figure.savefig("TestSecondOrder.png")
+# figure = plt.figure(figsize=(6000 / 300, 3000 / 300), dpi=300)
+# plt.axis("off")
+# for i in range(len(jsd_history)):
+#     record = jsd_history[i]
+#     plt.plot([i] * len(record["evidence"]), record["evidence"], 'r.', ms=0.5)
+#     plt.plot([i] * len(record["evidence_err"]), record["evidence_err"], 'b.', ms=0.5)
+#     plt.plot(i, record["threshold"], 'gx', ms=3)
+#     if record["correct"] == -1:
+#         plt.plot(i, record["error"], 'bx', ms=3)
+#     else:
+#         plt.plot(i, record["correct"], 'rx', ms=3)
+# figure.savefig("TestSecondOrder.png")
