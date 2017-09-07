@@ -293,12 +293,121 @@
 		\subsection{Methodology}
 			\textbf{Raise and answer some research questions. Present test background and methods.}
 			
+			We adopted a data set containing Taobao online sellers' transaction records\footcite{https://tianchi.aliyun.com/competition/information.htm?raceId=231591} provided by Alibaba Tian Chi big data competition. The data package contains seller features data set, user payments data set and user browsing behaviour data set. An example of the user payments data set is shown in Table~\ref{tab:user-payment-sample}.
+			
+			\begin{table}[!ht]
+				\centering
+				\caption{User Payment Record Exmaple}
+				\label{tab:user-payment-sample}
+				\begin{tabular}{|c|c|c|}
+					\hline
+					User ID & Seller ID & Payment Time\\
+					\hline
+					10523185 & 1629 & 2015-11-11 17:00:00\\
+					\hline
+					2 & 2 & 2\\
+					\hline
+					3 & 3 & 3\\
+					\hline
+					\vdots & \vdots & \vdots\\
+					\hline
+				\end{tabular}
+			\end{table}
+			
+			We randomly chose one seller(ID: 1629) and extracted transaction history of this seller, records ranging from Nov. 11th 2015 to Oct. 31st 2016. Entire transaction set was then divided into 325 collections, each containing records in one day. 
+			
+			
+			\begin{figure}[!ht]
+				\centering
+				\includegraphics[width=0.75\linewidth]{fig/DailyTransactionVolume.png}
+				\caption{Daily Transaction Volumes}
+				\label{fig:daily-transaction-volume}
+			\end{figure}
+			
+			\begin{figure}[ht]
+				\centering
+				\includegraphics[width=\linewidth]{fig/SaleDistributionSamples.png}
+				\caption{Randomly selected 3 days and draw histograms by hourly sale}
+				\label{fig:sale-distribution-sample}
+			\end{figure}
+			
+			Fig.~\ref{fig:daily-transaction-volume} shows the daily transaction volume of the seller. It sees a trend of daily sale which is slightly moving as the time goes. And the daily selling distributions, as is shown in Fig.~\ref{fig:sale-distribution-sample}, display a roughly similar shape.
+			
+			Click farmed data was generated according to patterns described in online reports\textbf{[ref here]}. The most popular way of click farming is to call online a group of people, assign each of them an amount of transaction. And those ``employees'' individually buy certain products via different buyer accounts. Therefore, a significant feature of this approach is that the cheating transactions usually assemble together in a short period of time. It is called ``Centralized Farming''. Some other ``employers'' are more clever. They usually arrange a time table for each employee to create new transactions. Thus the transaction distribution may not vary too much with and without click farming. This is called ``Equalized Farming''.
+			
+			To emulate ``Centralized Click Farming'', we randomly inserted some gaussian-distributed transactions in a chosen collection, where the total number of new records is the same of the original volume. To emulate a extremely clever ``Equalized Click Farmer'', we simply doubled each record in the chosen collection to make the new distribution exactly the same as the original one, which is harder for the online platform to discover.
+			
+			To play the role of purchasing platform, we surveillance two levels of transaction distribution. The first level is simply drawing a histogram on time spans. The second level is to draw a histogram on the sub-volumes of each time span. For example, shown in Fig.~\ref{fig:histogram-example}, the first level histogram can be drawn by counting the number of hourly sales. The frequencies of each bucket in 1st level histogram is: $F=$\{0, 0, 0, 0, 0, 0, 0, 1, 13, 30, 37, 68, 60, 66, 72, 94, 75, 113, 127, 182, 165, 61, 0, 0\}. Then, counting $F$ with a step size 20 gives the 2nd level histogram.
+			
+			\begin{figure}[!ht]
+				\centering
+				\includegraphics[width=\linewidth]{fig/HistogramExample.png}
+				\caption{Example of 1st and 2nd Level Histogram}
+				\label{fig:histogram-example}
+			\end{figure}
+			
+			In order to test the performance of Algorithm~\ref{alg:dynamic}, every single collection was fed into the algorithm by the time order. Each collection input has a probability of $\alpha$ to be anomalous, namely, click farmed. The algorithm checks each collection with 1st or 2nd level histogram and give an answer of true and false. Then a F1 score was computed as the result of the experiment.
+			
+		\subsection{Experiment on Raw Data}
+			We first tested Algorithm~\ref{alg:dynamic} on raw data set in order to see how and why the algorithm works. Due to desensitization process, time stamps in raw data set only tell which hour the transaction was committed. Thus, the histogram was drawn by counting hourly volume of each collection. For $\alpha = 0.2$, we select first 30 days as the evidence set of normal collections; day 21st to 30th were also emulated to be click farmed, composing the evidence set of anomalous collections. The results are shown in Table~\ref{tab:result-raw-1st}, where \textit{true positive rate}, \textit{false positive rate} and \textit{accuracy} were recorded.
+			
+			\begin{table}[!ht]
+				\centering
+				\caption{Classification Results on Raw Data}
+				\label{tab:result-raw-1st}
+				\begin{tabular}{|c|c|c|c|c|c|c|}
+					\hline
+					& \multicolumn{3}{c|}{Centralized} & \multicolumn{3}{c|}{Equalized}\\
+					\hline
+					& TPR & FAR & ACC & TPR & FAR & ACC\\
+					\hline
+					1st Level & 100 & 4.05 & 96.72 & 26.64 & 28.03 & 62.49\\
+					\hline
+					2nd Level & 88.01 & 7.68 & 91.41 & 83.89 & 15.78 & 84.07\\
+					\hline
+				\end{tabular}
+			\end{table}
+			
+			\begin{figure}[!ht]
+				\centering
+				\includegraphics[width=\linewidth]{fig/Raw1stLevelHist.png}
+				\caption{1st Level Histogram of Raw Data}
+				\label{fig:raw-hist-1st}
+			\end{figure}
+			
+			\begin{figure}[!ht]
+				\centering
+				\includegraphics[width=\linewidth]{fig/Raw2ndLevelHist}
+				\caption{2nd Level Histogram of Raw Data}
+				\label{fig:raw-hist-2nd}
+			\end{figure}
+			
+			\begin{figure}[!ht]
+				\centering
+				\includegraphics[width=\linewidth]{fig/RawOverview1st.png}
+				\caption{JSD of 1st Level Histograms}
+				\label{fig:raw-overview-1st}
+			\end{figure}
+			
+			\begin{figure}[!ht]
+				\centering
+				\includegraphics[width=\linewidth]{fig/RawOverview2nd.png}
+				\caption{JSD of 2nd Level Histogram}
+				\label{fig:raw-overview-2nd}
+			\end{figure}
+			
+			When classifying toward 1st level histograms, centralized click farming behaviours can be easily discovered. As displayed in the left two columns in Fig.~\ref{fig:raw-hist-1st}, normal collections share a similar distribution while centralized click farmed ones abruptly violates the original shape. However, as a clever click farmer, equalized click farming did not in the least distorted the distribution. Most of them escaped the security check under the perfect disguise.
+			But when it comes to 2nd level histogram, the ``clever disguise'' does not work any longer. It can be clearly seen in Fig.~\ref{fig:raw-hist-2nd} that both types of click farming shows an obvious difference from the normal ones, while the normal ones still share a similar distribution.
+			From the overview in Fig.~\ref{fig:raw-overview-1st} and~\ref{fig:raw-overview-2nd}, the difference between normal and anomalous collections can be observed more intuitively.
+			
 		\subsection{Experiment on Synthetic Data}
-			\textbf{Test basic properties of statistical distance and algorithm}
+			As is put in the former section, every single record in the transaction set only gives a time stamp aligned at hours. Part of the information was erased with the absence of minutes and seconds. In the following experiments, Every time stamp was assigned a random value for minutes and seconds. Therefore, the synthetic data set should be closer to the real world data.
+			
+			
+			
+		\subsection{Threshold Optimization}
+			\textbf{give results of the comparison of different threshold equations}
 		
-		\subsection{Experiment on Real World Data}
-			\textbf{Test performance of algorithm}
-	
 	\section{Conclusion}\label{sec:conclusion}
 	
 	\section*{Acknowledgement}
