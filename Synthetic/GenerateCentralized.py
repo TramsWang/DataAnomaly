@@ -7,8 +7,10 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
+ratio = 0.8
+
 input_dir = "Correct"
-output_dir = "Centralized(2.0)"
+output_dir = "Centralized(%.1f)" % (1 + ratio)
 d = os.path.abspath(output_dir)
 if not os.path.exists(d):
     os.makedirs(d)
@@ -22,7 +24,7 @@ for file in os.listdir(input_dir):
                 cnt += 1
                 ofile.write(line)
             #num_new = numpy.random.randint(int(cnt * 1.5), int(cnt * 2.0))
-            num_new = cnt
+            num_new = int(cnt * ratio)
             center = numpy.random.randint(10, 21)
             for item in numpy.random.normal(center * 3600, 1.5 * 3600, num_new):
                 if (item >= (7 * 3600)) and (item < 24 * 3600):

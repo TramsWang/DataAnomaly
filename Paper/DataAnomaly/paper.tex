@@ -166,7 +166,13 @@
 			
 			Histogram methods can not only be applied to non-parametric distributions, but also to miscellaneous data types. From a general point of view, as long as there exits a function mapping the input data instance into a subset of real numbers, this data collection can be counted into a histogram. For example, date, time and single characters.
 			
-			In order to generate a accurate approximation, step size is the most important parameter the algorithm should determine. If the size is too small then the resulting histogram will be over fitting; but if the size is too large then the estimation will be too coarse to depict the original shape. According to statistics theory, when dealing with a sample size of $k$, a step size of $l = c \sigma k^{-0.2}$ will give a best partition, where $c$ is a constant relative to the shape of distribution(e.g. for normal distribution, $c=1.05$).
+			In order to generate a accurate approximation, step size is the most important parameter the algorithm should determine. If the size is too small then the resulting histogram will be over fitting; but if the size is too large then the estimation will be too coarse to depict the original shape. According to statistics theory, when dealing with a sample size of $k$, a step size of 
+			
+			\begin{equation}\label{equ:step-size}
+				l = c \sigma k^{-0.2}
+			\end{equation}
+			
+			will give a best partition, where $c$ is a constant relative to the shape of distribution(e.g. for normal distribution, $c=1.05$).
 			
 		\subsection{Threshold}\label{sec:alg-threshold}
 			One important factor in the algorithm is the value of threshold. A higher threshold rejects more instances, improving the sensitivity of anomalous data while increasing the number of false alarms. A lower threshold provide higher true negative rates yet neglecting more possible threats.
@@ -401,9 +407,8 @@
 			From the overview in Fig.~\ref{fig:raw-overview-1st} and~\ref{fig:raw-overview-2nd}, the difference between normal and anomalous collections can be observed more intuitively.
 			
 		\subsection{Experiment on Synthetic Data}
-			As is put in the former section, every single record in the transaction set only gives a time stamp aligned at hours. Part of the information was erased with the absence of minutes and seconds. In the following experiments, Every time stamp was assigned a random value for minutes and seconds. Therefore, the synthetic data set should be closer to the real world data.
-			
-			\textbf{How did we get the result?}
+			As is put in the former section, every single record in the transaction set only gives a time stamp aligned at hours. Part of the information was erased with the absence of minutes and seconds. In the following experiments, Every time stamp was assigned a random value for minutes and seconds. Therefore, the synthetic data set should be closer to the real world case. Moreover, the step size in the histograms can now be calculated more precisely. In the 1st level histogram, the constant $c$ in equation(\ref{equ:step-size}) was set to 0.5 since the PDF of daily distribution was approximately a linear function. And in the 2nd level histogram, sub-volumes of every 300 seconds were counted, producing more data points in the 2nd level data collections. Then, constant $c$ in equation(\ref{equ:step-size}) was also set to 0.5 given that the 2nd level histogram was also approximately a linear function.
+			We tested algorithm performance for $\alpha \in \{0.1, 0.3, 0.5, 0.7, 0.9\}$, with $E_N$ and $E_A$ the same configuration as before. Results were shown in Table~\ref{tab:syn-result-1st} and~\ref{tab:syn-result-2nd}.
 			
 			\begin{table}[!ht]
 				\centering
@@ -467,11 +472,90 @@
 				\end{tabular} 
 			\end{table}
 			
-			\textbf{Comment on the result. Explain the trend:(1)$\alpha \uparrow, TPR \uparrow $; (2)$\alpha \uparrow, FPR \uparrow$; (3)$\alpha \uparrow, ACC \downarrow then \uparrow $}
+			The result shows that the algorithm can efficiently distinguish the normal and anomalous data collections. No matter how much proportion of data is anomalous, the algorithm always gives a high accuracy. That is because the adaptive threshold was designed to minimize the number of total errors, which was irrelevant to TPR or FPR. When $\alpha$ was increasing, there were less data collections added into $E_N$. Thus the update of $E_N$ became slower and FPR went higher. On the contrary, TPR became higher as $\alpha$ increased. Moreover, since $|E_N| > |E_A|$, it needs more collection instances for $|E_N|$ then that for $|E_A|$ to keep up to the trend. Therefore, it was faster of FPR to increase than TPR to increase. As a result of that, there were more false alarms emerged and ACC went lower, as $\alpha$ increased from 0.1 to 0.5. After that, however, although FPR was still increasing, total number of normal instances decreased dramatically and those false alarms contributed less to total errors. Therefore, ACC rose up again.
+			
+			\begin{figure}[!ht]
+				\centering
+				\includegraphics[width=\linewidth]{fig/ROC-alpha}
+				\caption{ROC Curve of 1st and 2nd Level Classifier}
+				\label{fig:roc-alpha}
+			\end{figure}
+			
+			Fig.~\ref{fig:roc-alpha} shows the ROC curve of the gaussian classifier dealing with centralized click farming with 1st level histogram and equalized click farming with 2nd level histogram.\textbf{[Comment: This shows that the classifier is efficient]}
+			
+			\begin{figure}[!ht]
+				\centering
+				This is the figure
+				\caption{ROC Curve of Different Magnitude of Click Farming}
+				\label{fig:roc-magnitude}
+			\end{figure}
+			
+			\textbf{[Next, show a figure of ROC curve for different click farm magnitude. Explore how sensitive the classifier is for the click farming problem. This requires lots of experiment data. Not finished yet]}
 			
 		\subsection{Threshold Optimization}
-			\textbf{give results of the comparison of different threshold equations}
+			\textbf{give results of the comparison of different threshold equations, in table~\ref{tab:threshold-comparison}}
+			\begin{table*}[!ht]
+				\centering
+				\caption{Compare of Different Threshold Calculator}
+				\label{tab:threshold-comparison}
+				\begin{tabular}{|c|c|c|}
+					\hline
+					Equation & Synthetic & Gaussian \\ 
+					\hline
+					$T = \frac{\sigma_B \mu_A + \sigma_A \mu_B}{\sigma_B + \sigma_A}$& 1.0588 & 0.5810 \\ 
+					\hline
+					$T = \frac{\sqrt{\sigma_B} \mu_A + \sqrt{\sigma_A} \mu_B}{\sqrt{\sigma_B} + \sqrt{\sigma_A}}$& 2.1861 & 0.5718 \\ 
+					\hline
+					$T = \frac{(ln\sigma_B)\mu_A + (ln\sigma_A)\mu_B}{ln\sigma_B + ln\sigma_A}$& 2.2390 & 0.3860 \\ 
+					\hline
+					$T = \frac{(\sqrt{|ln\sigma_B|})\mu_A + (\sqrt{|ln\sigma_A|})\mu_B}{\sqrt{|ln\sigma_B|} + \sqrt{|ln\sigma_A|}}$& 2.2082 & 0.5515 \\ 
+					\hline
+					$T = \frac{(ln\sqrt{\sigma_B})\mu_A + (ln\sqrt{\sigma_A})\mu_B}{ln\sqrt{\sigma_B} + ln\sqrt{\sigma_A}}$& 2.1211 & 0.3811 \\ 
+					\hline
+					$T = \frac{\sigma_B (1 - \alpha) \mu_A + \sigma_A \alpha \mu_B}{\sigma_B (1 - \alpha) + \sigma_A \alpha}$& 0.7688 & 0.3515 \\ 
+					\hline
+					$T = \frac{(\sigma_B \sqrt{1 - \alpha}) \mu_A + (\sigma_A \sqrt{\alpha}) \mu_B}{\sigma_B \sqrt{1 - \alpha} + \sigma_A \sqrt{\alpha}}$& 0.8158 & 0.4510 \\ 
+					\hline
+					$
+					T = \frac{\big[\sigma_B ln(1 - \alpha)\big] \mu_A
+						+ \big[\sigma_A ln\alpha\big] \mu_B}
+					{\sigma_B ln(1 - \alpha) + \sigma_A ln\alpha}
+					$& 1.5227 & 0.5523 \\ 
+					\hline
+					$
+					T = \frac{\mu_A \sigma_B \sqrt{-ln(1 - \alpha)}
+						+ \mu_B \sigma_A \sqrt{-ln\alpha}}
+					{\sigma_B \sqrt{-ln(1 - \alpha)} + \sigma_A \sqrt{-ln\alpha}}
+					$& 2.6013 & 0.5791 \\ 
+					\hline
+					$
+					T = \frac{\mu_A \sigma_B ln\sqrt{1 - \alpha}
+						+ \mu_B \sigma_A ln\sqrt{\alpha}}
+					{\sigma_B ln\sqrt{1 - \alpha} + \sigma_A ln\sqrt{\alpha}}
+					$& 1.4155 & 0.5578 \\ 
+					\hline
+					$
+					T = \frac{\mu_A \sqrt{|ln\big[\sigma_B (1 - \alpha)\big]|}
+						+ \mu_B \sqrt{|ln(\sigma_A \alpha)|}}
+					{\sqrt{|ln\big[\sigma_B (1 - \alpha)\big]|} + \sqrt{|ln(\sigma_A \alpha)|}}
+					$& 2.2730 & 0.5600 \\ 
+					\hline
+					$
+					T = \frac{\mu_A ln\sqrt{\sigma_B (1 - \alpha)}
+						+ \mu_B ln\sqrt{\sigma_A \alpha}}
+					{ln\sqrt{\sigma_B (1 - \alpha)} + ln\sqrt{\sigma_A \alpha}}
+					$& 2.0753 & 0.2808 \\ 
+					\hline
+					$T = \mathop{\arg\min}_{\mu_A \le T \le \mu_B}\ \alpha \cdot \int_{-\infty}^{T}P_B(x)dx + (1 - \alpha) \cdot \int_{T}^{+\infty}P_A(x)dx$ & 1.9300 & 0.6072\\
+					\hline
+				\end{tabular} 
+			\end{table*}
+			
+			\textbf{[Comment: Which equation is the best in each case? Why?]}
 		
+		\subsection{Comparison with other collective classification algorithms}
+			\textbf{It would be better to have this comparison, but it requires much more experiments and the data set may not be very suitable.}
+			
 	\section{Conclusion}\label{sec:conclusion}
 	
 	\section*{Acknowledgement}

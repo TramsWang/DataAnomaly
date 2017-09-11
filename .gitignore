@@ -23,4 +23,4 @@ Paper/**/*.bbl
 Paper/**/*.blg
 
 # Untrack abundoned data
-/Synthetic/Centralized(3x)
+/Synthetic/Centralized(*)

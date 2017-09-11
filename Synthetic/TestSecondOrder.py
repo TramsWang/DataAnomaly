@@ -29,7 +29,7 @@ def linearBalancedThreshold(ua, sa, ub, sb, alpha):
         return sol2
 
 input_dir = "Correct"
-input_dir_err = "Centralized"
+input_dir_err = "Equalized"
 
 error_rate = 0.9
 #sigma_coefficient = 3  # Don't think about this now
@@ -83,9 +83,10 @@ for i in range(30, 325):
     jsd_mean_err = statistics.mean(jsd_evidence_err)
     jsd_sigma_err = statistics.stdev(jsd_evidence_err)
 
-    w = jsd_sigma_err * math.sqrt(-math.log(1 - error_rate))
-    w_err = jsd_sigma * math.sqrt(-math.log(error_rate))
-    threshold = (jsd_mean * w + jsd_mean_err * w_err) / (w + w_err)
+    # w = jsd_sigma_err * math.sqrt(-math.log(1 - error_rate))
+    # w_err = jsd_sigma * math.sqrt(-math.log(error_rate))
+    # threshold = (jsd_mean * w + jsd_mean_err * w_err) / (w + w_err)
+    threshold = 0.05
     #print("Test File: %d.csv(%d/325) Threshold jsd: %g(PD: %g)"
     #      % (i, i, threshold, stats.norm.pdf(threshold, jsd_mean, jsd_sigma)))
     ch = '-'
@@ -135,6 +136,7 @@ for i in range(30, 325):
         new_data = list(freq.values())
         dropped, dist = Divergence.histogram(new_data, step)
         tmp_jsd = Divergence.jsd(dist_pop, dist)
+        print("Jsd: %g" % tmp_jsd)
 
         if tmp_jsd <= threshold:
             # Slide window forward
