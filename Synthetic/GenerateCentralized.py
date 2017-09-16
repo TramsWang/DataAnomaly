@@ -7,7 +7,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-ratio = 0.8
+ratio = 0.5
 
 input_dir = "Correct"
 output_dir = "Centralized(%.1f)" % (1 + ratio)

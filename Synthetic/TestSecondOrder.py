@@ -29,9 +29,9 @@ def linearBalancedThreshold(ua, sa, ub, sb, alpha):
         return sol2
 
 input_dir = "Correct"
-input_dir_err = "Equalized"
+input_dir_err = "Centralized(1.5)"
 
-error_rate = 0.9
+error_rate = 0.5
 #sigma_coefficient = 3  # Don't think about this now
 time_span = 300
 
@@ -86,7 +86,7 @@ for i in range(30, 325):
     # w = jsd_sigma_err * math.sqrt(-math.log(1 - error_rate))
     # w_err = jsd_sigma * math.sqrt(-math.log(error_rate))
     # threshold = (jsd_mean * w + jsd_mean_err * w_err) / (w + w_err)
-    threshold = 0.05
+    threshold = 0.1
     #print("Test File: %d.csv(%d/325) Threshold jsd: %g(PD: %g)"
     #      % (i, i, threshold, stats.norm.pdf(threshold, jsd_mean, jsd_sigma)))
     ch = '-'
