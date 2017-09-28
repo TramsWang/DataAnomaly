@@ -251,45 +251,44 @@
 		\subsection{Threshold}\label{sec:alg-threshold}
 			One important factor in the algorithm is the value of threshold. A higher threshold rejects more instances, improving the sensitivity of anomalous data while increasing the number of false alarms. A lower threshold provide higher true negative rates yet neglecting more possible threats.
 			
-			A naive but prevalent approach is to set a fixed value as threshold. This approach is easy to implement and may give satisfying results in specific cases. However, a fixed threshold requires specific analysis in the certain scenario, manual observation and tuning of parameters, which involves lots of human labour. The rule of ``$3 \sigma$'' can be used to automatically determine a threshold. But as a rigid metric, it is merely an estimation of a suitable boundary considering average situations, which is far from optimal when concrete data is provided. It would be either higher than the optimum if anomalous data lies far away from the cluster consisting normal data records, or lower than the optimum if the anomalies sit more within the boundary.
+			A naive but prevalent approach is to set a fixed value as threshold. This approach is easy to implement and may give satisfying results in specific cases. However, a fixed threshold requires specific analysis in the certain scenario, manual observation and tuning of parameters, which involves lots of human labour. The rule of ``$3 \sigma$'' can be used to automatically determine a threshold. But as a rigid metric, it is merely an estimation of a suitable boundary considering average situations, which is far from optimal when concrete data is provided. It would be either higher than the optimum if anomalous data lies far away from the normal cluster, or lower than the optimum if the anomalies sit close to the cluster centre.
 	
 			\begin{figure}[!t]
 				\centering
 				\includegraphics[width=\linewidth]{fig/JSD-Dist.png}
 				\caption{Distribution of JSD values for everyday data collection. It can be approximately regarded as a gaussian distribution.}
+				\label{fig:jsd-dist}
 			\end{figure}
 	
-			However, applying divergence as the distance measurement among data collection distributions provides a fine property. That is, divergences of normal data collections assemble together, forming a quasi-gaussian distribution. And those of anomalies also form a quasi-guassian distribution which lies in the right-hand-side interval on the real number axis. As a result of further observation, however, true distribution of both JSDs derived from normal and anomalous data collections may differ a little more from the standard gaussian than the expected estimation error. That is due to the unknown randomness within real world data. Few assumptions can be applied in real world data sets, let alone data volume is sometimes relatively low. This topic is out of the domain discussed in this paper and we here only introduce the technique instead of the specific distribution model. However, in the scenarios that better models can be calculated, distributions here can be replaced to produce better results. For the simplicity of our proposal, we assume the distributions of JSDs to be gaussian.
+			However, applying divergence as the distance measurement among data collections provides a fine property. That is, divergences of normal data collections assemble together, forming a quasi-gaussian distribution. And those of anomalies also form a quasi-guassian distribution which lies in the right-hand-side to the other one on the real number axis. As a result of further observation, however, true distribution of both JSDs derived from normal and anomalous data collections may differ a little more from the standard gaussian than the expected estimation error(Fig.~\ref{fig:jsd-dist}). That is due to the unknown randomness within real world data. Few assumptions can be applied in real world data sets, let alone data volume is sometimes relatively low. This topic is out of the domain discussed in this paper and we here only introduce the technique instead of the specific distribution model. However, in the scenarios that better models can be calculated, distributions here can be replaced to produce better results. For the simplicity of our proposal, we assume the distributions of JSDs to be gaussian.
 	
-			\textbf{[Better give a Histogram drawing JSD distribution]}
-			
 			\begin{figure}[!t]
 				\centering
 				\includegraphics[width=\linewidth]{fig/ExampleThreshold.png}
-				\caption{Threshold can be determined either by a probability density value, or a radius from the centre. In the scenario shown in the figure, the threshold can be determined by the position between two means of the distribution, denoted as ``T'' here. This form of threshold can also be applied to other types of distributions even there is no intersection between these two.}
+				\caption{Threshold can be determined either by a probability density value, or a radius from the centre. In the scenario shown in the figure, the threshold can be determined by the position between two centres of the distribution, denoted as ``T'' here. This form of threshold can also be applied to other types of distributions even there is no intersection between these two.}
 				\label{fig:example-threshold}
 			\end{figure}
 	
-			As shown in Fig~\ref{fig:example-threshold}, the black curve($PDF_{normal}(x)$) displays the probability density function(PDF) fitting those JSDs calculated from normal data collections; the blue curve($PDF_{anomalous}(x)$) displays the PDF derived from anomalous data collections. Threshold is chosen to minimize total errors(False Negative and False Positive).
+			As shown in Fig~\ref{fig:example-threshold}, the black curve($PDF_{normal}(x)$ or in short $PDF_n(x)$) displays the probability density function(PDF) fitting those JSDs calculated from normal data collections; the blue curve($PDF_{anomalous}(x)$ or in short $PDF_a(x)$) displays the PDF derived from anomalous data collections. Threshold is chosen to minimize total errors(both false negative and false positive).
 			
 			Suppose:
 	
 			\begin{align}
-				PDF_{normal}(x) &\approx N(\mu_n, \sigma_n)\\
-				PDF_{anomalous}(x) &\approx N(\mu_a, \sigma_a)
+				PDF_{n}(x) &\approx N(\mu_n, \sigma_n)\\
+				PDF_{a}(x) &\approx N(\mu_a, \sigma_a)
 			\end{align}
 			
 			Then the optimal threshold $T$ is:
 	
 			\begin{equation}\label{equ:linear-weight}
-				\small
+				%\small
 				\begin{split}
-					T &= \mathop{\arg\min}_{T} \int_{0}^{T}PDF_{anomalous}(x)dx +
-					\int_{T}^{log_k2}PDF_{normal}(x)dx\\
+					T &= \mathop{\arg\min}_{T} \int_{0}^{T}PDF_{a}(x)dx +
+					\int_{T}^{log_k2}PDF_{n}(x)dx\\
 					& \approx \mathop{\arg\min}_{T}
-					\int_{-\infty}^{T}
+					\int_{0}^{T}
 					\frac{e^{-\frac{(x - \mu_a)^2}{2\sigma_a^2}}}{\sqrt{2\pi} \sigma_a}dx
-					+ \int_{T}^{+\infty}
+					+ \int_{T}^{log_k2}
 					\frac{e^{-\frac{(x - \mu_n)^2}{2\sigma_n^2}}}{\sqrt{2\pi} \sigma_n}dx\\
 					& = \frac{\mu_n\sigma_a + \mu_a\sigma_n}{\sigma_a + \sigma_n}
 				\end{split}
@@ -297,30 +296,30 @@
 	
 			According to equation(\ref{equ:linear-weight}), threshold value can be automatically determined. The optimal threshold will minimize total errors, yielding an optimal outcome. The only requirement for this technique is another evidence set containing data point derived from anomalous data collections.
 			
-			However, this is not accurate enough, since equation(\ref{equ:linear-weight}) implicate an assumption that the chances are the same for a new data collection to be either anomalous or not. If we can determine the probability for a new data collection to be anomalous in any segment of data sequence, the equation should be modified as:
+			However, this is not accurate enough, since equation(\ref{equ:linear-weight}) implicates an assumption that the chances are the same for a new data collection to be either anomalous or not. If we can determine the probability for a new data collection to be anomalous in any segment of data sequence, the equation should be modified as:
 	
 			\begin{equation}\label{equ:linear-balanced}
-				\small
+				{\footnotesize
 				\begin{split}
-					T & = \mathop{\arg\min}_{T} \alpha\int_{0}^{T}PDF_{anomalous}(x)dx +
-					(1-\alpha)\int_{T}^{log_k2}PDF_{normal}(x)dx\\
+					T & = \mathop{\arg\min}_{T} \alpha\int_{0}^{T}PDF_{a}(x)dx +
+					(1-\alpha)\int_{T}^{log_k2}PDF_{n}(x)dx\\
 					& \approx \mathop{\arg\min}_{T}
-					\alpha\int_{-\infty}^{T}
+					\alpha\int_{0}^{T}
 					\frac{e^{-\frac{(x - \mu_a)^2}{2\sigma_a^2}}}{\sqrt{2\pi} \sigma_a}dx
-					+ (1-\alpha)\int_{T}^{+\infty}
+					+ 
+					(1-\alpha)\int_{T}^{log_k2}
 					\frac{e^{-\frac{(x - \mu_n)^2}{2\sigma_n^2}}}{\sqrt{2\pi} \sigma_n}dx
-				\end{split}
+				\end{split}}
 			\end{equation}
 	
-			Where $\alpha$ is the anomaly probability. Equation(\ref{equ:linear-balanced}) is much more complicated than (\ref{equ:linear-weight}). It can be reduced to a quadratic equation. But may not have real roots in some cases.
-			
-			Section~\ref{sec:exp-threshold} compares some estimations for optimal threshold under a real world circumstance. It shows the difference among calculators and the scenario that equation~\ref{equ:linear-balanced} outperforms others.
+			Where $\alpha$ is the anomaly probability. Equation(\ref{equ:linear-balanced}) is much more complicated. But it can be reduced to a quadratic equation.
+			Section~\ref{sec:exp-threshold} compares some estimations for optimal threshold under a real world circumstance. It shows the difference among calculators and that equation(\ref{equ:linear-balanced}) outperforms others when $PDF_n(x)$ and $PDF_a(x)$ are actually gaussian.
 	
 		\subsection{Dynamic DCAD}\label{sec:alg-dynamic}
-			In Algorithm~\ref{alg:static}, there is a hidden assumption that it regards every data collection to be sampled from a static population. That is to say the seller will never change his or her products and customer volume always remain the same. In most cases, real world data is always in the process of evolution and fluctuation. Online shops are often in the process of expanding or dwindling. Thus the sales distribution will slightly change as time goes on. Therefore, the algorithms should automatically adapt to the trend at any time. To meet the need, a sliding window technique has been applied to the basic algorithm frame work. Considering discussion in section~\ref{sec:alg-histogram} and~\ref{sec:alg-threshold}, a dynamic version is proposed as follow:
+			In Algorithm~\ref{alg:static}, there is a hidden assumption that it regards every data collection to be sampled from a static environment. That is to say the seller will never change his or her products and customer volumes always remain the same. In most cases, real world data is always in the process of evolution and fluctuation. Online shops are often in the process of expanding or dwindling. Thus the sales distribution will slightly change as time goes on. Therefore, the algorithms should automatically adapt to the trend at any time. To meet the need, a sliding window technique has been applied to the basic algorithm frame work. And considering discussion in section~\ref{sec:alg-histogram} and~\ref{sec:alg-threshold}, a dynamic version is proposed in Algorithm~\ref{alg:dynamic}.
 	
-			\begin{algorithm}[!ht]
-				\caption{Dynamic DAD}
+			\begin{algorithm}[!t]
+				\caption{Dynamic Classification}
 				\label{alg:dynamic}
 				\begin{algorithmic}[1]
 					\Require Normal evidence set $\mathbb{E}_N = \{D_{N_1}, \dots, D_{N_n}\}$ by given order; Anomalous evidence set $\mathbb{E}_A = \{D_{A_1}, \dots, D_{A_m}\}$ by given order; New data collection $D'$; Estimated anomalous probability $\alpha$
@@ -344,16 +343,16 @@
 					\State $(\mu_A, \sigma_A) \gets$ estimated from $\{J_{A_1}, \dots, J_{A_m}\}$\label{line:gaussian-2}
 					\State $T \gets$ proper threshold derived from $(\mu_N, \sigma_N)$, $(\mu_A, \sigma_A)$ and $\alpha$
 					\If{$J' < T$}
-					\State $E_N \gets E_N \backslash \{D_{N_0}\} \cup \{D'\}$\label{line:update-normal-evidence}
+					\State $\mathbb{E}_N \gets \mathbb{E}_N \backslash \{D_{N_0}\} \cup \{D'\}$\label{line:update-normal-evidence}
 					\State \textbf{Return} False
 					\Else
-					\State $E_A \gets E_A \backslash \{D_{A_0}\} \cup \{D'\}$\label{line:update-anomalous-evidence}
+					\State $\mathbb{E}_A \gets \mathbb{E}_A \backslash \{D_{A_0}\} \cup \{D'\}$\label{line:update-anomalous-evidence}
 					\State \textbf{Return} True
 					\EndIf
 				\end{algorithmic}
 			\end{algorithm}
 	
-			Algorithm~\ref{alg:dynamic} uses $\mathbb{E}_N$ and $\mathbb{E}_A$ as two sliding windows, keeping up with latest trend of both normal and anomalous features. Thus, the two window sizes $n$ and $m$ cannot be too large. Otherwise the evolving features will be flattened and aligned to the older ones. For the sake of estimation accuracy, they cannot be too small either. The size should refer to ratio of both data updates and feature evolution.
+			Algorithm~\ref{alg:dynamic} uses $\mathbb{E}_N$ and $\mathbb{E}_A$ as two sliding windows, keeping up with latest trend of both normal and anomalous features. Thus, the two window sizes $n$ and $m$ cannot be too large. Otherwise the evolving features will be flattened and aligned to the older version. For the sake of estimation accuracy, they cannot be too small either. The size should refer to ratio of both data updates and feature evolution.
 			
 			Note that line~\ref{line:hist-1} and~\ref{line:hist-2} can be replaced by other estimation methods if better assumptions can be made. Line~\ref{line:gaussian-1} and~\ref{line:gaussian-2} can be replaced by other models for more accuracy. Line~\ref{line:update-normal-evidence} and~\ref{line:update-anomalous-evidence} update the evidence sets, replacing the most outdated one, moving the sliding window forward one step ahead. Moreover, $\alpha$ can also be updated according to a history sequence of return values, if necessary.
 	
@@ -362,7 +361,7 @@
 	
 		\begin{enumerate}
 			\item How to emulate different types of click farming?
-			\item Is the analysis in section~\ref{sec:related-realworld} and~\ref{sec:algorithm-details} applicable and accurate in real world data sets.
+			\item Is the analysis in section~\ref{sec:related-realworld} and~\ref{sec:alg-basic} applicable and accurate in real world data sets.
 			\item Is the technique efficient against click farming? And How sensitive will the classifier be confronting different magnitude of click farming?
 			\item What is the performance of different adaptive thresholds?
 		\end{enumerate}
@@ -374,7 +373,7 @@
 	
 			\begin{table}[!ht]
 				\centering
-				\caption{User Payment Record Exmaple}
+				\caption{User Payment Record Examples}
 				\label{tab:user-payment-sample}
 				\begin{tabular}{|c|c|c|}
 					\hline
@@ -393,39 +392,39 @@
 	
 			We randomly chose one seller(ID: 1629) and extracted transaction history of this seller, records ranging from Nov. 11th 2015 to Oct. 31st 2016. Entire transaction set was then divided into 325 collections, each containing records in one day. There are some days with no records because the online shop temporarily closed in those days.
 	
-			\begin{figure}[!ht]
+			\begin{figure}[!t]
 				\centering
 				\includegraphics[width=0.75\linewidth]{fig/DailyTransactionVolume.png}
-				\caption{Changing of the daily sales volume shows that some features of online sales has been changing all the time. Business transactions shall be checked with the dynamic algorithm.}
+				\caption{Changing of the daily sales volume shows that environment of online sales has been changing all the time. Business transactions shall be checked with the dynamic algorithm.}
 				\label{fig:daily-transaction-volume}
 			\end{figure}
 	
-			\begin{figure}[ht]
+			\begin{figure}[!t]
 				\centering
-				\includegraphics[width=\linewidth]{fig/SaleDistributionSamples.png}
+				\includegraphics[width=\linewidth]{fig/SaleDistributions.png}
 				\caption{We selected 3 days randomly and drew sales distribution by counting hourly volume. Although sales volume has changed from day to day, the shape of the distribution remain almost alike.}
 				\label{fig:sale-distribution-sample}
 			\end{figure}
 	
 			Fig.~\ref{fig:daily-transaction-volume} shows the daily transaction volume of the seller. It sees a trend of daily sale which is slightly moving as the time goes. And the daily selling distributions, as is shown in Fig.~\ref{fig:sale-distribution-sample}, display a roughly similar shape.
 			
-			Click farmed data was generated according to patterns described in section~\ref{sec:related-realworld}. We adopted two prevalent types of click farming: \textit{Centralized Click Farming} and \textit{Equalized Click Farming}. Centralized click farming emulates the scenarios that a group of people are called out and assigned tasks by a casual leader that does not care much about the click farm timing. A significant feature of this approach is that the cheating transactions usually assemble together in a short period of time. Equalized click farming emulates the circumstances that click farms are arranged by some well programmed applications or teams carefully managed and strictly commit transactions according to a timetable. Thus the transaction distribution may not vary too much with and without click farming. According to investigations\textbf{[ref here?]}, the magnitude of click farm varies and depends on the payment the seller can afford. But usually, the click farmed transactions are several times more than the transaction volume it should have. In our experiments, we use $\nu$ to denote the magnitude coefficient of click farm, then $|D_{anomalous}| = (1 + \nu)|D_{normal}|$. In the following experiments without extra illustration, we adopt $\nu = 1$.
+			Click farmed data was generated according to patterns described in section~\ref{sec:related-realworld}. We adopted two prevalent types of click farming: \textit{centralized click farming} and \textit{equalized click farming}. Centralized click farming emulates the scenarios that a group of people are called out and assigned tasks by a casual leader that does not care much about the click farm timing. A significant feature of this approach is that the cheating transactions usually assemble together in a short period of time. Equalized click farming emulates the circumstances that click farms are arranged by some well programmed applications or teams carefully managed and strictly commit transactions according to a timetable. Thus the transaction distribution may not vary too much with and without click farming. Usually, the click farmed transactions are several times more than the volume it original has, if the seller hires a group of organized workers. In our experiments, we use $\nu$ to denote the magnitude coefficient of click farming. Hence $|D_{anomalous}| = (1 + \nu)|D_{normal}|$. In the following experiments without extra illustration, we adopt $\nu = 1$.
 	
-			To emulate centralized click farming, we randomly inserted some gaussian-distributed transactions in a chosen collection, where the total number of new records is the same of the original volume. As for emulating the equalized click farmers, we simply doubled each record in the chosen collection to make the new distribution exactly the same as the original one, which is harder for the online platform to discover.
+			To emulate centralized click farming, we randomly inserted some gaussian-distributed transactions in the chosen collection. As for emulating the equalized click farmers, we simply doubled each record in the chosen collection to make the new distribution exactly the same as the original one, which is harder for the online platform to discover.
 			
-			To play the role of purchasing platform, we surveillance two levels of transaction distribution. The first level is simply drawing a histogram aligned to time spans. The second level is to draw a histogram on the sub-volumes of each time span. For example, shown in Fig.~\ref{fig:histogram-example}, the first level histogram can be drawn by counting the number of hourly sales. The frequencies of each bucket in 1st level histogram is: $\mathbb{F}=$\{0, 0, 0, 0, 0, 0, 0, 1, 13, 30, 37, 68, 60, 66, 72, 94, 75, 113, 127, 182, 165, 61, 0, 0\}. Then, counting $\mathbb{F}$ with a step size 20 gives the 2nd level histogram.
+			To play the role of purchasing platform, we surveillance two levels of transaction distribution. The first level is simply drawing a histogram aligned to time spans. The second level is to draw a histogram on the sub-volumes in each time span. For example, as shown in Fig.~\ref{fig:histogram-example}, the first level histogram can be drawn by counting the number of hourly sales. The frequencies of each bucket in 1st level histogram is: $\mathbb{F}=$\{0, 0, 0, 0, 0, 0, 0, 1, 13, 30, 37, 68, 60, 66, 72, 94, 75, 113, 127, 182, 165, 61, 0, 0\}. Then, counting $\mathbb{F}$ with a step size 20 gives the 2nd level histogram.
 	
-			\begin{figure}[!ht]
+			\begin{figure}[!t]
 				\centering
 				\includegraphics[width=\linewidth]{fig/HistogramExample.png}
 				\caption{Example of 1st and 2nd Level Histogram}
 				\label{fig:histogram-example}
 			\end{figure}
 	
-			In order to test the performance of Algorithm~\ref{alg:dynamic}, every single collection was fed into the algorithm by the time order. Each collection input has a probability of $\alpha$ to be anomalous, namely, click farmed. The algorithm checks each collection with 1st or 2nd level histogram and give an answer of true or false. Several metrics were explored in the following experiments.
+			In order to test the performance of Algorithm~\ref{alg:dynamic}, every single collection was fed into the algorithm by the time order. Each input collection has a probability of $\alpha$ to be anomalous, namely, click farmed. The algorithm checks each collection with 1st or 2nd level histogram and give an answer of true or false. Several metrics were explored in the following experiments.
 			
-		\subsection{Experiment on Raw Data}\label{sec:exp-raw}
-			We first tested Algorithm~\ref{alg:dynamic} on raw data set in order to see whether and why the algorithm works. Due to desensitization process, time stamps in raw data set only tell which hour the transaction was committed. Thus, the histogram was drawn by counting hourly volume of each collection. For $\alpha = 0.2$, we select first 30 days as the evidence set of normal collections; day 21st to 30th were also emulated to be click farmed, composing the evidence set of anomalous collections. Equation(9) was employed as the threshold calculator. The results are shown in Table~\ref{tab:result-raw-1st}, where \textit{true positive rate}, \textit{false positive rate} and \textit{accuracy} were recorded.
+		\subsection{Experiments on Raw Data}\label{sec:exp-raw}
+			We first tested Algorithm~\ref{alg:dynamic} on raw data set in order to see whether and why the algorithm works. Due to desensitization process, time stamps in raw data set only tell which hour each transaction was committed. Thus, the histogram was drawn by counting hourly volume of each collection. For $\alpha = 0.2$, we selected first 30 days as the evidence set of normal collections; day 21st to 30th were also emulated to be click farmed, composing the evidence set of anomalous collections. Equation(5) in Table~\ref{tab:threshold-comparison} was employed as the threshold calculator. The results are shown in Table~\ref{tab:result-raw-1st}, where \textit{true positive rate}(TPR), \textit{false positive rate}(FPR) and \textit{accuracy}(ACC) were recorded.
 	
 			\begin{table}[!ht]
 				\centering
@@ -435,30 +434,30 @@
 					\hline
 					& \multicolumn{3}{c|}{Centralized} & \multicolumn{3}{c|}{Equalized}\\
 					\hline
-					& TPR & FAR & ACC & TPR & FAR & ACC\\
+					Level & TPR & FPR & ACC & TPR & FPR & ACC\\
 					\hline
-					1st Level & 100 & 4.05 & 96.72 & 26.64 & 28.03 & 62.49\\
+					1st & 100.00 & 4.05 & 96.72 & 26.64 & 28.03 & 62.49\\
 					\hline
-					2nd Level & 88.01 & 7.68 & 91.41 & 83.89 & 15.78 & 84.07\\
+					2nd & 88.01 & 7.68 & 91.41 & 83.89 & 15.78 & 84.07\\
 					\hline
 				\end{tabular}
 			\end{table}
 			
-			\begin{figure}[!ht]
+			\begin{figure}[!t]
 				\centering
 				\includegraphics[width=\linewidth]{fig/Raw1stLevelHist.png}
 				\caption{1st level histogram of day 5, 113 and 287, each day in a column. Distributions after centralized and equalized click farming are in 1st and 3rd row correspondingly. And the original distributions are shown in 2nd row.}
 				\label{fig:raw-hist-1st}
 			\end{figure}
 			
-			\begin{figure}[!ht]
+			\begin{figure}[!t]
 				\centering
 				\includegraphics[width=\linewidth]{fig/Raw2ndLevelHist}
 				\caption{2nd level histogram of day 5, 113 and 287, each day in a column. Distribution after centralized click farming in day 287 uses another time scale since it deviates a lot from others.}
 				\label{fig:raw-hist-2nd}
 			\end{figure}
 	
-			\begin{figure}[!ht]
+			\begin{figure}[!t]
 				\centering
 				\includegraphics[width=\linewidth]{fig/RawOverview1st.png}
 				(a)
@@ -469,22 +468,22 @@
 			\end{figure}
 	
 			When classifying toward 1st level histograms, centralized click farming behaviours can be easily discovered. As displayed in the left two columns in Fig.~\ref{fig:raw-hist-1st}, normal collections share a similar distribution while centralized click farmed ones abruptly violates the original shape. However, as a clever click farmer, equalized click farming did not in the least distorted the distribution. Most of them escaped the security check under the perfect disguise.
-			But when it comes to 2nd level histogram, the ``clever disguise'' does not work any longer. It can be clearly seen in Fig.~\ref{fig:raw-hist-2nd} that both types of click farming shows an obvious difference from the normal ones, while the normal ones still share a similar distribution.
+			But when it comes to 2nd level histograms, the ``clever disguise'' does not work any longer. It can be clearly seen in Fig.~\ref{fig:raw-hist-2nd} that both types of click farming shows an obvious difference from the normal ones, while the normal ones still share a similar distribution.
 			From the overview in Fig.~\ref{fig:raw-overview}, the difference between normal and anomalous collections can be observed more intuitively.
 	
 		\subsection{Experiment on Synthetic Data}\label{sec:exp-synthetic}
-			As is put in the former section, every single record in the transaction set only gives a time stamp aligned at hours. Part of the information was erased with the absence of minutes and seconds. In the following experiments, Every time stamp was assigned a random value for minutes and seconds. Therefore, the synthetic data set should be closer to the real world case. Moreover, the step size in the histograms can now be calculated more precisely. In the 1st level histogram, the constant $c$ in equation(\ref{equ:step-size}) was set to 0.5 since the PDF of daily distribution was approximately a linear function. And in the 2nd level histogram, sub-volumes of every 300 seconds were counted, producing more data points in the 2nd level data collections. Then, constant $c$ in equation(\ref{equ:step-size}) was also set to 0.5 given that the 2nd level histogram was also approximately a linear function.
-			We tested algorithm performance for $\alpha \in \{0.1, 0.3, 0.5, 0.7, 0.9\}$, with $E_N$ and $E_A$ the same configuration as before. Results were shown in Table~\ref{tab:syn-result-1st} and~\ref{tab:syn-result-2nd}.
+			As is put in the former section, every single record in transaction collections gives only a time stamp aligned at hours. Part of the information was erased with the absence of minutes and seconds. In the following experiments, every time stamp was assigned a random value for minutes and seconds. Therefore, the synthetic data set should be closer to the real world case. Moreover, the step size in the histograms can now be calculated more precisely. In the 1st level histogram, the constant $c$ in equation(\ref{equ:step-size}) was set to 0.5 since the PDF of daily distribution was approximately a linear function. And in the 2nd level histogram, sub-volumes of every 300 seconds were counted, producing more data points in the 2nd level data collections. Then, constant $c$ in equation(\ref{equ:step-size}) was also set to 0.5 given that the 2nd level histogram was also approximately a linear function.
+			We tested algorithm performance for $\alpha \in \{0.1, 0.3, 0.5, 0.7, 0.9\}$, with $\mathbb{E}_N$ and $\mathbb{E}_A$ the same configuration as before. Results are shown in Table~\ref{tab:syn-result-1st} and~\ref{tab:syn-result-2nd}.
 			
 			\begin{table}[!ht]
 				\centering
-				\caption{1st Level}
+				\caption{Classification on 1st Level Histogram}
 				\label{tab:syn-result-1st}
 				\begin{tabular}{|c|c|c|c|c|c|c|}
 					\hline
 					& \multicolumn{3}{c|}{Centralized} & \multicolumn{3}{c|}{Equalized}\\
 					\hline
-					$\alpha$ & TPR(\%) & FPR(\%) & ACC(\%) & TPR(\%) & FPR(\%) & ACC(\%) \\ 
+					$\alpha$ & TPR & FPR & ACC & TPR & FPR & ACC \\ 
 					\hline
 					0.1 & 86.10 & 1.14 & 97.40 & 5.75 & 12.28 & 79.66 \\ 
 					\hline
@@ -509,13 +508,13 @@
 			
 			\begin{table}[!ht]
 				\centering
-				\caption{2nd Level}
+				\caption{Classification on 2nd Level Histogram}
 				\label{tab:syn-result-2nd}
 				\begin{tabular}{|c|c|c|c|c|c|c|}
 					\hline
 					& \multicolumn{3}{c|}{Centralized} & \multicolumn{3}{c|}{Equalized}\\
 					\hline
-					$\alpha$ & TPR(\%) & FPR(\%) & ACC(\%) & TPR(\%) & FPR(\%) & ACC(\%) \\ 
+					$\alpha$ & TPR & FPR & ACC & TPR & FPR & ACC \\ 
 					\hline
 					0.1 & 75.60 & 3.90 & 93.74 & 97.84 & 1.64 & 98..31 \\ 
 					\hline
@@ -538,34 +537,28 @@
 				\end{tabular} 
 			\end{table}
 			
-			The result shows that the algorithm can efficiently distinguish the normal and anomalous data collections. No matter how much proportion of data is anomalous, the algorithm always gives a high accuracy. That is because the adaptive threshold was designed to minimize the number of total errors, which was irrelevant to TPR or FPR. When $\alpha$ was increasing, there were less data collections added into $\mathbb{E}_N$. Thus the update of $\mathbb{E}_N$ became slower and FPR went higher. On the contrary, TPR became higher as $\alpha$ increased. Moreover, since $|\mathbb{E}_N| > |\mathbb{E}_A|$, it needs more collection instances for $|\mathbb{E}_N|$ then that for $|\mathbb{E}_A|$ to keep up to the trend. Therefore, it was faster of FPR to increase than TPR to increase. As a result of that, there were more false alarms emerged and ACC went lower, as $\alpha$ increased from 0.1 to 0.5. After that, however, although FPR was still increasing, total number of normal instances decreased dramatically and those false alarms contributed less to total errors. Therefore, ACC rose up again.
+			The result shows that the algorithm can efficiently distinguish the normal and anomalous data collections. No matter how much proportion in them is anomalous, the algorithm always gives a high accuracy. That is because the adaptive threshold was designed to minimize the number of total errors, which was not relevant directly to TPR or FPR. When $\alpha$ was increasing, there were less data collections added into $\mathbb{E}_N$. Thus the update of $\mathbb{E}_N$ became slower and FPR went higher. On the contrary, TPR became higher as $\alpha$ increased. Moreover, since $|\mathbb{E}_N| > |\mathbb{E}_A|$, it needs more collection instances for $|\mathbb{E}_N|$ then that for $|\mathbb{E}_A|$ to keep up to the trend. Therefore, it was faster of FPR to increase than that of TPR. As a result of that, there were more false alarms emerged and ACC went lower, as $\alpha$ increased from 0.1 to 0.5. After that, however, although FPR was still increasing, total number of normal instances decreased dramatically and those false alarms contributed less to total errors. Therefore, ACC rose up again.
 	
-			\begin{figure}[!ht]
+			\begin{figure}[!t]
 				\centering
 				\includegraphics[width=\linewidth]{fig/ROC-Alpha.png}
 				\caption{ROC curve of 1st and 2nd level classifier given different values of $\alpha$. The performance of the classifier does not change much for different error rates.}
 				\label{fig:roc-alpha}
 			\end{figure}
 	
-			Fig.~\ref{fig:roc-alpha} shows the ROC curve($\nu=1.0$) of the gaussian classifier dealing with centralized click farming with 1st level histograms and equalized manipulation with 2nd level histograms. The curves are pretty close to the upper left corner of the diagram and size under the curves are very large. For different $\alpha$'s, the classifier can efficiently distinguish normal and anomalous data collections.
+			Fig.~\ref{fig:roc-alpha} shows the ROC curve of the gaussian classifier dealing with centralized click farming with 1st level histograms and equalized click farming with 2nd level histograms. The curves are pretty close to the upper left corner of the diagram and size under the curves are very large. For different $\alpha$'s, the classifier can efficiently distinguish normal and anomalous data collections.
 			
-			\begin{figure}[!ht]
+			\begin{figure}[!t]
 				\centering
 				\includegraphics[width=\linewidth]{fig/ROC-Nu.png}
 				\caption{ROC curve of different magnitude of click farming. In real world scenarios, $\nu$ is normally larger than 1.}
 				\label{fig:roc-magnitude}
 			\end{figure}
 	
-			In Fig.~\ref{fig:roc-magnitude}, we tested the classifier with different magnitude of centralised click farming. In former experiments, the manipulation of centralized click farming always creates as many new transaction records as the original ones. Let $\nu$ denote the magnitude coefficient, then $|D_{anomalous}| = (1 + \nu) |D_{normal}|$. If $\nu $ is smaller, then it will be harder for the classifier to identify anomalous data collections since the anomalous distribution will be closer to normal ones. It can be concluded from the figure that the 1st level classifier can be efficient even when $\nu = 0.3$. However the 2nd level classifier is less sensitive when $\nu = 0.5$. That is because the 1st level histogram provides more probability entries than 2nd level histograms. Data collections are compressed from 1st to 2nd level. But for real world click farming behaviours(usually, $\nu > 1$) both classifiers can be efficient enough.
+			In Fig.~\ref{fig:roc-magnitude}, we tested the classifier with different magnitude of centralised click farming. In former experiments, $\nu = 1$. If $\nu $ is smaller, then it will be harder for the classifier to identify anomalous data collections since the anomalous distribution will be closer to normal ones. It can be concluded from the figure that the 1st level classifier can be efficient even when $\nu = 0.3$. However the 2nd level classifier is less sensitive. That is because the 1st level histogram provides more probability entries than 2nd level histograms do. Data collections are compressed from 1st to 2nd level. But for real world click farming behaviours(usually, $\nu > 1$) both classifiers can be efficient enough.
 	
 		\subsection{Threshold Optimization}\label{sec:exp-threshold}
-			Section~\ref{sec:alg-threshold} mentions only two equations for calculating adaptive thresholds. Table~\ref{tab:threshold-comparison} gives the comparison of more equations out of similar considerations. From the aspect of weighted average(i.e. equation(1)) and taken $\alpha$ into consideration, we composes several other formulas with different operation on $\alpha$ and $\sigma$, yielding other possible balanced points within the interval $[\mu_N, \mu_A]$.
-			
-			We tested those calculators on synthetic data set with $\alpha = 0.1, \nu = 1$. Testing each level of classifier and each type of anomalies, we got 4 F1 scores and added them up. Equation 5 gives best performance. Then those equations were tested on large amount of gaussian distributed data instances. 90K and 10K data points were sampled from 500 pairs of random gaussian distributions which represent normal and anomalous distributions respectively, yielding 500 F1 scores for each equation. We compared the average score and discovered that equation 13 gives the best result.
-	
-			Equation 13 gives best classification result for two gaussian distributions but does not outperform others in real world data. Part of the reasons are mentioned in section~\ref{sec:alg-threshold}. Another reason is that the size of evidence sets are too small, that the gaussian distribution may not be well approximated.
-	
-			\begin{table*}[!t]
+			\begin{table*}[h]
 				\centering
 				\caption{F1 Scores of Different Threshold Calculators}
 				\label{tab:threshold-comparison}
@@ -573,50 +566,57 @@
 					\hline
 					& Equation & Synthetic & Gaussian \\ 
 					\hline
-					1 & $\displaystyle T = \frac{\sigma_B \mu_A + \sigma_A \mu_B}{\sigma_B + \sigma_A}$& 1.0588 & 0.5810 \\ 
+					1 & $\displaystyle T = \frac{\mu_n \sigma_a + \mu_a \sigma_n}{\sigma_a + \sigma_n}$& 1.0588 & 0.5810 \\ 
 					\hline
-					2 & $\displaystyle T = \frac{\sigma_B (1 - \alpha) \mu_A + \sigma_A \alpha \mu_B}{\sigma_B (1 - \alpha) + \sigma_A \alpha}$& 0.7688 & 0.3515 \\ 
+					2 & $\displaystyle T = \frac{\mu_n \sigma_a (1 - \alpha) + \mu_a \sigma_n \alpha}{\sigma_a (1 - \alpha) + \sigma_n \alpha}$& 0.7688 & 0.3515 \\ 
 					\hline
-					3 & $\displaystyle T = \frac{(\sigma_B \sqrt{1 - \alpha}) \mu_A + (\sigma_A \sqrt{\alpha}) \mu_B}{\sigma_B \sqrt{1 - \alpha} + \sigma_A \sqrt{\alpha}}$& 0.8158 & 0.4510 \\ 
+					3 & $\displaystyle T = \frac{\mu_n \sigma_a \sqrt{1 - \alpha} + \mu_a \sigma_n \sqrt{\alpha}}{\sigma_a \sqrt{1 - \alpha} + \sigma_n \sqrt{\alpha}}$& 0.8158 & 0.4510 \\ 
 					\hline
 					4 & $\displaystyle 
-					T = \frac{\big[\sigma_B ln(1 - \alpha)\big] \mu_A
-						+ \big[\sigma_A ln\alpha\big] \mu_B}
-					{\sigma_B ln(1 - \alpha) + \sigma_A ln\alpha}
+					T = \frac{\mu_n \sigma_a ln(1 - \alpha)
+						+ \mu_a \sigma_n ln\alpha}
+					{\sigma_a ln(1 - \alpha) + \sigma_n ln\alpha}
 					$& 1.5227 & 0.5523 \\ 
 					\hline
 					5 & $\displaystyle 
-					T = \frac{\mu_A \sigma_B \sqrt{-ln(1 - \alpha)}
-						+ \mu_B \sigma_A \sqrt{-ln\alpha}}
-					{\sigma_B \sqrt{-ln(1 - \alpha)} + \sigma_A \sqrt{-ln\alpha}}
+					T = \frac{\mu_n \sigma_a \sqrt{-ln(1 - \alpha)}
+						+ \mu_a \sigma_n \sqrt{-ln\alpha}}
+					{\sigma_a \sqrt{-ln(1 - \alpha)} + \sigma_n \sqrt{-ln\alpha}}
 					$& \color{blue}\textbf{2.6013} & 0.5791 \\ 
 					\hline
 					6 & $\displaystyle 
-					T = \frac{\mu_A \sigma_B ln\sqrt{1 - \alpha}
-						+ \mu_B \sigma_A ln\sqrt{\alpha}}
-					{\sigma_B ln\sqrt{1 - \alpha} + \sigma_A ln\sqrt{\alpha}}
+					T = \frac{\mu_n \sigma_a ln\sqrt{1 - \alpha}
+						+ \mu_a \sigma_n ln\sqrt{\alpha}}
+					{\sigma_a ln\sqrt{1 - \alpha} + \sigma_n ln\sqrt{\alpha}}
 					$& 1.4155 & 0.5578 \\ 
 					\hline
 					7 & $\displaystyle 
-					T = \frac{\mu_A \sqrt{|ln\big[\sigma_B (1 - \alpha)\big]|}
-						+ \mu_B \sqrt{|ln(\sigma_A \alpha)|}}
-					{\sqrt{|ln\big[\sigma_B (1 - \alpha)\big]|} + \sqrt{|ln(\sigma_A \alpha)|}}
+					T = \frac{\mu_n \sqrt{|ln\big[\sigma_a (1 - \alpha)\big]|}
+						+ \mu_a \sqrt{|ln(\sigma_n \alpha)|}}
+					{\sqrt{|ln\big[\sigma_a (1 - \alpha)\big]|} + \sqrt{|ln(\sigma_n \alpha)|}}
 					$& 2.2730 & 0.5600 \\ 
 					\hline
 					8 & $\displaystyle 
-					T = \frac{\mu_A ln\sqrt{\sigma_B (1 - \alpha)}
-						+ \mu_B ln\sqrt{\sigma_A \alpha}}
-					{ln\sqrt{\sigma_B (1 - \alpha)} + ln\sqrt{\sigma_A \alpha}}
+					T = \frac{\mu_n ln\sqrt{\sigma_a (1 - \alpha)}
+						+ \mu_a ln\sqrt{\sigma_n \alpha}}
+					{ln\sqrt{\sigma_a (1 - \alpha)} + ln\sqrt{\sigma_n \alpha}}
 					$& 2.0753 & 0.2808 \\ 
 					%\hline
 					\hline
-					9 & $\displaystyle T = \mathop{\arg\min}_{\mu_A \le T \le \mu_B}\ \alpha \cdot \int_{-\infty}^{T}P_B(x)dx + (1 - \alpha) \cdot \int_{T}^{+\infty}P_A(x)dx$ & 1.9300 & \color{blue}\textbf{0.6072}\\
+					9 & $\displaystyle T = \mathop{\arg\min}_{\mu_n \le T \le \mu_a}\ \alpha \cdot \int_{0}^{T}PDF_a(x)dx + (1 - \alpha) \cdot \int_{T}^{log_k2}PDF_n(x)dx$ & 1.9300 & \color{blue}\textbf{0.6072}\\
 					\hline
 				\end{tabular} 
 			\end{table*}
 			
+			Section~\ref{sec:alg-threshold} mentions only two equations for calculating adaptive thresholds. Table~\ref{tab:threshold-comparison} gives the comparison of more equations out of similar considerations. From the aspect of weighted average(i.e. equation(1)) and taken $\alpha$ into consideration, we composes several other formulas with different operation on $\alpha$ and $\sigma$, yielding other possible balanced points within the interval $[\mu_N, \mu_A]$.
+			
+			We tested those calculators on synthetic data set with $\alpha = 0.1, \nu = 1$. Testing each level of classifier and each type of anomalies, we got 4 F1 scores and added them up. Equation 5 gives best performance. Then those equations were tested on large amount of gaussian distributed data instances. 90K and 10K data points were sampled from 500 pairs of random gaussian distributions which represent normal and anomalous distributions respectively, yielding 500 F1 scores for each equation. We compared the average score and discovered that equation 9 gives the best result.
+	
+			Equation 9 gives best classification result for two gaussian distributions but does not outperform others in real world data. Part of the reasons are mentioned in section~\ref{sec:alg-threshold}. Another reason is that the size of evidence sets are too small, that the gaussian distribution may not be well approximated.
+	
+			
 	\section{Conclusion \& Future Work}\label{sec:conclusion}
-		This paper proposed an dynamic collective anomaly detection algorithm with adaptive threshold, which helps detect data manipulations in modern data pipelines and data centres. Different from existing algorithms detecting collective anomalies, our approach employs statistical distance as the similarity measurement, mapping data collections to a restricted one dimensional space. We explored several technical points involved in the design of the algorithm and performed a thorough experiment to test its efficiency. It showed that the algorithm can efficiently discover anomalies within the data sequences and the classifier is sensitive enough toward real world data manipulations.
+		This paper proposed an dynamic collective anomaly detection technique with adaptive threshold, which helps detect data manipulations in modern data pipelines and data centres. Different from existing algorithms designed for collective anomalies, our approach employs statistical distance as the similarity measurement, mapping data collections to a restricted one dimensional space. We explored several technical points involved in the design of the algorithm and performed a thorough experiment to test its efficiency. It showed that the algorithm can efficiently discover anomalies within the data collections and the classifier is sensitive enough toward real world data manipulations.
 		
 		However, the modelling of the JSD distributions is not precise enough. The efficiency of different adaptive thresholds should be tested on different real world circumstances to get a more complete view of their performances. Moreover, a comparison with other collective detection algorithm should be adopted in the future to get an performance overview of similar algorithms. Since the algorithm adapts to the slowly evolving feature, when attacks disguise itself in the long run as if it was one of the changing features, the technique may fail to detect. In this case, other techniques may be applied as assistances.
 		
