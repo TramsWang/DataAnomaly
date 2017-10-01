@@ -2,7 +2,7 @@ import csv
 import itertools
 import os
 
-dir = "Equalized"
+dir = "Centralized(1.5)"
 
 if not os.path.exists(os.path.abspath(dir)):
     os.makedirs(os.path.abspath(dir))

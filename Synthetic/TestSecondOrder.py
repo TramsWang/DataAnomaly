@@ -29,7 +29,7 @@ def linearBalancedThreshold(ua, sa, ub, sb, alpha):
         return sol2
 
 input_dir = "Correct"
-input_dir_err = "Centralized(1.5)"
+input_dir_err = "Centralized"
 
 error_rate = 0.5
 #sigma_coefficient = 3  # Don't think about this now

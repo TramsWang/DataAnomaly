@@ -16,18 +16,17 @@
 \usepackage{color}
 \usepackage{flushend}
 %
-\title{Dynamic Anomaly Detection for Collective Data via Statistical Distance}
+\title{Statistical Detection of Collective Data Anomalies}
 %
 \author{%
 	% author names are typeset in 11pt, which is the default size in the author block
-	{Ruoyu Wang{\small $~^{\#1}$}, Daniel Sun{\small $~^{*2}$}, Guoqiang Li{\small $~^{\#3}$} }%
+	{Ruoyu Wang{\small$^{1}$}, Daniel Sun{\small$^{2}$}, Guoqiang Li{\small$^{1*}$} }%
 	% add some space between author names and affils
 	\vspace{1.6mm}\\
 	\fontsize{10}{10}\selectfont\itshape
 	% 20080211 CAUSAL PRODUCTIONS
 	% separate superscript on following line from affiliation using narrow space
-	$^{\#}$\,School of Software, Shanghai Jiao Tong University\\
-	Shanghai, 200240, China\\
+	$^{1}$\,School of Software, Shanghai Jiao Tong University, China\\
 	\fontsize{9}{9}\selectfont\ttfamily\upshape
 	%
 	% 20080211 CAUSAL PRODUCTIONS
@@ -37,14 +36,13 @@
 	% addresses, and make them 'hot'.  Without a narrow space, the superscript is included
 	% in the email address and corrupts it.
 	% Also, removed ~ from pre-superscript since it does not seem to serve any purpose
-	$^{1}$\,trams.wang.ruoyu@gmail.com\\
-	$^{3}$\,li.g@sjtu.edu.cn%
+	\{solftwarewry,li.g\}@sjtu.edu.cn
 	% add some space between email and affil
 	\vspace{1.2mm}\\
 	\fontsize{10}{10}\selectfont\rmfamily\itshape
 	% 20080211 CAUSAL PRODUCTIONS
 	% separated superscript on following line from affiliation using narrow space \,
-	$^{*}$\,Data61, Commonwealth Scientific and Industrial Research Organization, Australia\\
+	\,Data61, CSIRO, Australia\\
 	\fontsize{9}{9}\selectfont\ttfamily\upshape
 	% 20080211 CAUSAL PRODUCTIONS
 	% removed ~ from pre-superscript since it does not seem to serve any purpose
@@ -58,16 +56,15 @@
 	\begin{abstract} 
 		Hackers can infiltrate networks and find their way into databases and software systems. Not only
 		can they steal chunks of data and hold them for ransom, but
-		also alter key information contained in those systems, setting up
+		also alter data contained in those systems, setting up
 		traps hard to discover and causing damages unlikely to recover.
-		Although altering single record may not oblige correct value scope such that it is hard to detect, the change, especially to a subset of data, can be observed and detected in a collective
-		scale. In this paper, we present a collective anomaly
+		Without referring to data source, it is hard to detect a single record that is alerted but still remain in correct value scopes. However, the change, especially to a subset of data, can be observed and detected in a collective scale. 
+		In this paper, we present a collective
 		detection technique based on statistical distance. The technique
 		extracts distribution similarities among data collections, and then uses the statistical distance to detect
 		collective anomalies. In order to adapt to data dynamics, our technique continuously evaluates 
-		metrics as evolving features. Aiming at broad generalisation, this
-		technique can replace several components of our solution to further improve the
-		performance of detection for various scenarios. To illustrate details of the technique
+		metrics as evolving features. To be general, our
+		technique is designed to be adaptive for various scenarios. To illustrate details of the technique
 		and explore its efficiency, we case-studied a real
 		world problem of click farming detection against malicious online
 		sellers. The evaluation shows that the technique maps normal
@@ -83,57 +80,53 @@
 % \end{keywords}
 %
 	\section{Introduction}
-		Major improvements in data acquisition, transmission and storage are driving increased data availability and affordability. Currently, there are totally 2.7ZB data in the digital universe~\cite{bigDataStatistics} and the growing speed is doubling every two years.
-		It has already been and will be much harder in the future to harness the exploding volumes of data which is now pervasive leading to many problems in data management and engineering, threatening trustworthiness and reliability of data flows inside working systems.
-		In 2016, according to the research by Tricentis~\cite{softwareFailure}, software failures cost \$1.1 trillion US dollars in total and those occurred at 363 investigated companies affected 4.4 billion customers, causing the total lost time of more than 315.5 years. And it takes more than 45\% of total expense to eliminate those errors~\cite{pawar2016software}. System configuration problems, as a matter of fact, are also responsible for the disturbing situation. They take even dominant places in failures in large distributed clusters~\cite{xu2015systems}.
-		
-		Data error rate in enterprises is approximately 1\% to 5\%, and for some, even above 30\%~\cite{saha2014data}. Those data anomalies may arise due to both internal and external reasons with respect to a certain system. On one hand, components inside the system may generate problematic source data. For example, in a sensor network, some sensors may generate erroneous data when it experiences power failure or other extreme conditions~\cite{rassam2014adaptive}. Data packages will be lost if sensor nodes fail to connect to network or some sensor hubs break down~\cite{herodotou2014scalable}. Also, human operators act as a heavily vulnerable part to bugs and mistakes. Malicious insiders even deliberately modify system configurations for fatal compromises~\cite{schuster2015vc3}. A study~\cite{humanError} found that 65\% of organizations state that human errors are the main  cause of data problems.
-		
+		Major improvements in data acquisition, transmission and storage are to increase data availability and affordability. Currently, there are totally 2.7ZB data in the digital universe~\cite{bigDataStatistics} and the growing speed is doubling every two years.
+		It has already been hard and will be much harder in the future to harness the exploding volume of data that has resulted in many problems in data management and engineering, threatening trustworthiness and reliability of data flows inside working systems.
+	Data error rate in enterprises is approximately 1\% to 5\%, and for some, even above 30\%~\cite{saha2014data}. Those data anomalies may arise due to both internal and external reasons. On one hand, components inside systems may generate problematic source data. For example, in a sensor network, some sensors may generate erroneous data when it experiences power failure or other extreme conditions~\cite{rassam2014adaptive}. Data packages will be lost if sensor nodes fail to connect to network or some sensor hubs break down~\cite{herodotou2014scalable}. Also, human operators act as a heavily vulnerable part to bugs and mistakes. Malicious insiders even deliberately modify system configurations for fatal compromises~\cite{schuster2015vc3}. A study shows that 65\% of organizations state that human errors are the main  cause of data problems~\cite{humanError} .
 		On the other hand, data manipulation~\cite{dataManipulation} from outside hackers composes another potential threat of data quality and reliability. \textit{Data Manipulation} here, according to a NSA definition, refers to that ``hackers can infiltrate networks via any attack vector, find their way into databases and applications and change information contained in those systems, rather than stealing data and holding it for ransom''.
-		If data inside the system is compromised, they will severely affect mining and learning algorithms and further change the final decision given by the entire system. In 2013, hackers from Syria put up fake reports via Associated Press' Twitter account and caused a 150-point drop in the Dow~\cite{SyriaHacker}.
+		If data is compromised, it will severely affect mining and learning algorithms and further change the final decision driven by the data. In 2013, hackers from Syria put up fake reports via Associated Press' Twitter account and caused a 150-point drop in the Dow~\cite{SyriaHacker}.
 		
-		However, from the aspect of data itself, we can still detect malicious data manipulation behaviours.
-		According to our observation, typical data manipulations on numerical data will lead to a drift or distortion of its original distribution. With the reshaping measurable, we can enclose data collections with similar distribution patterns inside the same cluster and filter out those strange shaped ones. In this paper, we adopt Jensen-Shannon divergence as the similarity measurement among different distributions. Comparing with a estimated ground truth, each data collection can be mapped into a single real number within a definite interval. Then a gaussian classifier can be applied to detect outliers derived from manipulated data. To automatically calculate adaptive threshold for the classifier, we keep two evidence sets for both normal points and anomalies, taking advantage of the property provided by Jensen-Shannon divergence. And those evidence sets are set to be slide windows to keep up to the evolving features in dynamic scenarios.
-		Details of the technique are put together with a real world problem of ``Click Farming'' and had been evaluated on both raw and synthetic data sets corresponding to the problem, demonstrating the correctness and effectiveness of the technique.
+It is hard to detect a single record that is alerted but still remain in correct value scopes, but if many data records are altered to change a final decision, we can still detect malicious data manipulation behaviours.
+		According to our observation, typical data manipulations on numerical data will lead to a drift or distortion of its original distribution. For measurable reshaping, we can enclose data collections with similar distribution patterns and filter out those strangely shaped ones. In this paper, we adopt Jensen-Shannon divergence as the similarity measurement among different distributions. Comparing with a estimated ground truth, each data collection can be mapped into a single real number within a definite interval. Then a gaussian classifier can be applied to detect outliers derived from manipulated data. \textcolor{red}{[This is not clear at all. Why sets == windows? Also the whole paragraph fails to tell a clear story especially what you did and why you did. Moreover, you need to outline your contributions explicitly] To automatically calculate adaptive threshold for the classifier, we keep two evidence sets for both normal points and anomalies, taking advantage of the property provided by Jensen-Shannon divergence. And those evidence sets are set to be slide windows to keep up to the evolving features in dynamic scenarios.}
+	The details of our technique are put together with a real world problem of ``Click Farming'' and had been evaluated on both raw and synthetic data sets corresponding to the problem, demonstrating the correctness and effectiveness of the technique.
 		
-		The rest of the paper is organised as follows: Section~\ref{sec:related-work} states related works on data anomaly detection and describes a real world problem. Section~\ref{sec:preliminaries} introduces statistical distance. Details of the technique are proposed in section~\ref{sec:algorithm-details}. Then section~\ref{sec:evaluation} presents evaluation results and further findings of the algorithm. Finally, all contents are concluded and discussed in section~\ref{sec:conclusion}.
+		The rest of the paper is organised as follows: Section~\ref{sec:related-work} states related work on data anomaly detection and describes a real world problem. Section~\ref{sec:preliminaries} introduces statistical distance. The details of the proposed technique are introduced in Section~\ref{sec:algorithm-details}. Then Section~\ref{sec:evaluation} presents evaluation results and further findings of the algorithm. Finally, the paper is concluded and discussed in Section~\ref{sec:conclusion}.
 		
 	\section{Related Work}\label{sec:related-work}
 		\subsection{Data Anomaly Detection}
-			Anomaly detection, also known as outlier detection, has been studied for a long time and discussed in diverse research domains, such as fraud detection, intrusion detection, system monitoring, fault detection and event detection in sensor networks. According to a comprehensive study in~\cite{chandola2009anomaly}, anomaly detection algorithms deal with input data in the form of points(or records), sequences, graphs and spatial relationships, where point data is the simplest and well studied, others are attracting more attention in new studies.
+			Anomaly detection, also known as outlier detection, has been studied for a long time and discussed in diverse research domains, such as fraud detection, intrusion detection, system monitoring, fault detection and event detection in sensor networks. According to a comprehensive study in~\cite{chandola2009anomaly}, anomaly detection algorithms deal with input data in the form of points (or records), sequences, graphs and spatial relationships, where point data is the simplest and well studied, and the others are attracting more attention in new studies.
 	
-			Prevalent anomalies can be classified into \textit{point anomalies}, \textit{contextual(or conditional) anomalies} and \textit{collective anomalies}. Point anomaly refers to an individual data instance that is considered anomalous with respect to others. But if it is anomalous only in certain circumstances or a specific context, the instance is regarded as contextual anomaly. If a group of related data instances(e.g. a segment of sequence) is anomalous with respect to other groups in the data set(e.g. the entire sequence), it is called a collective anomaly~\cite{goldberger2000components}.
+			Prevalent anomalies can be classified into \textit{point anomalies}, \textit{contextual (or conditional) anomalies} and \textit{collective anomalies}. Point anomaly refers to an individual data instance that is considered anomalous with respect to others. But if it is anomalous only in certain circumstances or a specific context, the instance is regarded as contextual anomaly. If a group of related data instances, e.g.a segment of sequence, is anomalous with respect to other groups in the data set (e.g. the entire sequence), it is called a collective anomaly~\cite{goldberger2000components}.
 			
-			Detection approaches can be categorized into three types according to whether data is labeled: \textit{Supervised}, \textit{Semi-Supervised} and \textit{Unsupervised} anomaly detection. As the name suggests, supervised detection methods train models on completely labeled data while unsupervised detection leverages data without any labeling. Semi-supervised detection approaches train model on data that has labeled instances for only the normal class. Supervised detection is commonly applied when both normal and anomalous data can be obtained.~\cite{fujimaki2005approach} When it comes to the circumstances that anomalous data is hard to obtain or there exist too many types of anomalies to enumerate, semi-supervised or unsupervised approaches are usually taken into consideration.
+			Detection approaches can be categorized into three types according to whether data is labeled: \textit{Supervised}, \textit{Semi-Supervised} and \textit{Unsupervised} anomaly detection. As the name suggests, supervised detection methods train models on completely labeled data, while unsupervised detection leverages data without any labeling. Semi-supervised detection approaches train model on data that has labeled instances for only the normal class. Supervised detection is commonly applied when both normal and anomalous data can be obtained~\cite{fujimaki2005approach}. When it comes to the circumstances that anomalous data is hard to obtain or there exist too many types of anomalies to enumerate, semi-supervised or unsupervised approaches are usually taken into consideration.
+			To make the final decision, detection algorithms mostly yield a score from each input instance, denoting how likely it is anomalous. An algorithm then selects top few as anomalies or compare the scores with a threshold, or outputs a label on each instance, and then decides whether each label belongs to the normal class.
+			Currently, distance based~\cite{cao2014scalable,cao2017multi} and feature evolving algorithms~\cite{masud2013classification,li2015discovery,shao2014prototype} catch most attention. Others adopted tree isolation~\cite{zhang2017lshiforest}, model based~\cite{yin2016model} and statistical methods~\cite{zhu2002statstream} in certain applications.
 	
-			To make the final decision, detection algorithms mostly yield a score from each input instance, denoting how likely it is anomalous. The algorithm then selects top few as anomalies or compare the score with a threshold. Or, detection algorithms output a label on each instance, then decide whether each label belongs to the normal class.
-			
-			Currently, distance based~\cite{cao2014scalable,cao2017multi} and feature evolving algorithms~\cite{masud2013classification,li2015discovery,shao2014prototype} algorithms seize most attention. Others adopted tree isolation~\cite{zhang2017lshiforest}, model based~\cite{yin2016model} and statistical methods~\cite{zhu2002statstream} in certain applications.
-	
-			To detect collective anomalies,~\cite{caudell1993adaptive} adopted the \textit{ART(Adoptive Resonance Theory)} neural networks to detect time-series anomalies. \textit{Box Modeling} is proposed in ~\cite{chan2005modeling}. And \textit{Longest Common Subsequence} was leveraged in ~\cite{budalakoti2006anomaly} as similarity metric for symbolic sequence. Markovian modeling techniques are also popular in this domain\cite{ye2000markov,warrender1999detecting,pavlov2003sequence}. \cite{yu2015glad} depicted groups in social media as combinations of different ``roles'' and compare groups according to the proportion of each role within each group.
+			To detect collective anomalies,~\cite{caudell1993adaptive} adopts the \textit{ART (Adoptive Resonance Theory)} neural networks to detect time-series anomalies. \textit{Box Modeling} is proposed in ~\cite{chan2005modeling}. \textit{Longest Common Subsequence} was leveraged in~\cite{budalakoti2006anomaly} as similarity metric for symbolic sequence. Markovian modeling techniques are also popular in this domain\cite{ye2000markov,warrender1999detecting,pavlov2003sequence}. \cite{yu2015glad} depicts groups in social media as combinations of different ``roles'' and compare groups according to the proportion of each role within each group.
 	
 		\subsection{Real World Problem: Click Farming Detection}\label{sec:related-realworld}
-			Since the establishment of Taobao in 2003, its online business platform has been growing from a follower in the market to the No.1 service provider in B2B and B2C markets, possessing a market share of 50.6\% to 56.2\% in China by 2016~\cite{iresearch2016b2c}. Currently, there are more than 9.4 million sellers in Taobao, providing more than 1 billion different products. Under the super-pressure caused by massive competitors, most of the sellers choose to use some cheating techniques to raise reputation and product sale volumes, then improve rankings in search lists.
+			Since the establishment of Taobao in 2003, its online business platform has been growing from a follower in the market to the No.1 service provider in B2B and B2C markets, possessing a market share of 50.6\% to 56.2\% in China by 2016~\cite{iresearch2016b2c}. Currently, there are more than 9.4 million sellers in Taobao, providing more than 1 billion different products. Under the super-pressure caused by massive competitors, a number of the sellers choose to use some cheating techniques to raise reputation and sale volumes, then improve rankings in search lists.
 			
 			The most popular approach to manipulate transaction and reputation data is \textit{Click Farming}, where sellers use a large number of dedicated customer accounts to create fake transaction records and give high remarks on products. Professional click farmers are usually well organized groups or companies containing thousands of people. Leaders of such groups receive orders from sellers and assign tasks to other members to create fake transactions. Some companies even develop professional applications that can be deployed on common PCs to improve productivity~\cite{zhao2016on}.
 	
-			A research performed in China showed that 81.9\% of the people investigated had heard of the behaviour of click farming, 51.2\% of them had seen people around them click farmed and 18.9\% of them had experience of click farming themselves~\cite{yan2015report}. American researchers reported in 2015 that over 11000 sellers were detected to have click farmed records and only 2.2\% of 4000 investigaed sellers had been penalized because of the cheating attempts~\cite{netease2015research}.
+			A research performed in China showed that 81.9\% of investigated people had heard of the behaviour of click farming, 51.2\% of them had seen \textcolor{red}{people around them click farmed ????}and 18.9\% of them had experience of click farming themselves~\cite{yan2015report}. American researchers reported in 2015 that over 11000 sellers were detected to have click farmed records and only 2.2\% of 4000 investigaed sellers had been penalized because of the cheating attempts~\cite{netease2015research}. \textcolor{red}{in which market?}
 			
 			Current detection techniques for click farming mainly focus on user behaviours, such as browsing frequencies and periods, most common purchasing time, favourite products, remarks and whether they communicate with sellers~\cite{simpleDetection}. Those techniques require the platform to keep lots of records and user features. However, the detection can be easily bypassed by trained workers and some well programmed applications.
-	
-			Although it is hard to classify users as honest and malicious, we can still find clues from the sellers' aspect. For normal sellers, their customers are usually similar since choices of products are seldom changed. Therefore, the distribution of transactions in a fixed period of time, say one day, is relatively stable. No matter how much alike between honest users and robots or the employed workers, the fake transaction records will always cause a bias or distortion of the original transaction distribution. To better observe the problem, we downloaded a real world data set containing Taobao online sellers' transaction records and emulated the circumstances if it had been click farmed(see section~\ref{sec:exp-methodology}). Fig.~\ref{fig:example-ecdf} shows the difference between normal and click farmed distributions of one day in the data set.
-			Thus, if we can measure the similarity between different transaction distributions, there is still a chance for us to detect dishonest sellers.
-	
-			\begin{figure}[!t]
+
+			\begin{figure}[ht]
 				\centering
 				\includegraphics[width=\linewidth]{fig/ExampleCDF.png}
 				\caption{Example Cumulative Distribution Function of Original And Click Farmed Daily Transaction Data}
 				\label{fig:example-ecdf}
 			\end{figure}
+
+			Although it is hard to classify users as honest and malicious, we can still find clues from the sellers' aspect. For normal sellers, their customers are usually similar since choices of products are seldom changed. Therefore, the distribution of transactions in a fixed period of time, say one day, is relatively stable. No matter how much alike between honest users and robots or the employed workers, the fake transaction records will always cause a bias or distortion of the original transaction distribution. To better observe the problem, we downloaded a real world data set containing Taobao online sellers' transaction records and emulated the circumstances if it had been click farmed (see section~\ref{sec:exp-methodology}). Fig.~\ref{fig:example-ecdf} shows the difference between normal and click farmed distributions of one day in the data set.
+			Thus, if we can measure the similarity between different transaction distributions, there is still a chance for us to detect dishonest sellers.
+	
 	
 	\section{Preliminaries}\label{sec:preliminaries}
 		Statistical divergence, also called statistical distance, measures the similarity between two or more distributions.
-		Mathematically, statistical divergence is a function which describes the ``distance'' of one probability distribution to the other on a statistical manifold. Let $\mathbb{S}$ be a space of probability distributions, then a divergence is a function from $\mathbb{S}$ to non-negative real numbers: 
+		Mathematically, statistical divergence is a function which describes the ``distance'' of one probability distribution to the other on a statistical manifold. Let $\mathbb{S}$ be a space of probability distributions, then a divergence is a function from $\mathbb{S}$ to non-negative real numbers\textcolor{red}{wrong! how about 0?}: 
 		\begin{equation}
 			D(\cdot || \cdot): \mathbb{S} \times \mathbb{S} \rightarrow \mathbb{R^+}
 		\end{equation}
@@ -184,24 +177,24 @@
 			\end{enumerate}
 	
 	\section{Statistical Detection}\label{sec:algorithm-details}
-		Diverse data sets in the real world show certain structures caused by hidden patterns or relationships among records in a collection of data. For example, the traffic volume in the highway and the business transaction records, they may show a relatively stable distribution in the daily scale. Manipulation on those data(e.g. Fig.~\ref{fig:example-ecdf}) results in a drift or distortion of the distribution, which can be captured to trigger the alarm. Main idea of the solution is simple. But there are several difficulties to be solved in the specific design and implementation of the technique:
+		Diverse data sets in the real world show certain structures caused by hidden patterns or relationships among records. For example, the traffic volume in the highway and the business transaction records, they may show a relatively stable distribution in the daily scale. Manipulation on those data (e.g. Fig.~\ref{fig:example-ecdf}) results in a drift or distortion of the distribution, which can be captured to trigger an alarm. There are some difficulties in the specific design and implementation of the technique:
 	
 		\begin{enumerate}
-			\item Are the corresponding one-dimensional points distinguishable after mapping form normal and anomalous distributions? And which classifier is efficient towards those points?
+			\item Are the corresponding one-dimensional points distinguishable after mapping betweem normal and anomalous distributions? And which classifier is efficient towards those points?
 			\item Is there a general approach that can effectively depict different distributions in various circumstances?
-			\item What classifier specific metric should be adopted to filter out anomalies? Can it be further optimized?
+			\item What classifier-specific metric should be adopted to filter out anomalies? Can it be further optimized?
 			\item Online shops are often in the process of expanding or dwindling. Thus the sales distribution will slightly change as time goes on. How to make the technique adapt to these drifting distributions?
 		\end{enumerate}
 	
 		These questions are addressed in the following subsections correspondingly.
-		\ref{sec:alg-basic} answers the first question and introduces a basic framework of our technique. The second question is studied in~\ref{sec:alg-histogram}. Then \ref{sec:alg-threshold} gives an analysis about adaptive metric that minimizes total error. And a dynamic framework is proposed in~\ref{sec:alg-dynamic}.
+		\ref{sec:alg-basic} answers the first question and introduces a basic framework of our technique. The second question is studied in~\ref{sec:alg-histogram}. Then \ref{sec:alg-threshold} gives an analysis about adaptive metric that minimizes total error. A dynamic framework is proposed in~\ref{sec:alg-dynamic}.
 	
 		\subsection{Divergence-Based Collective Anomaly Detection}\label{sec:alg-basic}
-			From section~\ref{sec:preliminaries} we know that statistical divergence only provides a distance between two or more distributions. In a set of data collections, we can only draw a complete graph where nodes denote data collections and edges refer to the divergence between two connected nodes. From the graph we can find some points that have apparently larger distances with most of other points and return them as anomalies. This may work if anomalous nodes do not compose a large proportion. However the procedure will be too complicated to work out with large amounts of data collections. 
+			From Section~\ref{sec:preliminaries} we know that statistical divergence only provides a distance between two or more distributions. In a set of data collections, we can only draw a complete graph where nodes denote data collections and edges refer to the divergence between two connected nodes. From the graph we can find some points that have apparently larger distances with most of other points and return them as anomalies. This may work if anomalous nodes do not compose a large proportion. However the procedure will be too complicated to work out with large amounts of data. 
 	
-			Otherwise we need a frame of reference that provides absolute coordinates rather than the relative ones. Therefore, we should keep an evidence set $\mathbb{E}$ which consists of several correct distributions that have already been given. Then the real distribution can be estimated by averaging all distributions in $\mathbb{E}$. This process is similar to the parameter estimation within a certain sample set. Let $M$ denote the estimated population distribution, then we can measure the statistical distance with respect to $M$ for every distribution $D$ inside and outside $\mathbb{E}$, yielding absolute distances. 
+			Alternatively we need a frame of reference that provides absolute coordinates rather than the relative ones. Therefore, we should keep an evidence set $\mathbb{E}$ which consists of several correct distributions that have already been given. Then the real distribution can be estimated by averaging all distributions in $\mathbb{E}$. This process is similar to the parameter estimation within a certain sample set. Let $M$ denote the estimated population distribution, then we can measure the statistical distance with respect to $M$ for every distribution $D$ inside and outside $\mathbb{E}$, yielding absolute distances. 
 			
-			Fig.~\ref{fig:raw-overview} in section~\ref{sec:exp-raw} demonstrates the result of the above process. Red dots refer to the distances calculated from normal data collections, blue and green ones are from click farmed data collections. Clearly, distances of normal data collections assembles together around a small value while anomalous ones lay around a larger distance value. Intuitively, a simple gaussian classifier can be suitable here to discover anomalous data points. The basic framework of the algorithm is shown in Algorithm~\ref{alg:static}.
+			Fig.~\ref{fig:raw-overview} in Section~\ref{sec:exp-raw} demonstrates the result of the above process. Red dots refer to the distances calculated from normal data collections, blue and green ones are from click-farmed data collections. Clearly, distances of normal data collections assembles together around a small value while anomalous ones lay around a larger distance value. Intuitively, a simple gaussian classifier can be suitable here to discover anomalous data points. The basic framework of the algorithm is shown in Algorithm~\ref{alg:static}.
 	
 			\begin{algorithm}[!t]
 				\caption{Basic Classification}
@@ -228,40 +221,40 @@
 				\end{algorithmic}
 			\end{algorithm}
 	
-			Let $\mathbb{S}$ be set of the daily transaction collections, if $\mathbb{E}$ is already given, we can run the algorithm with $\mathbb{E}$ and $\forall D \in \mathbb{S}$ and discover the anomalies. JSD here cannot be replaced by KLD since entries in $P'$ are not necessarily defined in $M$. Although it is convenient to compute $JSD(P_1, \dots, P_n, P')$ instead of $JSD(P_1||M), \dots, JSD(P_n||M), JSD(P'||M)$, it is not viable for classification. Jensen-Shannon divergence of $n+1$ distributions will dilute the affection of the abnormal one, in which case the difference between $P'$ being normal and anomalous will become subtle when $n$ goes very large. For example, suppose $P(1) = P(2) = P(3) = \frac{1}{3}$ and $P'(1) = \frac{1}{6}, P'(2) = \frac{1}{3}, P'(3) = \frac{1}{2}$, then $JSD(P||P') \approx 0.023$ and $JSD(P, P, P, P') \approx 0.017$.
+			Let $\mathbb{S}$ be set of the daily transaction collections, if $\mathbb{E}$ is already given, we can run the algorithm with $\mathbb{E}$ and $\forall D \in \mathbb{S}$, and then discover the anomalies. JSD here cannot be replaced by KLD since entries in $P'$ are not necessarily defined in $M$. Although it is convenient to compute $JSD(P_1, \dots, P_n, P')$ instead of $JSD(P_1||M), \dots, JSD(P_n||M), JSD(P'||M)$, it is not viable for classification. Jensen-Shannon divergence of $n+1$ distributions will dilute the affection of the abnormal one, in which case the difference between $P'$ being normal and anomalous will become subtle when $n$ goes very large. For example, suppose $P(1) = P(2) = P(3) = \frac{1}{3}$ and $P'(1) = \frac{1}{6}, P'(2) = \frac{1}{3}, P'(3) = \frac{1}{2}$, then $JSD(P||P') \approx 0.023$ and $JSD(P, P, P, P') \approx 0.017$.
 	
-			According to the property of statistical divergence, we can infer that the true distribution of JSDs calculated form normal data collections are close to but not exactly a gaussian distribution $N(\mu, \sigma)$ since for each point, there are both definite upper and lower bounds instead of infinities. Therefore, $\mu$ should be slightly larger than zero. The reason why $\mu$ cannot be exactly zero is hidden in line~\ref{line:population-estimation}.
+			According to the property of statistical divergence, we can infer that the true distribution of JSDs calculated form normal data collections are close to but not exactly a gaussian distribution $N(\mu, \sigma)$ since for each point, there are both definite upper and lower bounds instead of infinities. Therefore, $\mu$ should be slightly larger than zero. The reason why $\mu$ cannot be exactly zero is in Line~\ref{line:population-estimation}.
 			For $\mu = 0$ if and only if $J_i = 0$ for $\forall i = 1, \dots, n$, which is equivalent to $P_i = P_j$ for $\forall i, j = 1, \dots, n$. And, $\lim_{n\rightarrow+\infty}P(P_i = P_j,\forall i, j = 1, \dots, n)=0$. Thus it is highly unlikely for real world data sets to have $u=0$.
 	
 		\subsection{Distribution Histogram}\label{sec:alg-histogram}
 			Not all data collections can be assumed subject to known distributions. Parameter approximation will probably lead to errors far beyond our expectation. For example, the distribution of vehicle volume in the highway may be of the shape of two connected gaussian curves and does not correspond to any of the prevalent distribution models. Few assumption of parameters can be made in advance on such data. For the sake of generality, non-parametric estimation should be applied.
 			
 			Surely, the kernel density estimation approaches will give a smooth, continuous distribution curve on any sampled data. But the computational cost will be much higher than applying a coarse histogram approximation.
-			Moreover, even if we applied a distribution model upon a collection of sampled data, yielding more accurate results, the computation of divergence will be much more complex on continuous functions than discrete distributions.
+			Moreover, even if we could apply a distribution model upon a collection of sampled data, yielding more accurate results, the computation of divergence would be much more complex on continuous functions than discrete distributions.
 			
 			Histogram methods can not only be applied to non-parametric distributions, but also to miscellaneous data types. From a general point of view, as long as there exits a function mapping the input data instance into a subset of real numbers, this data collection can be counted into a histogram. For example, date, time and single characters.
 	
-			In order to generate an accurate approximation, step size is the most important parameter the algorithm should determine. If the size is too small then the resulting histogram will be over fitting; but if the size is too large then the estimation will be too coarse to depict the original shape. According to statistics theory, when dealing with a sample size of $k$, a step size of 
-	
+			In order to generate an accurate approximation, the step size is the most important parameter the algorithm should determine. If the size is too small then the histogram will be over fitting; but if the size is too large then the estimation will be too coarse to depict the original shape. According to statistics theory, when dealing with a sample size of $k$, a step size of 
 			\begin{equation}\label{equ:step-size}
-				l = c \sigma k^{-0.2}
+				l = c \sigma k^{-0.2},
 			\end{equation}
-	
-			will give a best partition size, where $c$ is a constant relative to the shape of distribution(e.g. for normal distribution, $c=1.05$). For data sets with a large number of elements, a random sampling method, such as Monte-Carlo method, can be applied to speed up the estimation procedure.
+			which will give a best partition size, where $c$ is a constant relative to the shape of distribution (e.g. for normal distribution, $c=1.05$). For data sets with a large number of elements, a random sampling method, such as Monte-Carlo method, can be applied to speed up the estimation procedure.
 	
 		\subsection{Threshold}\label{sec:alg-threshold}
 			One important factor in the algorithm is the value of threshold. A higher threshold rejects more instances, improving the sensitivity of anomalous data while increasing the number of false alarms. A lower threshold provide higher true negative rates yet neglecting more possible threats.
 			
-			A naive but prevalent approach is to set a fixed value as threshold. This approach is easy to implement and may give satisfying results in specific cases. However, a fixed threshold requires specific analysis in the certain scenario, manual observation and tuning of parameters, which involves lots of human labour. The rule of ``$3 \sigma$'' can be used to automatically determine a threshold. But as a rigid metric, it is merely an estimation of a suitable boundary considering average situations, which is far from optimal when concrete data is provided. It would be either higher than the optimum if anomalous data lies far away from the normal cluster, or lower than the optimum if the anomalies sit close to the cluster centre.
+			A naive but prevalent approach is to set a fixed value as the threshold. This approach is easy to implement and may give satisfying results in specific cases. However, a fixed threshold requires specific analysis in the certain scenario, manual observation and tuning of parameters, which involves lots of human labour. The rule of ``$3 \sigma$'' \textcolor{red}{need citation or simple explanation here}can be used to automatically determine a threshold. But as a rigid metric, it is merely an estimation of a suitable boundary considering average situations, which is far from optimality when concrete data is provided. It would be either higher than the optimum if anomalous data lies far away from the normal cluster, or lower than the optimum if the anomalies sit close to the cluster centre.
 	
 			\begin{figure}[!t]
 				\centering
 				\includegraphics[width=\linewidth]{fig/JSD-Dist.png}
-				\caption{Distribution of JSD values for everyday data collection. It can be approximately regarded as a gaussian distribution.}
+				\caption{Distribution of JSD values for everyday data collection. }
 				\label{fig:jsd-dist}
 			\end{figure}
 	
-			However, applying divergence as the distance measurement among data collections provides a fine property. That is, divergences of normal data collections assemble together, forming a quasi-gaussian distribution. And those of anomalies also form a quasi-guassian distribution which lies in the right-hand-side to the other one on the real number axis. As a result of further observation, however, true distribution of both JSDs derived from normal and anomalous data collections may differ a little more from the standard gaussian than the expected estimation error(Fig.~\ref{fig:jsd-dist}). That is due to the unknown randomness within real world data. Few assumptions can be applied in real world data sets, let alone data volume is sometimes relatively low. This topic is out of the domain discussed in this paper and we here only introduce the technique instead of the specific distribution model. However, in the scenarios that better models can be calculated, distributions here can be replaced to produce better results. For the simplicity of our proposal, we assume the distributions of JSDs to be gaussian.
+			Fortunately, applying divergence as the distance measurement among data collections provides a fine property. That is, divergences of normal data collections assemble together, forming a quasi-gaussian distribution. And those of anomalies also form a quasi-guassian distribution which lies in the right-hand-side to the other one on the real line. As a result of further observation, however, true distribution of both JSDs derived from normal and anomalous data collections may differ a little more from the standard gaussian than the expected estimation error (Fig.~\ref{fig:jsd-dist}). That is due to the unknown randomness within real world data. Few assumptions can be applied in real world data sets, no mention that data volume is sometimes relatively low. This topic is out of the domain discussed in this paper and we here only introduce the technique instead of the specific distribution model. 
+\textcolor{red}{WHAT do you want to say here? This sentence seems weird. However, in the scenarios that better models can be calculated, distributions here can be replaced to produce better results. }
+For the simplicity of our proposal, we deem the distributions of JSDs to be gaussian.
 	
 			\begin{figure}[!t]
 				\centering
@@ -270,7 +263,7 @@
 				\label{fig:example-threshold}
 			\end{figure}
 	
-			As shown in Fig~\ref{fig:example-threshold}, the black curve($PDF_{normal}(x)$ or in short $PDF_n(x)$) displays the probability density function(PDF) fitting those JSDs calculated from normal data collections; the blue curve($PDF_{anomalous}(x)$ or in short $PDF_a(x)$) displays the PDF derived from anomalous data collections. Threshold is chosen to minimize total errors(both false negative and false positive).
+			As shown in Fig~\ref{fig:example-threshold}, the black curve ($PDF_{normal}(x)$ or in short $PDF_n(x)$) displays the probability density function (PDF) fitting those JSDs calculated from normal data collections; the blue curve ($PDF_{anomalous}(x)$ or in short $PDF_a(x)$) displays the PDF derived from anomalous data collections. Threshold is chosen to minimize total errors(both false negative and false positive).
 			
 			Suppose:
 	
@@ -280,7 +273,6 @@
 			\end{align}
 			
 			Then the optimal threshold $T$ is:
-	
 			\begin{equation}\label{equ:linear-weight}
 				%\small
 				\begin{split}
@@ -295,10 +287,9 @@
 				\end{split}
 			\end{equation}
 	
-			According to equation(\ref{equ:linear-weight}), threshold value can be automatically determined. The optimal threshold will minimize total errors, yielding an optimal outcome. The only requirement for this technique is another evidence set containing data point derived from anomalous data collections.
+			According to E.q.(\ref{equ:linear-weight}), the threshold value can be automatically determined. The optimal threshold will minimize total errors and yield an optimal outcome. \textcolor{red}{The only requirement for this technique is another evidence set containing data point derived from anomalous data collections.}
 			
-			However, this is not accurate enough, since equation(\ref{equ:linear-weight}) implicates an assumption that the chances are the same for a new data collection to be either anomalous or not. If we can determine the probability for a new data collection to be anomalous in any segment of data sequence, the equation should be modified as:
-	
+			However, this is not accurate enough, since equation (\ref{equ:linear-weight}) implicates an assumption that the chances are the same for a new data collection to be either anomalous or not. If we can determine the probability for a new data collection to be anomalous in any segment of data sequence, the equation should be modified as:
 			\begin{equation}\label{equ:linear-balanced}
 				{\footnotesize
 				\begin{split}
@@ -313,11 +304,11 @@
 				\end{split}}
 			\end{equation}
 	
-			Where $\alpha$ is the anomaly probability. Equation(\ref{equ:linear-balanced}) is much more complicated. But it can be reduced to a quadratic equation.
+			Where $\alpha$ is the anomaly probability. E.q.(\ref{equ:linear-balanced}) is much more complicated. But it can be reduced to a quadratic equation.
 			Section~\ref{sec:exp-threshold} compares some estimations for optimal threshold under a real world circumstance. It shows the difference among calculators and that equation(\ref{equ:linear-balanced}) outperforms others when $PDF_n(x)$ and $PDF_a(x)$ are actually gaussian.
 	
 		\subsection{Dynamic DCAD}\label{sec:alg-dynamic}
-			In Algorithm~\ref{alg:static}, there is a hidden assumption that it regards every data collection to be sampled from a static environment. That is to say the seller will never change his or her products and customer volumes always remain the same. In most cases, real world data is always in the process of evolution and fluctuation. Online shops are often in the process of expanding or dwindling. Thus the sales distribution will slightly change as time goes on. Therefore, the algorithms should automatically adapt to the trend at any time. To meet the need, a sliding window technique has been applied to the basic algorithm frame work. And considering discussion in section~\ref{sec:alg-histogram} and~\ref{sec:alg-threshold}, a dynamic version is proposed in Algorithm~\ref{alg:dynamic}.
+Algorithm~\ref{alg:static} regards every data collection to be sampled from a static environment. That is to say the seller will never change his or her products and customer volumes always remain the same. In most cases, real world data is always in the process of evolution and fluctuation. Online shops are often in the process of expanding or dwindling. Thus the sales distribution will slightly change as time goes on. Therefore, the algorithms should automatically adapt to the trend at any time. To meet the need, a sliding window technique has been applied to the basic algorithm frame work. Thus, considering discussion in section~\ref{sec:alg-histogram} and~\ref{sec:alg-threshold}, a dynamic version is proposed in Algorithm~\ref{alg:dynamic}.
 	
 			\begin{algorithm}[!t]
 				\caption{Dynamic Classification}
@@ -355,10 +346,10 @@
 	
 			Algorithm~\ref{alg:dynamic} uses $\mathbb{E}_N$ and $\mathbb{E}_A$ as two sliding windows, keeping up with latest trend of both normal and anomalous features. Thus, the two window sizes $n$ and $m$ cannot be too large. Otherwise the evolving features will be flattened and aligned to the older version. For the sake of estimation accuracy, they cannot be too small either. The size should refer to ratio of both data updates and feature evolution.
 			
-			Note that line~\ref{line:hist-1} and~\ref{line:hist-2} can be replaced by other estimation methods if better assumptions can be made. Line~\ref{line:gaussian-1} and~\ref{line:gaussian-2} can be replaced by other models for more accuracy. Line~\ref{line:update-normal-evidence} and~\ref{line:update-anomalous-evidence} update the evidence sets, replacing the most outdated one, moving the sliding window forward one step ahead. Moreover, $\alpha$ can also be updated according to a history sequence of return values, if necessary.
+			Note that Line~\ref{line:hist-1} and~\ref{line:hist-2} can be replaced by other estimation methods if better assumptions can be made. Line~\ref{line:gaussian-1} and~\ref{line:gaussian-2} can be replaced by other models for more accuracy. Line~\ref{line:update-normal-evidence} and~\ref{line:update-anomalous-evidence} update the evidence sets, replacing the most outdated one, moving the sliding window forward one step ahead. Moreover, $\alpha$ can also be updated according to a history sequence of return values, if necessary.
 	
 	\section{Evaluation}\label{sec:evaluation}
-		The algorithm was implemented and interpreted in Python 3.6. All experiments was tested on Ubuntu 17.04. In the following experiments, we would like to figure out:
+		Our algorithm was implemented and interpreted in Python 3.6. All experiments were tested on Ubuntu 17.04. In the following experiments, we would like to figure out:
 	
 		\begin{enumerate}
 			\item How to emulate different types of click farming?
@@ -370,7 +361,7 @@
 		These four questions are answered in the following subsections respectively.
 	
 		\subsection{Methodology}\label{sec:exp-methodology}
-			We adopted a data set containing Taobao online sellers' transaction records\footnote{https://tianchi.aliyun.com/competition/information.htm?raceId=231591} provided by Alibaba Tian Chi big data competition where all records are collected from the real world business scenarios and are desensitized. The data package contains seller features data set, user payments data set and user browsing behaviour data set. An example of the user payments data set is shown in Table~\ref{tab:user-payment-sample}.
+			We adopted a data set containing Taobao online sellers' transaction records\footnote{https://tianchi.aliyun.com/competition/information.htm?raceId=231591} provided by Alibaba Tian Chi big data competition where all records are collected from the real world business scenarios. The data package contains seller features data set, user payments data set and user browsing behaviour data set. An example of the user payments data set is shown in Table~\ref{tab:user-payment-sample}.
 	
 			\begin{table}[!ht]
 				\centering
@@ -391,7 +382,7 @@
 				\end{tabular}
 			\end{table}
 	
-			We randomly chose one seller(ID: 1629) and extracted transaction history of this seller, records ranging from Nov. 11th 2015 to Oct. 31st 2016. Entire transaction set was then divided into 325 collections, each containing records in one day. There are some days with no records because the online shop temporarily closed in those days.
+			We randomly chose one seller (ID: 1629) and extracted transaction history of this seller, records ranging from Nov. 11th 2015 to Oct. 31st 2016. Entire transaction set was then divided into 325 collections, each containing records in one day. There are some days with no records because the online shop temporarily closed in those days.
 	
 			\begin{figure}[!t]
 				\centering
@@ -409,7 +400,8 @@
 	
 			Fig.~\ref{fig:daily-transaction-volume} shows the daily transaction volume of the seller. It sees a trend of daily sale which is slightly moving as the time goes. And the daily selling distributions, as is shown in Fig.~\ref{fig:sale-distribution-sample}, display a roughly similar shape.
 			
-			Click farmed data was generated according to patterns described in section~\ref{sec:related-realworld}. We adopted two prevalent types of click farming: \textit{centralized click farming} and \textit{equalized click farming}. Centralized click farming emulates the scenarios that a group of people are called out and assigned tasks by a casual leader that does not care much about the click farm timing. A significant feature of this approach is that the cheating transactions usually assemble together in a short period of time. Equalized click farming emulates the circumstances that click farms are arranged by some well programmed applications or teams carefully managed and strictly commit transactions according to a timetable. Thus the transaction distribution may not vary too much with and without click farming. Usually, the click farmed transactions are several times more than the volume it original has, if the seller hires a group of organized workers. In our experiments, we use $\nu$ to denote the magnitude coefficient of click farming. Hence $|D_{anomalous}| = (1 + \nu)|D_{normal}|$. In the following experiments without extra illustration, we adopt $\nu = 1$.
+			Click-farmed data was generated according to patterns described in section~\ref{sec:related-realworld}. We adopted two prevalent types of click farming: \textit{centralized click farming} and \textit{equalized click farming}. Centralized click farming emulates the scenarios that a group of people are assigned tasks by a casual leader that does not care much about the click farm timing. A significant feature of this approach is that the cheating transactions usually assemble together in a short period of time. Equalized click farming emulates the circumstances that click farms are arranged by some well programmed applications or teams carefully managed and strictly commit transactions according to a timetable. Thus the transaction distribution may not vary too much with and without click farming. 
+			Usually, the click-farmed transactions are several times more than the volume it originally has, if the seller hires a group of organized workers. In our experiments, we use $\nu$ to denote the magnitude coefficient of click farming. Hence $|D_{anomalous}| = (1 + \nu)|D_{normal}|$. In the following experiments without extra illustration, we adopt $\nu = 1$.
 	
 			To emulate centralized click farming, we randomly inserted some gaussian-distributed transactions in the chosen collection. As for emulating the equalized click farmers, we simply doubled each record in the chosen collection to make the new distribution exactly the same as the original one, which is harder for the online platform to discover.
 			
@@ -422,10 +414,10 @@
 				\label{fig:histogram-example}
 			\end{figure}
 	
-			In order to test the performance of Algorithm~\ref{alg:dynamic}, every single collection was fed into the algorithm by the time order. Each input collection has a probability of $\alpha$ to be anomalous, namely, click farmed. The algorithm checks each collection with 1st or 2nd level histogram and give an answer of true or false. Several metrics were explored in the following experiments.
+			In order to test the performance of Algorithm~\ref{alg:dynamic}, every single collection was fed into the algorithm by time order. Each input collection has a probability of $\alpha$ to be anomalous, namely, click farmed. The algorithm checks each collection with 1st or 2nd level histogram and give an answer of true or false. Several metrics were explored in the following experiments.
 			
 		\subsection{Experiments on Raw Data}\label{sec:exp-raw}
-			We first tested Algorithm~\ref{alg:dynamic} on raw data set in order to see whether and why the algorithm works. Due to desensitization process, time stamps in raw data set only tell which hour each transaction was committed. Thus, the histogram was drawn by counting hourly volume of each collection. For $\alpha = 0.2$, we selected first 30 days as the evidence set of normal collections; day 21st to 30th were also emulated to be click farmed, composing the evidence set of anomalous collections. Equation(5) in Table~\ref{tab:threshold-comparison} was employed as the threshold calculator. The results are shown in Table~\ref{tab:result-raw-1st}, where \textit{true positive rate}(TPR), \textit{false positive rate}(FPR) and \textit{accuracy}(ACC) were recorded.
+			We first tested Algorithm~\ref{alg:dynamic} on raw data set in order to see whether and why the algorithm works. Due to desensitization process, time stamps in raw data set only tell which hour each transaction was committed. Thus, the histogram was drawn by counting hourly volume of each collection. For $\alpha = 0.2$, we selected first 30 days as the evidence set of normal collections; Day 21st to 30th were also emulated to be click farmed, composing the evidence set of anomalous collections. E.q.(5) in Table~\ref{tab:threshold-comparison} was employed as the threshold calculator. The results are shown in Table~\ref{tab:result-raw-1st}, where \textit{true positive rate} (TPR), \textit{false positive rate} (FPR) and \textit{accuracy} (ACC) were recorded.
 	
 			\begin{table}[!ht]
 				\centering
@@ -468,12 +460,12 @@
 				\label{fig:raw-overview}
 			\end{figure}
 	
-			When classifying toward 1st level histograms, centralized click farming behaviours can be easily discovered. As displayed in the left two columns in Fig.~\ref{fig:raw-hist-1st}, normal collections share a similar distribution while centralized click farmed ones abruptly violates the original shape. However, as a clever click farmer, equalized click farming did not in the least distorted the distribution. Most of them escaped the security check under the perfect disguise.
+			When classifying toward 1st level histograms, centralized click farming behaviours can be easily discovered. As displayed in the left two columns in Fig.~\ref{fig:raw-hist-1st}, normal collections share a similar distribution while centralized click-farmed ones abruptly violates the original shape. However, as a clever click farmer, equalized click farming \textcolor{red}{did not in the least distorted the distribution.} Most of them escape the security check under the perfect disguise.
 			But when it comes to 2nd level histograms, the ``clever disguise'' does not work any longer. It can be clearly seen in Fig.~\ref{fig:raw-hist-2nd} that both types of click farming shows an obvious difference from the normal ones, while the normal ones still share a similar distribution.
 			From the overview in Fig.~\ref{fig:raw-overview}, the difference between normal and anomalous collections can be observed more intuitively.
 	
 		\subsection{Experiment on Synthetic Data}\label{sec:exp-synthetic}
-			As is put in the former section, every single record in transaction collections gives only a time stamp aligned at hours. Part of the information was erased with the absence of minutes and seconds. In the following experiments, every time stamp was assigned a random value for minutes and seconds. Therefore, the synthetic data set should be closer to the real world case. Moreover, the step size in the histograms can now be calculated more precisely. In the 1st level histogram, the constant $c$ in equation(\ref{equ:step-size}) was set to 0.5 since the PDF of daily distribution was approximately a linear function. And in the 2nd level histogram, sub-volumes of every 300 seconds were counted, producing more data points in the 2nd level data collections. Then, constant $c$ in equation(\ref{equ:step-size}) was also set to 0.5 given that the 2nd level histogram was also approximately a linear function.
+			As is put in the former section, every single record in transaction collections gives only a time stamp aligned at hours. Part of the information was erased with the absence of minutes and seconds. In the following experiments, every time stamp was assigned a random value for minutes and seconds. Therefore, the synthetic data set should be closer to the real world case. Moreover, the step size in the histograms can now be calculated more precisely. In the 1st level histogram, the constant $c$ in E.q.(\ref{equ:step-size}) was set to 0.5 since the PDF of daily distribution was approximately a linear function. And in the 2nd level histogram, sub-volumes of every 300 seconds were counted, producing more data points in the 2nd level data collections. Then, constant $c$ in E.q.(\ref{equ:step-size}) was also set to 0.5 given that the 2nd level histogram was also approximately a linear function.
 			We tested algorithm performance for $\alpha \in \{0.1, 0.3, 0.5, 0.7, 0.9\}$, with $\mathbb{E}_N$ and $\mathbb{E}_A$ the same configuration as before. Results are shown in Table~\ref{tab:syn-result-1st} and~\ref{tab:syn-result-2nd}.
 			
 			\begin{table}[!ht]
@@ -538,7 +530,7 @@
 				\end{tabular} 
 			\end{table}
 			
-			The result shows that the algorithm can efficiently distinguish the normal and anomalous data collections. No matter how much proportion in them is anomalous, the algorithm always gives a high accuracy. That is because the adaptive threshold was designed to minimize the number of total errors, which was not relevant directly to TPR or FPR. When $\alpha$ was increasing, there were less data collections added into $\mathbb{E}_N$. Thus the update of $\mathbb{E}_N$ became slower and FPR went higher. On the contrary, TPR became higher as $\alpha$ increased. Moreover, since $|\mathbb{E}_N| > |\mathbb{E}_A|$, it needs more collection instances for $|\mathbb{E}_N|$ then that for $|\mathbb{E}_A|$ to keep up to the trend. Therefore, it was faster of FPR to increase than that of TPR. As a result of that, there were more false alarms emerged and ACC went lower, as $\alpha$ increased from 0.1 to 0.5. After that, however, although FPR was still increasing, total number of normal instances decreased dramatically and those false alarms contributed less to total errors. Therefore, ACC rose up again.
+			The result shows that the algorithm can efficiently distinguish the normal and anomalous data collections. No matter how much proportion in them is anomalous, the algorithm always gives a high accuracy. That is because the adaptive threshold was designed to minimize the number of total errors, which was not relevant directly to TPR or FPR. When $\alpha$ was increasing, there were less data collections added into $\mathbb{E}_N$. Thus the update of $\mathbb{E}_N$ became slower and FPR went higher. On the contrary, TPR became higher as $\alpha$ increased. Moreover, since $|\mathbb{E}_N| > |\mathbb{E}_A|$, it needs more collection instances for $|\mathbb{E}_N|$ then that for $|\mathbb{E}_A|$ to keep up to the trend. Therefore, it was faster of FPR to increase than that of TPR. As a result of that, there were more false alarms emerged and ACC went lower, as $\alpha$ increased from 0.1 to 0.5. After that, however, although FPR was still increasing, total number of normal instances decreased dramatically and those false alarms contributed less to total errors. Therefore, ACC rose up again. \textcolor{red}{present tense! Throughout the experiment section, the problem is always. You should know when to use past and when present!}
 	
 			\begin{figure}[!t]
 				\centering
@@ -556,7 +548,7 @@
 				\label{fig:roc-magnitude}
 			\end{figure}
 	
-			In Fig.~\ref{fig:roc-magnitude}, we tested the classifier with different magnitude of centralised click farming. In former experiments, $\nu = 1$. If $\nu $ is smaller, then it will be harder for the classifier to identify anomalous data collections since the anomalous distribution will be closer to normal ones. It can be concluded from the figure that the 1st level classifier can be efficient even when $\nu = 0.3$. However the 2nd level classifier is less sensitive. That is because the 1st level histogram provides more probability entries than 2nd level histograms do. Data collections are compressed from 1st to 2nd level. But for real world click farming behaviours(usually, $\nu > 1$) both classifiers can be efficient enough.
+			In Fig.~\ref{fig:roc-magnitude}, we test the classifier with different magnitude of centralised click farming. In former experiments, $\nu = 1$. If $\nu $ is smaller, then it will be harder for the classifier to identify anomalous data collections since the anomalous distribution will be closer to normal ones. It can be concluded from the figure that the 1st level classifier can be efficient even when $\nu = 0.3$. However the 2nd level classifier is less sensitive. That is because the 1st level histogram provides more probability entries than 2nd level histograms do. Data collections are compressed from 1st to 2nd level. But for real world click farming behaviours (usually, $\nu > 1$) both classifiers can be efficient enough.
 	
 		\subsection{Threshold Optimization}\label{sec:exp-threshold}
 			\begin{table*}[h]
@@ -609,17 +601,67 @@
 				\end{tabular} 
 			\end{table*}
 			
-			Section~\ref{sec:alg-threshold} mentions only two equations for calculating adaptive thresholds. Table~\ref{tab:threshold-comparison} gives the comparison of more equations out of similar considerations. From the aspect of weighted average(i.e. equation(1)) and taken $\alpha$ into consideration, we composes several other formulas with different operation on $\alpha$ and $\sigma$, yielding other possible balanced points within the interval $[\mu_N, \mu_A]$.
+			Section~\ref{sec:alg-threshold} mentions only two equations for calculating adaptive thresholds. Table~\ref{tab:threshold-comparison} gives the comparison of more equations out of similar considerations. From the aspect of weighted average, i.e. E.q.(1), and taken $\alpha$ into consideration, we composes several other formulas with different operations on $\alpha$ and $\sigma$, yielding other possible balanced points within the interval $[\mu_N, \mu_A]$.
 			
-			We tested those calculators on synthetic data set with $\alpha = 0.1, \nu = 1$. Testing each level of classifier and each type of anomalies, we got 4 F1 scores and added them up. Equation 5 gives best performance. Then those equations were tested on large amount of gaussian distributed data instances. 90K and 10K data points were sampled from 500 pairs of random gaussian distributions which represent normal and anomalous distributions respectively, yielding 500 F1 scores for each equation. We compared the average score and discovered that equation 9 gives the best result.
+			We test those calculators on synthetic data set with $\alpha = 0.1, \nu = 1$. After having tested each level of classifier and each type of anomalies, we got 4 F1 scores and added them up. Equation 5 gives best performance. Then those equations were tested on large amount of gaussian distributed data instances. 90K and 10K data points were sampled from 500 pairs of random gaussian distributions which represent normal and anomalous distributions respectively, yielding 500 F1 scores for each equation. We compared the average score and discovered that equation 9 gives the best result.
 	
 			Equation 9 gives best classification result for two gaussian distributions but does not outperform others in real world data. Part of the reasons are mentioned in section~\ref{sec:alg-threshold}. Another reason is that the size of evidence sets are too small, that the gaussian distribution may not be well approximated.
 	
+		\subsection{Comparison: Multinomial Goodness-of-Fit}
+			There has been few research on collective anomaly from the aspect of data collection distribution. In 2011, Wang et. al had proposed a technique, \textit{Multinomial Goodness-of-Fit}(MGoF), to analyze likelihood ratio of distributions via Kullback-Leibler divergence which is indeed a hypothesis test on distributions~\cite{wang2011statistical}. The following experiments were performed on the synthetic data sets by MGoF, providing the comparison baseline of our approach.
+			
+			We first tested performance of MGoF with different $\alpha$'s. Here $T$ is set to the point correspond to 0.95 in chi-square cumulative distribution function, and $c_{th}$ is set to 10. For simplicity, we only tested on 1st level classification against centralized click farming and 2nd level classification against equalized click farming. 
+			The results are shown in TABLE~\ref{tab:mgof}.
+			
+			\begin{table}[!ht]
+				\centering
+				\caption{Performance of Multinomial Goodness-of-Fit}
+				\label{tab:mgof}
+				\begin{tabular}{|c|c|c|c|c|c|c|}
+					\hline
+					& \multicolumn{3}{c|}{1st Level Centralized} & \multicolumn{3}{c|}{2nd Level Equalized}\\
+					\hline 
+					$\alpha$ & TPR & FPR & ACC & TPR & FPR & ACC \\ 
+					\hline 
+					0.1 & 100.00 & 54.08 & 52.43 & 31.51 & 26.52 & 69.72 \\ 
+					\hline 
+					0.2 & 99.40 & 44.82 & 64.63 & 32.96 & 26.29 & 65.20 \\ 
+					\hline 
+					0.3 & 98.88 & 45.25 & 68.36 & 32.86 & 28.22 & 60.00 \\ 
+					\hline 
+					0.4 & 98.86 & 47.47 & 70.73 & 40.38 & 28.76 & 58.08 \\ 
+					\hline 
+					0.5 & 99.56 & 92.62 & 54.35 & 29.71 & 25.57 & 53.45 \\ 
+					\hline 
+					0.6 & 98.90 & 66.22 & 74.46 & 32.54 & 30.26 & 47.12 \\ 
+					\hline 
+					0.7 & 99.52 & 99.22 & 70.40 & 27.11 & 28.26 & 40.48 \\ 
+					\hline 
+					0.8 & 99.25 & 83.76 & 80.90 & 24.41 & 23.58 & 34.58 \\ 
+					\hline 
+					0.9 & 99.63 & 100.00 & 90.40 & 27.10 & 38.49 & 30.96 \\ 
+					\hline 
+				\end{tabular} 
+			\end{table}
+		
+		\begin{figure}[!t]
+			\centering
+			\includegraphics[width=0.49\linewidth]{fig/ROC-Alpha-MGOF.png}
+			\includegraphics[width=0.49\linewidth]{fig/ROC-Nu-MGOF.png}
+			\caption{These two diagrams show the ROC curve of MGoF with same parameters in the former experiment. Results were generated by classifying against centralized click farmed data via 1st level histograms. By adopting different $\alpha$'s and $\nu$'s, we can find that the classifier is not so sensitive as that provided in our technique.}
+			\label{fig:roc-mgof}
+		\end{figure}
+		
+		Left half of the table sees both trends of increasing FPR and ACC. That is because MGoF always classify as anomalous the first $c_{th}$ distributions correspond to certain null hypothesis. Thus when $\alpha$ increases, the proportion of misclassified normal collections also becomes larger. While those anomalies are still considered anomalous. And given that the total number of normal collections drops down, the overall accuracy tends to increase as more instances are correctly classified as anomalous. However, the right half shows a different trend. The basic reason is that MGoF uses KLD instead of JSD. In the Taobao dataset, the discrete estimation of collect distributions oscillate a lot, leading to many situations that the prerequisite of KLD is unsatisfied. Thus the calculation of KLD may not give a correct measurement. Furthermore, the 2nd histogram provides fewer probability entries than the 1st level does. Thus it shows a more significant deviation from our expectation. Another reason that it shows highly unstable trends is that it simply adopts a threshold which is relative only to the hypothesis of normal data. The threshold value requires lots of observation and tuning and still may not be adaptive to most of the circumstances.
+		
+		Another main drawback of MGoF is that its learning procedure of anomalous probability hypothesis is inefficient. To maintain a comprehensive knowledge of the behaviour of anomalies, MGoF has to reserve a single hypothesis entry for every type of them. But in reality, it is always the case that we face the heterogeneity of outliers. However in our technique, that is not a problem since it can map and gather all anomalies together and draw a universal boundary between them and all normal collections.
+	
+		Fig.~\ref{fig:roc-mgof} shows two ROC curves as comparisons with those in Fig.~\ref{fig:roc-alpha} and~\ref{fig:roc-magnitude}. For classifiers in MGoF, they are vulnerable to a high error rate. While our technique outperforms at any proportion of click farmed data and also more efficient. For a relatively small magnitude of click farming, the classifier of MGoF quickly breaks down and degraded to be trivial. On the contrary, our techniques provides classifier sensitive enough even toward a relatively small magnitude of click farming.
 			
 	\section{Conclusion \& Future Work}\label{sec:conclusion}
-		This paper proposed an dynamic collective anomaly detection technique with adaptive threshold, which helps detect data manipulations in modern data pipelines and data centres. Different from existing algorithms designed for collective anomalies, our approach employs statistical distance as the similarity measurement, mapping data collections to a restricted one dimensional space. We explored several technical points involved in the design of the algorithm and performed a thorough experiment to test its efficiency. It showed that the algorithm can efficiently discover anomalies within the data collections and the classifier is sensitive enough toward real world data manipulations.
+		This paper proposes an dynamic collective anomaly detection technique with adaptive threshold, which helps detect data manipulations in modern data pipelines and data centres. Different from existing algorithms designed for collective anomalies, our approach employs statistical distance as the similarity measurement, mapping data collections to a restricted one dimensional space. We explored several technical points involved in the design of the algorithm and performed a thorough experiment to test its efficiency. It showed that the algorithm can efficiently discover anomalies within the data collections and the classifier is sensitive enough toward real world data manipulations.
 		
-		However, the modelling of the JSD distributions is not precise enough. The efficiency of different adaptive thresholds should be tested on different real world circumstances to get a more complete view of their performances. Moreover, a comparison with other collective detection algorithm should be adopted in the future to get an performance overview of similar algorithms. Since the algorithm adapts to the slowly evolving feature, when attacks disguise itself in the long run as if it was one of the changing features, the technique may fail to detect. In this case, other techniques may be applied as assistances.
+		\textcolor{red}{[This paragraph tells no future work but only incomplete work. You should at least find a reference technique, either from papers or common sense, as a baseline.] However, the modelling of the JSD distributions is not precise enough. The efficiency of different adaptive thresholds should be tested on different real world circumstances to get a more complete view of their performances. Moreover, a comparison with other collective detection algorithm should be adopted in the future to get an performance overview of similar algorithms. Since the algorithm adapts to the slowly evolving feature, when attacks disguise itself in the long run as if it was one of the changing features, the technique may fail to detect. In this case, other techniques may be applied as assistances.}
 		
 
 \section*{Acknowledgment}
@@ -630,3 +672,6 @@
 \bibliography{IEEEabrv,paper}
 
 \end{document}
+
+
+In 2016, according to the research by Tricentis~\cite{softwareFailure}, software failures cost \$1.1 trillion US dollars in total and those occurred at 363 investigated companies affected 4.4 billion customers, causing the total lost time of more than 315.5 years. And it takes more than 45\% of total expense to eliminate those errors~\cite{pawar2016software}. System configuration problems, as a matter of fact, are also responsible for the disturbing situation. They take even dominant places in failures in large distributed clusters~\cite{xu2015systems}.
