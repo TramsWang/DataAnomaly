@@ -10,8 +10,19 @@
 !README.md
 
 # Track only data and source codes of latest version
+!Algorithms.py
 !Divergence.py
-!RealWorld
+!Drawings.py
+!Experiments.py
+!KoubeiDataConverter.py
+!SyntheticDataGenerator.py
+!Utils.py
+
+# Track Dirs
+!Exp-Results
+!fig
+!Koubei
+!OldStory
 !Synthetic
 
 # Track latex source code
@@ -21,7 +32,3 @@ Paper/**/*.log
 Paper/**/*.out
 Paper/**/*.bbl
 Paper/**/*.blg
-
-# Untrack abundoned data
-/Synthetic/Centralized(*)
-/RealWorld/Centralized(*)

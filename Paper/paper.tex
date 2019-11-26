@@ -1,0 +1,595 @@
+% IEEE Paper Template for US-LETTER Page Size (V1)
+% Sample Conference Paper using IEEE LaTeX style file for US-LETTER pagesize.
+% Copyright (C) 2006-2008 Causal Productions Pty Ltd.
+% Permission is granted to distribute and revise this file provided that
+% this header remains intact.
+%
+% REVISION HISTORY
+% 20080211 changed some space characters in the title-author block
+%
+\documentclass[10pt,conference,letterpaper]{article}
+\usepackage{times,amsmath,amsfonts,epsfig}
+\usepackage{graphicx}
+\usepackage{algorithm,algorithmicx,algpseudocode}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+\usepackage{color}
+\usepackage{flushend}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{cuted}
+\usepackage{rotating}
+\usepackage{caption}
+%
+\title{Statistical Detection of Collective Data Anomalies}
+\date{}
+%
+%\author{%
+%	% author names are typeset in 11pt, which is the default size in the author block
+%	{Ruoyu Wang{\small$^{1}$}, Daniel Sun{\small$^{2}$}, Guoqiang Li{\small$^{1*}$} }%
+%	% add some space between author names and affils
+%	\vspace{1.6mm}\\
+%	\fontsize{10}{10}\selectfont\itshape
+%	% 20080211 CAUSAL PRODUCTIONS
+%	% separate superscript on following line from affiliation using narrow space
+%	$^{1}$\,School of Software, Shanghai Jiao Tong University, China\\
+%	\fontsize{9}{9}\selectfont\ttfamily\upshape
+%	%
+%	% 20080211 CAUSAL PRODUCTIONS
+%	% in the following email addresses, separate the superscript from the email address 
+%	% using a narrow space \,
+%	% the reason is that Acrobat Reader has an option to auto-detect urls and email
+%	% addresses, and make them 'hot'.  Without a narrow space, the superscript is included
+%	% in the email address and corrupts it.
+%	% Also, removed ~ from pre-superscript since it does not seem to serve any purpose
+%	\{solftwarewry,li.g\}@sjtu.edu.cn
+%	% add some space between email and affil
+%	\vspace{1.2mm}\\
+%	\fontsize{10}{10}\selectfont\rmfamily\itshape
+%	% 20080211 CAUSAL PRODUCTIONS
+%	% separated superscript on following line from affiliation using narrow space \,
+%	\,Data61, CSIRO, Australia\\
+%	\fontsize{9}{9}\selectfont\ttfamily\upshape
+%	% 20080211 CAUSAL PRODUCTIONS
+%	% removed ~ from pre-superscript since it does not seem to serve any purpose
+%	$^{2}$\,daniel.sun@data61.csiro.au
+%}
+
+%
+\begin{document}
+\maketitle
+%
+	\begin{abstract} 
+		Attackers infiltrate databases and software systems to not only steal chunks of data and hold them for ransom, but also alter certain parts, setting up traps harder to discover and causing damages unlikely to recover.
+		Without referring to data source, it is hard to detect a single record that is altered but still remain in correct value scopes. However, the change, especially to a subset of data, can be observed and detected in a collective scale. 
+		In this paper, we present a collective detection technique based on statistical divergence. \textcolor{red}{Statistical divergence detection was explored in multimedia applications. But it is still underdeveloped in big data era due to data irregularity.} The technique extracts distribution similarities among data collections, and then uses the statistical divergence to detect collective anomalies.
+		Our technique continuously evaluates metrics as evolving features and calculate adaptive threshold to meet the best mathematical expectation.
+		To illustrate details of the technique and explore its efficiency, we case-studied a real world problem of click farming detection against malicious online sellers. The evaluation shows that these techniques provided efficient classifiers. They were also sufficiently sensitive to a much smaller magnitude of data alteration, compared with real world malicious behaviours. Thus, it is applicable in the real world. 
+	\end{abstract}
+
+% NOTE keywords are not used for conference papers so do not populate them
+% \begin{keywords}
+% keyword-1, keyword-2, keyword-3
+% \end{keywords}
+%
+	\section{Introduction}
+		Major improvements in data acquisition, transmission and storage are to increase data availability and affordability. Currently, there are more than 2.7ZB data in the digital universe~\cite{bigDataStatistics} and the growing speed is doubling every two years.
+		It has already been hard and will be much harder in the future to harness the exploding volume of data that has resulted in many problems in data management and engineering, threatening trustworthiness and reliability of data flows inside working systems.
+		Data error rate in enterprises is approximately 1\% to 5\%, and for some, even above 30\%~\cite{saha2014data}. Those data anomalies may arise due to both internal and external reasons. 
+		
+		On one hand, components inside systems may generate problematic source data. For example, in a sensor network, some sensors may generate erroneous data when it experiences power failure or other extreme conditions~\cite{rassam2014adaptive}. Data packages will be lost if sensor nodes fail to connect to network or some sensor hubs break down~\cite{herodotou2014scalable}. Also, human operators act as a heavily vulnerable part to bugs and mistakes. Malicious insiders even deliberately modify system configurations for fatal compromises~\cite{schuster2015vc3}. A study shows that 65\% of organizations state that human errors are the main  cause of data problems~\cite{humanError} .
+		
+		On the other hand, data manipulation~\cite{dataManipulation} from outside hackers composes another potential threat of data quality and reliability. \textit{Data Manipulation} here, according to a NSA definition, refers to that ``hackers can infiltrate networks via any attack vector, find their way into databases and applications and change information contained in those systems, rather than stealing data and holding it for ransom''.
+		If data is compromised, it will severely affect mining and learning algorithms and further change the final decision driven by the data. In 2013, hackers from Syria put up fake reports via Associated Press' Twitter account and caused a 150-point drop in the Dow~\cite{SyriaHacker}.
+		
+		It is hard to detect a single record that is alerted but still remain in correct value scopes, but if sufficient data records are altered to change a final decision, we can still detect malicious data manipulation behaviours.
+		According to our observation, typical manipulations on numerical data will lead to a drift or distortion of its original distribution. For measurable reshaping, we can enclose data collections with similar distribution patterns and filter out those strangely shaped ones. 
+		To address problems caused by data manipulation, we propose a novel technique which sorts out manipulated data collections from normal ones by adopting statistical divergence.
+		\textcolor{red}{Statistical divergence detection was explored in multimedia applications. But it is still underdeveloped in big data era due to data irregularity.}
+		In this paper, we focus on a concrete data manipulation problem: click farming in online shops, and try to apply our technique to pick out those dishonest sellers.
+		Our techniques maps data collections to points in distribution spaces and reduce the problem to classical point anomaly detection.
+		Optimizations estimate ground truth, mapping each data collection into a single real number within a definite interval. Then a Gaussian classifier can be applied to detect outliers derived from manipulated data. To automatically calculate adaptive threshold for the classifier, we keep two evidence sets for both normal points and anomalies, taking advantage of the property provided by statistical divergence.
+		In the dynamic environments, these evidence sets are modified after every data collection is checked, in which manner they act intuitively as slide windows and keep up to the evolving features in dynamic scenarios.
+		Our contribution includes: 1) A brief review on data anomaly detection and a study on the problem of click farming; 2) Detailed description of both basic and optimized framework of our technique, resolving several technical difficulties such as automated adaptive threshold; 3) Real world and synthetic data experiments that test efficiency of our technique and a comparison with a previous work on the same topic.
+		
+		The rest of the paper is organised as follows: Section~\ref{sec:related-work} states related work on data anomaly detection and describes a real world problem. Section~\ref{sec:preliminaries} introduces statistical distance. Details of proposed technique are introduced in section~\ref{sec:algorithm-details}. Then section~\ref{sec:evaluation} presents evaluation results and further findings of the algorithm. Finally, the paper is concluded in section~\ref{sec:conclusion}.
+		
+	\section{Related Work}\label{sec:related-work}
+		\subsection{Data Anomaly Detection}
+			Anomaly detection, also known as outlier detection, has been studied for a long time and discussed in diverse research domains, such as fraud detection, intrusion detection, system monitoring, fault detection and event detection in sensor networks.
+			Anomaly detection algorithms deal with input data in the form of points (or records), sequences, graphs and spatial and geographical relationships.~\cite{chandola2009anomaly} According to relationships within data records, outliers can be classified into \textit{point anomalies}, \textit{contextual (or conditional) anomalies} and \textit{collective anomalies}.~\cite{goldberger2000components}
+			
+			Currently, distance based~\cite{cao2014scalable,cao2017multi} and feature evolving algorithms~\cite{masud2013classification,li2015discovery,shao2014prototype} catch most attention. Others adopted tree isolation~\cite{zhang2017lshiforest}, model based~\cite{yin2016model} and statistical methods~\cite{zhu2002statstream} in certain applications.
+	
+			To detect collective anomalies,~\cite{caudell1993adaptive} adopts the \textit{ART (Adoptive Resonance Theory)} neural networks to detect time-series anomalies. \textit{Box Modeling} is proposed in ~\cite{chan2005modeling}. \textit{Longest Common Subsequence} was leveraged in~\cite{budalakoti2006anomaly} as similarity metric for symbolic sequence. Markovian modeling techniques are also popular in this domain\cite{ye2000markov,warrender1999detecting,pavlov2003sequence}. \cite{yu2015glad} depicts groups in social media as combinations of different ``roles'' and compare groups according to the proportion of each role within each group.
+			
+			Wang et al. proposed a technique, \textit{Multinomial Goodness-of-Fit} (MGoF), to analyze likelihood ratio of distributions via Kullback-Leibler divergence, and is fundamentally a hypothesis test on distributions~\cite{wang2011statistical}.
+			MGoF divides the observed data sequence into several windows. It quantifies data in each window into a histogram and check these estimated distributions against several hypothesis. If the target distribution rejects all provided hypothesis, it is considered an anomaly and preserved as a new candidate of null hypothesis. If the target distribution failed to reject some hypothesis, then it is considered a supporting evidence of the one that yields most similarity. Furthermore, if the number of supporting evidence is larger than a threshold $c_{th}$, it is classified as non-anomaly.
+			
+			MGoF is the best competitor out of the similar techniques, and we use it as our baseline against our approach.
+	
+		\subsection{Real World Problem: Click Farming Detection}\label{sec:related-realworld}
+%			Since the establishment of Taobao in 2003, its online business platform has been growing from a follower in the market to the No.1 service provider in B2B and B2C markets, 
+			Taobao possesses a market share of 50.6\% to 56.2\% in China by 2016~\cite{iresearch2016b2c}. Currently, there are more than 9.4 million sellers in Taobao, providing more than 1 billion different products. Under the super-pressure caused by massive competitors, a number of the sellers choose to use some cheating techniques to raise reputation and sale volumes, then improve rankings in search lists.
+			
+			The most popular approach to manipulate transaction and reputation data is \textit{Click Farming}, where sellers use a large number of customer accounts to create fake transaction records and give high remarks on products. Professional click farmers are usually well organized groups or companies containing thousands of people.
+%			Leaders of such groups receive orders from sellers and assign tasks to other members to create fake transactions. 
+			Some companies even develop professional applications that can be deployed on common PCs to improve productivity~\cite{zhao2016on}.
+			
+			There are two types of click farming behaviours: Centralized and Equalized. Centralized click farming refers to the scenarios that transactions are randomly generated throughout the day. A significant feature of this approach is that the cheating transactions usually assemble together in a short period of time since most workers work at the same time. Equalized click farming refers to the circumstances that click farms are arranged by some well programmed applications or teams carefully managed and strictly commit transactions according to a timetable. Thus the transaction distribution may not vary too much with and without click farming. 
+	
+			A research performed in China showed that 81.9\% of investigated people had heard of the behaviour of click farming, 51.2\% are aware of click farm and 18.9\% of them had experience of click farming themselves~\cite{yan2015report}. American researchers reported in 2015 that over 11000 sellers on Taobao were detected to have click farmed records and only 2.2\% of 4000 investigated dishonest sellers had been penalized because of the cheating attempts~\cite{netease2015research}.
+			
+			Current detection techniques for click farming mainly focus on user behaviours, such as browsing frequencies and periods, most common purchasing time, favourite products, remarks and whether they communicate with sellers~\cite{simpleDetection}. Those techniques require the platform to keep lots of records and user features. However, the detection can be easily bypassed by trained workers and some well programmed applications.
+
+			\begin{figure}[t]
+				\centering
+				\includegraphics[width=\linewidth]{fig/ExampleCDF.png}
+				\caption{Example cumulative distribution function of original and click farmed daily transaction data}
+				\label{fig:example-ecdf}
+			\end{figure}
+
+			Although it is hard to classify users as honest or malicious, we can still find clues from the sellers' aspect. For normal sellers, their customers are usually similar since choices of products are seldom changed. Therefore, the distribution of transactions in a fixed period of time, say one day, is relatively stable. No matter how much alike between honest users and robots or the employed workers, the fake transaction records will always cause a bias or distortion of the original transaction distribution. To better observe the problem, we downloaded a real world data set containing Taobao online sellers' transaction records and emulated the circumstances if it had been click farmed (see section~\ref{sec:exp-methodology}). Fig.~\ref{fig:example-ecdf} shows the difference between normal and click farmed distributions of one day in the data set.
+			Thus, if we can measure the similarity between different transaction distributions, there is still a chance for us to detect dishonest sellers.
+	
+	
+	\section{Preliminaries}\label{sec:preliminaries}
+		Statistical divergence, also called statistical distance, measures the similarity between two or more distributions.
+		Mathematically, statistical divergence is a function which describes the ``distance'' of one probability distribution to the other on a statistical manifold. Let $\mathbb{S}$ be a space of probability distributions, then a divergence is a function from $\mathbb{S}$ to non-negative real numbers: 
+		\begin{equation}
+			D(\cdot || \cdot): \mathbb{S} \times \mathbb{S} \rightarrow \mathbb{R^+} \cup \{0\}
+		\end{equation}
+	
+		Divergence between two distributions $P$ and $Q$, written as $D(P||Q)$, satisfies:
+	
+		\begin{enumerate}
+			\item $D(P||Q) \ge 0, \forall P, Q \in \mathbb{S}$
+			\item $D(P||Q) = 0$, if and only if $P=Q$
+		\end{enumerate}
+	
+		For our purposes, we do not require the function $D$ to have the property: $D(P||Q) = D(Q||P)$. But we do need it to be true that if $Q$ is more similar with $P$ than $U$, then $D(Q||P) < D(U||P)$. There are ways to calculate divergence,	several frequently used divergence metrics are as follows:
+	
+		\subsection{Kullback-Leibler Divergence}
+			Let $P,Q$ be discrete probability distributions, $Q(x)=0$ implies $P(x)=0$ for $\forall x$, the \textit{Kullback-Leibler Divergence} from $Q$ to $P$ is defined to be:
+	
+			\begin{equation}
+				KLD(P||Q) = \sum_{Q(x)\ne 0} P(x)log\Big(\frac{P(x)}{Q(x)}\Big)
+			\end{equation}
+	
+			For $P,Q$ being continuous distributions:
+	
+			\begin{equation}
+				KLD(P||Q) = \int_{q(x) \ne 0} p(x)log\frac{p(x)}{q(x)}dx
+			\end{equation}
+	
+		\subsection{Jensen-Shannon Divergence}
+			Let $P,Q$ be discrete probability distributions, \textit{Jensen-Shannon Divergence} between $P$ and $Q$ is defined to be:
+	
+			\begin{equation}
+				JSD(P||Q) = \frac{1}{2}KLD(P||M) + \frac{1}{2}KLD(Q||M)
+			\end{equation}
+			where $\displaystyle M = \frac{1}{2}(P+Q)$.
+	
+			A more generalized form is defined to be:
+			
+%			{\small
+			\begin{equation}
+					JSD(P_1, \dots, P_n) = H\Big(\sum_{i=1}^n\pi_i P_i\Big) - \sum_{i=1}^n\pi_iH(P_i)
+			\end{equation}
+%			}
+			where $H$ is Shannon Entropy, $\displaystyle M = \sum_{i=1}^{n}\pi_iP_i$ and $\displaystyle \sum_{i=1}^{n}\pi_i = 1$.
+			
+			Especially, if $\displaystyle \pi_i = \frac{1}{n}$, then:
+			\begin{equation}
+				JSD(P_1, \dots, P_n) = \frac{1}{n}\sum_{i=1}^{n}KLD(P_i||M)
+			\end{equation}
+	
+			Jensen-Shannon divergence has some fine properties:
+			\begin{enumerate}
+				\item $JSD(P||Q) = JSD(Q||P), \forall P, Q\in \mathbb{S}$.
+				\item $0 \le JSD(P_1, \dots, P_n) \le log_k(n)$. If a $k$ based algorithm is adopted.
+				\item To calculate $JSD(P||Q)$, it need not necessarily to be true that $Q(x)=0$ implies $P(x)=0$.
+			\end{enumerate}
+			
+		\subsection{Bhattacharyya Distance}
+			Let $P,Q$ be discrete probability distributions over same domain $X$, \textit{Bhattacharyya Distance} between $P$ and $Q$ is defined to be:
+			
+			\begin{equation}
+				BD(P||Q) = -ln\Big(\sum_{x\in X}\sqrt{P(x)Q(x)}\Big)
+			\end{equation}
+		
+		\subsection{Hellinger Distance}
+			Let $P,Q$ be discrete probability distributions, \textit{Hellinger Distance} between $P$ and $Q$ is defined to be:
+			
+			\begin{equation}
+				HD(P||Q) = \frac{1}{\sqrt{2}}\sqrt{\sum_x\bigg(\sqrt{P(x)} - \sqrt{Q(x)}\bigg)^2}
+			\end{equation}
+		
+		\subsection{Kolmogorov-Smirnov Statistic}
+			Let $P,Q$ be discrete one-dimensional probability distributions, $CDF_P$ and $CDF_Q$ are their cumulative probability functions respectively, \textit{Kolmogorov-Smirnov Statistic} between $P$ and $Q$ is defined to be:
+			
+			\begin{equation}
+				KSS(P||Q) = \sup_x | CDF_P(x) - CDF_Q(x) |
+			\end{equation}
+			
+	
+	\section{Statistical Detection}\label{sec:algorithm-details}
+	
+		Diverse data sets in the real world show certain structures caused by hidden patterns or relationships among records. For example, traffic volume in the highway and the business transaction records, they may show a relatively stable distribution in the daily scale. Manipulation on those data (e.g. Fig.~\ref{fig:example-ecdf}) results in a drift or distortion of the distribution, which can be captured to trigger an alarm.
+	
+		\subsection{Statistical Divergence Detection with Reference(SDD-R)}\label{sec:alg-opt-reference}
+			From Section~\ref{sec:preliminaries} we know that statistical divergence only provides a distance between two or more distributions. In a set of data collections, we can only draw a complete graph where nodes denote data collections and edges refer to the symmetric divergence between two connected nodes. From the graph we can find some points that have apparently larger distances with most of other points and return them as anomalies. This may work if anomalous nodes do not compose a large proportion. However the procedure will be too complicated to work out with large amounts of data. If it is assured that data collections form only one cluster, some optimizations can be applied to reduce complexity.
+		
+			Alternatively we can provide a frame of reference that generates absolute coordinates rather than the relative ones. This optimization is feasible if data collections form one single cluster in distribution space. This is true in most reality scenarios given that distribution is adopted to depict a macro property which comes out as one universal conclusion. In other words , if multiple distributions are used to describe subgroups of entire sample space, then a conclusive one can be obtained by averaging all these sub-distributions. Therefore, we can use an estimate cluster center as reference and test distances between the reference and each other data collections(Algorithm~\ref{alg:sdd-r}), yielding absolute distances.
+			
+			\begin{algorithm}[!t]
+				\caption{SDD-R}
+				\label{alg:sdd-r}
+				\begin{algorithmic}[1]
+					\Require Data Collections $\mathbb{D} = \{D_1, \dots, D_n\}$
+					\Require Estimated anomalous probability $\alpha$
+					\Ensure Anomalous Data Collections
+					\For {$i \gets 1$ to $n$}
+						\State $P_i \gets$ the distribution of $D_i$
+					\EndFor
+					\State $P_R \gets \frac{1}{n}\sum_{i = 1}^n P_i$
+					\For {$i \gets 1$ to $n$}
+						\State $d_i \gets D(P_i||P_R)$
+					\EndFor
+					\State $\mathcal{N}(\mu, \sigma) \gets$ Gaussian distribution estimated by $d_i$
+					\State \Return $\{D_i | \frac{d_i - \mu}{\sigma} > 3 \}$
+				\end{algorithmic}
+			\end{algorithm}
+			
+			\begin{figure}[!t]
+				\centering
+				\includegraphics[width=\linewidth]{fig/JSD-Dist.png}
+				\caption{Distribution of Jensen-Shannon divergence on Taobao data set(without click farming) used in the experiments.}
+				\label{fig:jsd-dist}
+			\end{figure}
+			
+			Fig.~\ref{fig:jsd-dist} shows distribution of all divergences against the reference. It can be approximated as a Gaussian distribution though the true one may differ a little more from the standard Gaussian than the expected estimation error. That is due to the unknown randomness within real world data. Few assumptions can be applied in real world data sets, no mention that data volume is sometimes relatively low. This topic is out of the domain discussed in this paper and we here only introduce the technique instead of the specific distribution model. 
+			Certainly, if stronger assumptions can be included to provide a more precise model, this component in the framework can be replaced to give better results.
+			For the simplicity of our proposal, we deem the distributions of divergences to be Gaussian.
+			
+			By this approach, time complexity can be reduced from quadratic to linear. Fig.~\ref{fig:raw-overview} in Section~\ref{sec:exp-raw} demonstrates the result of the above process. Red distribution refer to the distances calculated from normal data collections, blue and green ones are from click-farmed data collections. Clearly, distances of normal data collections assembles together around a small value while anomalous ones lay around a larger distance value.
+			
+		\subsection{Optimization: Statistical Divergence Detection with Evidence(SDD-E)}
+			It is possible to further optimize SDD-R if we can provide this algorithm with evidence(Algorithm~\ref{alg:sdd-e}).
+			
+			\begin{algorithm}[!t]
+				\caption{SDD-E}
+				\label{alg:sdd-e}
+				\begin{algorithmic}[1]
+					\Require Evidence set with normal data collections $\mathbb{E}_N = \{N_1, \dots, N_n\}$
+					\Require Evidence set with anomalous data collections $\mathbb{E}_A = \{A_1, \dots, A_m\}$
+					\Require Estimated anomalous probability $\alpha$
+					\Require New data collection $\mathbb{D} = \{D_1, \dots, D_l\}$
+					\Ensure Anomalous data collections in $\mathbb{D}$
+					\For{$i \gets 1$ to $n$}
+						\State $P_{N_i} \gets$ distribution of $D_{N_i}$\label{line:hist-1}
+					\EndFor
+					\For{$i \gets 1$ to $m$}
+						\State $P_{A_i} \gets$ distribution of $D_{A_i}$\label{line:hist-2}
+					\EndFor
+					\State $P_R \gets \frac{1}{n}\sum_{i=1}^{n}P_{N_i}$
+					\For{$i \gets 1$ to $n$}
+						\State $d_{N_i} \gets D(P_{N_i}||P_R)$
+					\EndFor
+					\For{$i \gets 1$ to $m$}
+						\State $d_{A_i} \gets D(P_{A_i}||P_R)$
+					\EndFor
+					\State $\mathcal{N}_N(\mu_N, \sigma_N) \gets$ normal distribution estimated from $\{d_{N_1}, \dots, d_{N_n}\}$
+					\State $\mathcal{N}_A(\mu_A, \sigma_A) \gets$  normal distribution estimated from $\{d_{A_1}, \dots, d_{A_m}\}$
+					\State $T \gets$ proper threshold derived from $\mathcal{N}_N$, $\mathcal{N}_A$ and $\alpha$
+					\For{$i \gets 1$ to $l$}
+						\State $P_i \gets$ distribution of $D_i$
+						\State $d_i \gets D(P_i||P_R)$
+					\EndFor
+					\State \Return $\{D_i|d_i > T\}$
+				\end{algorithmic}
+			\end{algorithm}
+			
+			Evidences enables the algorithm to not only refine estimation of real distribution but also build knowledge of anomalous collections, which is similar to the parameter estimation within a certain sample set.
+			
+			According to the property of statistical divergence, we can infer that the true distribution of divergences calculated from normal data collections are close to but not exactly a Gaussian distribution $\mathcal{N}(\mu, \sigma)$ since for each point, there are both definite upper and lower bounds instead of infinities. Therefore, $\mu$ should be slightly larger than zero($\mu = 0 \iff P_i = P_j, \forall P_i, P_j \in \mathbb{E}_N$, for real world data sets, this is highly unlikely). Time complexity for this algorithm is still linear but with a larger coefficient.
+			
+			For certain divergence, it is possible to compare similarity from one distribution against multiple others, such as Jensen-Shannon Divergence. Although it reduces time complexity, it sacrifices unaffordable accuracy because divergence among multiple distribution dilutes differences. Take JSD as an example, suppose $P(1) = P(2) = P(3) = \frac{1}{3}$ and $Q(1) = \frac{1}{6}, Q(2) = \frac{1}{3}, Q(3) = \frac{1}{2}$, then $JSD(P||Q) \approx 0.033$ and $JSD(P, P, P, Q) \approx 0.024$.
+			
+			This algorithm can be slightly modified to deal with concept drift(for example, trading trend changes over time for online shops as they are often in the process of expanding or dwindling) by turning the two evidence sets as sliding windows and adopting certain update strategies such as \textit{Least Recently Used}(LRU). Time complexity for this optimization is $O(n\cdot(|\mathbb{E}_N|+|\mathbb{E}_A|)\cdot T_D)$, where $T_D$ denotes time complexity of divergence calculation.
+	
+		\subsection{Threshold}\label{sec:alg-threshold}
+			One important factor in algorithm SDD-E is the value of threshold. A lower threshold rejects more instances, improving the sensitivity of anomalous data while increasing the number of false alarms. A higher threshold provide higher true negative rates yet neglecting more possible threats.
+			
+			A naive but prevalent approach is to set a fixed value as the threshold(As is shown in Algorithm~\ref{alg:sdd-r}). This approach is easy to implement and may give satisfying results in specific cases. However, a fixed threshold requires specific analysis in the certain scenario, manual observations and tuning of parameters, which involves lots of human labour. The rule of ``$3 \sigma$'' declares all instances outside $[\mu - 3\sigma, \mu + 3\sigma]$ to be anomalous. It can be used to automatically determine a threshold. But as a rigid metric, it is merely an estimation of a suitable boundary considering average situations, which is far from optimality when concrete data is provided. It would be either lower than the optimum if anomalous data lies far away from the normal cluster, or higher than the optimum if the anomalies sit close to the cluster centre.
+	
+			Fortunately, applying divergence as the distance measurement among data collections provides a fine property. With a reference distribution, divergences of normal data collections form a quasi-Gaussian distribution as we have seen in section \ref{sec:alg-opt-reference}. The same applies to those anomalous ones.
+	
+			\begin{figure}[!t]
+				\centering
+				\includegraphics[width=\linewidth]{fig/ExampleThreshold.png}
+				\caption{Threshold can be determined either by a probability density value, or a radius from the centre. In the scenario shown in the figure, the threshold can be determined by the position between two centres of the distribution, denoted as ``T'' here. This form of threshold can also be applied to other types of distributions even there is no intersection between these two.}
+				\label{fig:example-threshold}
+			\end{figure}
+	
+			Moreover, as is verified in experiments, the meta-distribution of anomalous data collections lies in the right-hand-side to the normal one on the real line. As shown in Fig~\ref{fig:example-threshold}, the black curve ($PDF_{normal}(x)$ or in short $PDF_n(x)$) displays the probability density function (PDF) fitting those divergences calculated from normal data collections; the blue curve ($PDF_{anomalous}(x)$ or in short $PDF_a(x)$) displays the PDF derived from anomalous data collections. Threshold is chosen to minimize total errors(both false negative and false positive).
+			
+			Suppose:
+			\begin{align}
+				PDF_n(x) &\approx \mathcal{N}(\mu_n, \sigma_n)\\
+				PDF_a(x) &\approx \mathcal{N}(\mu_a, \sigma_a)
+			\end{align}
+			
+			Then the optimal threshold $T$ is calculated by E.q.(\ref{equ:equal-weight}). The optimal threshold will minimize total errors and yield an optimal outcome.
+			However, this is not accurate enough, since E.q.(\ref{equ:equal-weight}) implicates an assumption that chances are the same for a new data collection to be either anomalous or not. If we can determine the probability for a new data collection to be anomalous in any segment of data sequence, the equation should be modified as E.q.(\ref{equ:linear-weight}), where $\alpha$ is the anomaly probability.
+			
+			\begin{align}\label{equ:equal-weight}
+				T &= \mathop{\arg\min}_{T} \int_{0}^{T}PDF_{a}(x)dx +
+				\int_{T}^{\sup(D)}PDF_{n}(x)dx \nonumber\\
+				& \approx \mathop{\arg\min}_{T}
+				\int_{-\infty}^{T}
+				\frac{e^{-\frac{(x - \mu_a)^2}{2\sigma_a^2}}}{\sqrt{2\pi} \sigma_a}dx
+				+ \int_{T}^{+\infty}
+				\frac{e^{-\frac{(x - \mu_n)^2}{2\sigma_n^2}}}{\sqrt{2\pi} \sigma_n}dx \nonumber\\
+				& = \begin{cases}
+				\displaystyle
+				\frac{1}{\sigma_a^2 - \sigma_n^2}\left[(\sigma_a^2\mu_n - \sigma_n^2\mu_a) \pm \sigma_a\sigma_n\sqrt{(\mu_a - \mu_n)^2 + 2(\sigma_a^2 - \sigma_n^2)ln\frac{\sigma_a}{\sigma_n}}\right], & \sigma_a \ne \sigma_n\\
+				\displaystyle \frac{\mu_n + \mu_a}{2}, & \sigma_a = \sigma_n
+				\end{cases}
+			\end{align}
+			
+			Note: when $\sigma_a \ne \sigma_n$, keep the root s.t. $\displaystyle \frac{T - \mu_a}{\sigma_a^3}e^{-\frac{(T - \mu_a)^2}{2\sigma_a^2}} < \frac{T - \mu_n}{\sigma_n^3}e^{-\frac{(T - \mu_n)^2}{2\sigma_n^2}}$
+			
+			\begin{align}\label{equ:linear-weight}
+				T & = \mathop{\arg\min}_{T} \alpha\int_{0}^{T}PDF_{a}(x)dx +
+				(1-\alpha)\int_{T}^{\sup(D)}PDF_{n}(x)dx\nonumber\\
+				& \approx \mathop{\arg\min}_{T}
+				\alpha\int_{-\infty}^{T}
+				\frac{e^{-\frac{(x - \mu_a)^2}{2\sigma_a^2}}}{\sqrt{2\pi} \sigma_a}dx
+				+ 
+				(1-\alpha)\int_{T}^{+\infty}
+				\frac{e^{-\frac{(x - \mu_n)^2}{2\sigma_n^2}}}{\sqrt{2\pi} \sigma_n}dx\nonumber\\
+				& = \begin{cases}
+				\displaystyle
+				\frac{1}{\sigma_a^2 - \sigma_n^2}\left[(\sigma_a^2\mu_n - \sigma_n^2\mu_a) \pm \sigma_a\sigma_n\sqrt{(\mu_a - \mu_n)^2 + 2(\sigma_a^2 - \sigma_n^2)ln\frac{(1 - \alpha)\sigma_a}{\alpha\sigma_n}}\right], & \sigma_a \ne \sigma_n\\
+				\displaystyle
+				\frac{\mu_n + \mu_a}{2} + \frac{k^2ln\frac{1 - \alpha}{\alpha}}{\mu_a - \mu_n}, & \sigma_a = \sigma_n = k
+				\end{cases}
+			\end{align}
+			
+			Note: when $\sigma_a \ne \sigma_n$, keep the root s.t. $\displaystyle \frac{\alpha (T - \mu_a)}{\sigma_a^3}e^{-\frac{(T - \mu_a)^2}{2\sigma_a^2}} < \frac{(1 - \alpha) (T - \mu_n)}{\sigma_n^3}e^{-\frac{(T - \mu_n)^2}{2\sigma_n^2}}$
+			
+			Moreover, with an estimated anomaly probability, SDD-R can be also optimized by ranking all data collections according to their divergence value and select first $n \cdot \alpha$ ones with highest values as anomalies.
+	
+	\section{Evaluation}\label{sec:evaluation}
+		Our algorithm was implemented and interpreted in Python 3.5.2. All experiments were tested on Ubuntu 16.04. In the following experiments, we figured out properties of real world data and performance of our technique against anomalous data collections. We also made a comparison among variations of SDD algorithms and MGoF.\footnote{All resources and more detailed experiment results can be retrieved online: https://github.com/TramsWang/StatisticalAnomalyDetection}
+	
+		\subsection{Methodology}\label{sec:exp-methodology}
+			We adopted two data sets: 1) Koubei sellers' transaction records\footnote{https://tianchi.aliyun.com/competition/information.htm?raceId=231591}; 2) Synthetic random distribution data set. Koubei data set was provided by Alibaba Tian Chi big data competition where all records were collected from real world business scenarios. It contained information about seller features, user payments and browsing behaviour. We randomly chose one seller (ID: 1629) and extracted transaction history of this seller, records ranging from Nov. 11th 2015 to Oct. 31st 2016. Entire transaction set was then divided into 325 collections, each containing records in one day. Fig.~\ref{fig:daily-transaction-volume} and~\ref{fig:sale-distribution-sample} give an overview of it.
+			
+			\begin{figure}[!t]
+				\centering
+				\includegraphics[width=0.75\linewidth]{fig/DailyTransactionVolume.png}
+				\caption{Changing of the daily sales volume shows that environment of online sales had been changing all the time.}
+				\label{fig:daily-transaction-volume}
+			\end{figure}
+			
+			\begin{figure}[!t]
+				\centering
+				\includegraphics[width=\linewidth]{fig/SaleDistributions.png}
+				\caption{We selected 3 days randomly and drew sales distribution by counting hourly volume. Although sales volume has changed from day to day, the shape of the distribution remain almost alike.}
+				\label{fig:sale-distribution-sample}
+			\end{figure}
+			
+			Two types of click-farmed data was generated according to patterns described in section~\ref{sec:related-realworld}. To emulate centralized click farming, we randomly inserted some Gaussian-distributed transactions in the chosen collection. As for emulating the equalized click farmers, we simply doubled each record in the chosen collection to make the new distribution exactly the same as the original one, which is harder for the online platform to discover.
+			Usually, the click-farmed transactions are several times more than the volume it originally has, if the seller hires a group of organized workers. In our experiments, we use $\nu$ to denote the magnitude coefficient of click farming. Hence $|D_{anomalous}| = (1 + \nu)|D_{normal}|$. In the following experiments without extra illustration, we adopted $\nu = 1$.
+			
+			One defect of this data set is that the detailed time stamp is aligned at each hour of the day due to desensitization. We constructed an enhanced data set by assigning every time stamp a random value for minutes and seconds. Therefore, the enhanced data set should be closer to the reality.
+			
+			The synthetic data set was divided into four sections. First two sections contained sample sets drawn from a uniform and a Gaussian distribution respectively. The third section used a mixture of one uniform distribution and two Gaussian distributions to simulate a random-shaped distribution. Moreover, we made the random-shaped distribution drift slightly to form the last section of test data. Corresponding anomalies were drown from distributions with deviated parameters respectively.
+	
+			We adopted histograms to depict distributions of any shape. Surely, the kernel density estimation approaches will give smooth and continuous estimations on any sampled data. But the computational cost will be too much to afford. Step size of histograms is chosen by:
+			\begin{equation}\label{equ:step-size}
+				l = c \sigma k^{-0.2},
+			\end{equation}
+			where $k$ is sample size, $c$ is a constant relative to the shape of distribution (e.g. for normal distribution, $c=1.05$) and $\sigma$ the standard deviation. For data sets with a large number of elements, a random sampling method, such as Monte-Carlo method, can be applied to speed up the estimation procedure.
+			
+			Divergence metric adopted in each SDD algorithms was Jensen-Shannon divergence if no specific notation is made. However, MGoF used only Kullback-Leibler divergence due to its special mechanism. We use a ``+'' to denote algorithms optimized by a given $\alpha$.
+			
+		\subsection{Experiments on Koubei Data Set}\label{sec:exp-raw}
+			We first tested our algorithms on Koubei data set in order to see whether and why the algorithm works. Anomalies were random selected days replaced by corresponding click farmed version. To play the role of purchasing platform, we investigated two levels of transaction distribution. The first level is to simply draw a histogram aligned to time spans. The second level is to draw a histogram on the sub-volumes in each time span(i.e. a histogram on frequencies in the first level histogram, as shown in Fig.~\ref{fig:histogram-example}).
+			
+			\begin{figure}[!t]
+				\centering
+				\includegraphics[width=\linewidth]{fig/HistogramExample.png}
+				\caption{Examples of 1st and 2nd Level Histogram}
+				\label{fig:histogram-example}
+			\end{figure}
+			
+			On the raw data set, we had no choice but to set one hour a basket. While on the enhanced data set, we adopted E.q.(\ref{equ:step-size}) to determine step size automatically.
+			To test SDD-E, we randomly selected 30 correct days and 10 click farmed days as normal and anomalous evidence respectively.
+			Here $\alpha = 0.2$. The results are shown in Table~\ref{tab:result-koubei-raw} and \ref{tab:result-koubei-enhanced}.
+			
+			\begin{sidewaystable}
+				\centering
+				\caption{Performance on Raw Data}
+				\label{tab:result-koubei-raw}
+				\footnotesize
+				\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+					\hline
+					\multirow{3}{*}{\textbf{}} & \multicolumn{8}{c|}{\textbf{Centralized}} & \multicolumn{8}{c|}{\textbf{Equalized}} \\ \cline{2-17} 
+					& \multicolumn{4}{c|}{\textbf{1st Level}} & \multicolumn{4}{c|}{\textbf{2nd Level}} & \multicolumn{4}{c|}{\textbf{1st Level}} & \multicolumn{4}{c|}{\textbf{2nd Level}} \\ \cline{2-17} 
+					& \textbf{Pre(\%)} & \textbf{Rec(\%)} & \textbf{F1(\%)} & \textbf{T(ms)} & \textbf{Pre(\%)} & \textbf{Rec(\%)} & \textbf{F1(\%)} & \textbf{T(ms)} & \textbf{Pre(\%)} & \textbf{Rec(\%)} & \textbf{F1(\%)} & \textbf{T(ms)} & \textbf{Pre(\%)} & \textbf{Rec(\%)} & \textbf{F1(\%)} & \textbf{T(ms)} \\ \hline
+					\textbf{SDD-R} & 89.51 & 48.75 & 63.12 & 266.77 & 21.97 & \textbf{99.38} & 35.98 & 11.12 & 6.67 & 0.63 & 1.14 & 249.15 & 21.22 & 72.50 & 32.83 & 7.81 \\ \hline
+					\textbf{SDD-R+} & 91.25 & 91.25 & \textbf{91.25} & \textbf{265.96} & \textbf{61.88} & 61.88 & 61.88 & 10.08 & 9.38 & 9.38 & 9.38 & \textbf{247.31} & \textbf{44.38} & 44.38 & 44.38 & 6.92 \\ \hline
+					\textbf{SDD-E Static} & \textbf{92.46} & 68.75 & 78.86 & 292.50 & 36.55 & 98.13 & 53.26 & 5.75 & 6.67 & 0.63 & 1.14 & 271.45 & 36.07 & 86.25 & 50.86 & 5.64 \\ \hline
+					\textbf{SDD-E Static+} & 85.02 & 32.50 & 47.02 & 293.77 & 46.24 & 91.88 & 61.52 & 5.95 & 10.00 & 0.63 & 1.18 & 272.71 & 43.60 & 76.25 & \textbf{55.48} & 5.68 \\ \hline
+					\textbf{SDD-E Dynamic} & 49.11 & \textbf{99.38} & 65.73 & 699.97 & 23.01 & \textbf{99.38} & 37.37 & 245.65 & 10.36 & \textbf{18.13} & \textbf{13.18} & 681.09 & 22.09 & \textbf{93.13} & 35.71 & 242.85 \\ \hline
+					\textbf{SDD-E Dynamic+} & 73.21 & 98.75 & 84.09 & 701.06 & 48.02 & 96.25 & \textbf{64.07} & 255.43 & 8.15 & 6.88 & 7.46 & 681.89 & 40.79 & 78.13 & 53.59 & 253.03 \\ \hline
+					\textbf{MGoF} & 14.08 & 21.88 & 17.13 & 292.14 & 13.01 & 4.38 & 6.55 & \textbf{3.64} & \textbf{12.50} & 3.13 & 5.00 & 250.42 & 12.50 & 3.13 & 5.00 & \textbf{3.71} \\ \hline
+				\end{tabular}
+				
+				\vskip\baselineskip
+				\caption{Performance on Enhanced Data}
+				\label{tab:result-koubei-enhanced}
+				\footnotesize
+				\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+					\hline
+					\multirow{3}{*}{\textbf{}} & \multicolumn{8}{c|}{\textbf{Centralized}} & \multicolumn{8}{c|}{\textbf{Equalized}} \\ \cline{2-17} 
+					& \multicolumn{4}{c|}{\textbf{1st Level}} & \multicolumn{4}{c|}{\textbf{2nd Level}} & \multicolumn{4}{c|}{\textbf{1st Level}} & \multicolumn{4}{c|}{\textbf{2nd Level}} \\ \cline{2-17} 
+					& \textbf{Pre(\%)} & \textbf{Rec(\%)} & \textbf{F1(\%)} & \textbf{T(ms)} & \textbf{Pre(\%)} & \textbf{Rec(\%)} & \textbf{F1(\%)} & \textbf{T(ms)} & \textbf{Pre(\%)} & \textbf{Rec(\%)} & \textbf{F1(\%)} & \textbf{T(ms)} & \textbf{Pre(\%)} & \textbf{Rec(\%)} & \textbf{F1(\%)} & \textbf{T(ms)} \\ \hline
+					\textbf{SDD-R} & 81.54 & 41.88 & 55.33 & 238.61 & 17.49 & 92.50 & 29.42 & 13.86 & 6.67 & 0.63 & 1.14 & 239.44 & 21.15 & 71.88 & 32.69 & 12.08 \\ \hline
+					\textbf{SDD-R+} & \textbf{91.25} & 91.25 & \textbf{91.25} & \textbf{236.94} & 36.88 & 36.88 & 36.88 & 12.98 & 8.13 & 8.13 & 8.13 & \textbf{236.47} & 38.75 & 38.75 & 38.75 & 11.03 \\ \hline
+					\textbf{SDD-E Static} & 88.31 & 67.50 & 76.52 & 257.60 & 31.99 & 92.50 & 47.54 & 9.74 & 6.67 & 0.63 & 1.14 & 257.65 & 34.49 & 91.25 & 50.06 & 9.37 \\ \hline
+					\textbf{SDD-E Static+} & 69.67 & 13.13 & 22.09 & 259.30 & \textbf{42.12} & 73.75 & \textbf{53.62} & 9.59 & 10.00 & 0.63 & 1.18 & 258.45 & \textbf{44.17} & 82.50 & \textbf{57.54} & 9.32 \\ \hline
+					\textbf{SDD-E Dynamic} & 42.93 & \textbf{99.38} & 59.96 & 1106.25 & 20.12 & \textbf{95.63} & 33.25 & 277.70 & 10.57 & \textbf{17.50} & \textbf{13.18} & 1108.93 & 20.30 & \textbf{94.38} & 33.42 & 271.74 \\ \hline
+					\textbf{SDD-E Dynamic+} & 69.18 & 98.13 & 81.15 & 1110.81 & 33.25 & 87.50 & 48.19 & 292.60 & 7.06 & 3.75 & 4.90 & 1118.00 & 37.21 & 80.63 & 50.92 & 283.50 \\ \hline
+					\textbf{MGoF} & 13.97 & 17.50 & 15.54 & 294.08 & 14.66 & 8.13 & 10.45 & \textbf{8.01} & \textbf{12.50} & 3.13 & 5.00 & 250.10 & 18.42 & 8.75 & 11.86 & \textbf{7.55} \\ \hline
+				\end{tabular}
+			\end{sidewaystable}
+			
+			\begin{figure}[!t]
+				\centering
+				\includegraphics[width=\linewidth]{fig/Raw1stLevelHist.png}
+				\caption{1st level histogram of day 5, 113 and 287, each day in a column. Distributions after centralized and equalized click farming are in 1st and 3rd rows correspondingly. And the original distributions are shown in the 2nd row.}
+				\label{fig:raw-hist-1st}
+			\end{figure}
+	
+			\begin{figure}[!t]
+				\centering
+				\includegraphics[width=\linewidth]{fig/RawOverview2nd.png}
+				\caption{This figure shows distribution of JSD values(on 2nd level histograms) of normal and two types of click farming data. Divergences were calculated according to a reference averaged among all correct distributions.}
+				\label{fig:raw-overview}
+			\end{figure}
+	
+			When classifying toward 1st level histograms, centralized click farming behaviours can be easily discovered. As displayed in the first two rows in Fig.~\ref{fig:raw-hist-1st}, normal collections share a similar distribution while centralized click-farmed ones abruptly violated the original shape. However, as a clever click farmer, equalized click farming did not in the least distort the distribution. Most of them escaped the check under perfect disguises.
+			But when it came to 2nd level histograms, the ``clever disguise'' did not work any longer. It can be clearly seen in Fig.~\ref{fig:raw-overview} that distribution of divergence of both click farming types shows an obvious deviation from the normal one.
+			
+			The result showed that our technique outperformed MGoF in every real world cases.
+			SDD-E provided best performance, yet it consumed the most computing power. Comparison among SDD-R revealed improvement of reference as well as the importance of threshold under this technique. Although dynamic SDD-E consumes more computation power, it is clear that dynamic SDD-E is capable of tracing the gradual shift of environment. MGoF turned out to be the worst since it always mark several false positive when $c_{th}$ had not been met and much more false negatives when similar errors occurred too many. 
+			
+			Parameter $\alpha$ improved total accuracy of dynamic SDD-E algorithm by 10-20\% as was supposed. It also increased its F1 by more than 20\%. $\alpha$ made a great difference in SDD-R as well, which illustrated that divergence sorted almost all collections in correct order according to the averaged reference. However, static SDD-E did not show the same improvement. Since environment drift took greater influence in the result. In comparison with $\alpha$, adaptive threshold given by evidence sets did not bring the most improvement. But this threshold can be applied together with other optimizations such as slide windows.
+	
+		\subsection{Test against Anomaly Proportion and Magnitude}\label{sec:exp-synthetic}
+			In this experiment, we tested algorithm performance under various anomaly proportion and magnitude. $\alpha$ ranged from 0.1 to 0.9 when $\nu = 1$ and $\nu \in [0.1, 0.9]$ when $\alpha = 0.1$, other settings remains the same.
+			
+			\begin{figure}[!t]
+				\includegraphics[width=\linewidth]{fig/AccuracyOnAnomalyProbability.png}
+				
+				\includegraphics[width=\linewidth]{fig/F1OnAnomalyProbability.png}
+				\caption{Accuracy and F1 on Different Anomaly Probabilities}
+				\label{fig:anomaly-probability}
+			\end{figure}
+			
+			Fig.~\ref{fig:anomaly-probability} shows that our technique outperformed MGoF and was relatively stable when dealing with all proportions of 1st level centralized anomalies. SDD-E performed even better since it maintains knowledge of both normal and anomalous distributions and calculates the threshold according to the best expectation. However, it relies on the accuracy of distribution estimation. When it came to 2nd level distributions, histograms became much coarser since data available was highly limited and thus its performance suffered dramatically.
+			
+			MGoF tended to classify every distribution as anomaly, therefore benefited most by larger $\alpha$. It always classifies as anomalous the first $c_{th}$ distributions supporting every null hypothesis. Thus when $\alpha$ increased, the proportion of misclassified normal collections also became larger, while those anomalies were still considered anomalous. And given that the total number of normal collections drops down, the overall accuracy tended to increase as more instances are correctly classified as anomalous. However, the right half shows a different trend. One reason is that MGoF uses KLD other than JSD. In the Koubei dataset, the discrete estimation of distributions oscillated in a wide range, leading to that the prerequisite of KLD is often unsatisfied. Thus the calculation of KLD may not give a correct measurement. Furthermore, the 2nd histogram provided fewer probability entries than the 1st level did. Thus it shows a more significant deviation from our expectation.
+			For the classifiers of MGoF, they  compromised to a high error rate. Because more anomalies gathered together and the algorithm recognized them as clusters of normal data.
+			
+			\begin{figure}[!t]
+				\includegraphics[width=\linewidth]{fig/PerformanceOnAnomalyMagnitude.png}
+				\caption{Accuracy and F1 on Different Anomaly Magnitudes}
+				\label{fig:anomaly-magnitude}
+			\end{figure}
+			
+			From Fig.~\ref{fig:anomaly-magnitude} we can conclude that our algorithms are still the best, given that they are most sensitive toward tiny anomalous variations. However, static SDD-E did not rise until $\nu > 1$, this is because it suffered from fluctuation on the trade environment at the mean time. MGoF is not sensitive toward minor anomalies either.
+			For a relatively small magnitude of click farming, the classifiers of MGoF quickly degrade to be trivial. The rigid threshold could not automatically rise up and was thus far from to optimal. 
+		
+		\subsection{Results on Synthetic Data Set}
+			In this experiment, we tested all seven algorithms on totally synthetic data sets. Results are shown in TABLE~\ref{tab:performance-synthetic}. It shows that our technique can be applied towards any kind of distributions. And these techniques worked better under irregular distributions since difference were clearer among these. Comparison between SDD-R and static SDD-E 
+			shows that adaptive thresholds provided more flexible classifiers. Results under random-shape drifting proves the efficiency of sliding windows toward drifting context.
+		
+			\begin{sidewaystable}
+				\centering
+				\caption{Performance Comparison on Synthetic Data Sets}
+				\label{tab:performance-synthetic}
+				\footnotesize
+				\begin{tabular}{|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+					\hline
+					\multirow{2}{*}{\textbf{}} & \multicolumn{4}{c|}{\textbf{Uniform}} & \multicolumn{4}{c|}{\textbf{Gaussian}} & \multicolumn{4}{c|}{\textbf{Random-shape}} & \multicolumn{4}{c|}{\textbf{Random-shape with Drift}} \\ \cline{2-17} 
+					& \textbf{Pre(\%)} & \textbf{Rec(\%)} & \textbf{F1(\%)} & \textbf{T(ms)} & \textbf{Pre(\%)} & \textbf{Rec(\%)} & \textbf{F1(\%)} & \textbf{T(ms)} & \textbf{Pre(\%)} & \textbf{Rec(\%)} & \textbf{F1(\%)} & \textbf{T(ms)} & \textbf{Pre(\%)} & \textbf{Rec(\%)} & \textbf{F1(\%)} & \textbf{T(ms)} \\ \hline
+					\textbf{SDD-R} & 10.00 & \textbf{100.00} & 18.18 & 349.42 & 24.78 & 69.20 & 36.49 & 401.82 & 10.00 & \textbf{100.00} & 18.18 & 351.65 & 9.97 & \textbf{99.00} & 18.11 & 353.65 \\ \hline
+					\textbf{SDD-R+} & 22.40 & 22.40 & 22.40 & 348.49 & 34.40 & 34.40 & 34.40 & \textbf{398.02} & 58.40 & 58.40 & 58.40 & \textbf{350.87} & 1.20 & 1.20 & 1.20 & \textbf{346.67} \\ \hline
+					\textbf{SDD-E Static} & 43.71 & 82.60 & 57.17 & 372.74 & 33.34 & 66.60 & 44.44 & 410.72 & 69.24 & 93.20 & 79.45 & 372.77 & 12.34 & 97.20 & 21.91 & 369.63 \\ \hline
+					\textbf{SDD-E Static+} & \textbf{75.10} & 60.20 & \textbf{66.83} & 371.72 & \textbf{45.93} & 45.80 & \textbf{45.86} & 412.95 & \textbf{89.52} & 85.40 & \textbf{87.41} & 368.97 & 12.60 & 94.20 & 22.23 & 370.12 \\ \hline
+					\textbf{SDD-E Dynamic} & 18.53 & 81.80 & 30.21 & 6808.58 & 20.28 & \textbf{71.40} & 31.58 & 8985.92 & 25.90 & 97.40 & 40.92 & 5881.37 & 13.44 & 97.20 & 23.61 & 5747.19 \\ \hline
+					\textbf{SDD-E Dynamic+} & 27.85 & 25.60 & 26.68 & 8019.23 & 26.19 & 56.40 & 35.77 & 9197.94 & 77.60 & 79.40 & 78.49 & 6408.12 & \textbf{50.55} & 84.00 & \textbf{63.11} & 6176.57 \\ \hline
+					\textbf{MGoF} & 10.94 & 4.40 & 6.28 & \textbf{347.97} & 10.08 & 51.60 & 16.87 & 571.93 & 6.40 & 13.60 & 8.70 & 440.26 & 2.75 & 11.60 & 4.45 & 509.58 \\ \hline
+				\end{tabular}
+				
+				\begin{multicols}{2}
+					\includegraphics[width=\linewidth]{fig/F1OnDivergenceMetric.png}
+					\captionof{figure}{F1 under Different Divergence Metric}
+					\label{fig:divergence-metric-f1}
+					\includegraphics[width=.8\linewidth]{fig/ROCUnderDifferentMetrics.png}
+					\captionof{figure}{ROC under Different Divergence Metric}
+					\label{fig:divergence-metric-roc}
+				\end{multicols}
+			\end{sidewaystable}
+			
+			The last experiment was carried out on random-shaped distribution data set, with $alpha=0.1$ and rest parameters the same. Under different divergence metrics mentioned in section~\ref{sec:preliminaries}, F1 scores were calculated among all SDD algorithms and ROC curves were recorded on SDD-R and static SDD-E. Given that MGoF was defined specifically on Kullback-Leibler divergence, it cannot be tested in the same way. Results are shown in Fig.~\ref{fig:divergence-metric-f1} and Fig.~\ref{fig:divergence-metric-roc}.
+			
+			It is indicated that Jensen-Shannon divergence is suited to all techniques due to its symmetry. Kullback-Leibler divergence provides more evident differences when references were given. Bhattacharyya distance and Hellinger distance turned out almost as good as Jensen-Shannon divergence, but they consumed less time. Kolmogorov-Smirnov Statistic performed relatively poor since it considers only the largest gap between two distributions, which provides little information.
+			
+		\subsection{Discussion}
+			MGoF's learning procedure of anomalous probability hypothesis is inefficient. To maintain a comprehensive knowledge of anomalies, MGoF has to reserve a single hypothesis entry for every type of them. But in reality, it is always the case that we face the heterogeneity of outliers. In the Koubei data set, there can be tens of anomalous distributions caused solely by centralized click farming. It takes a long time to discover every possible type of anomaly. Besides, if there happens to be more than $c_{th}$ anomalous distributions of the same type, later discovered collections will no longer declared to be anomalous any more.
+			
+			However, in SDD-R and SDD-E, that is not a problem since it can map and gather all anomalies together and draw a universal boundary between them and all normal collections. These techniques are suitable to all typical divergence metrics and consumes little computation power(except dynamic SDD-E). The only drawback is they require comprehensive estimation of target distributions. Although other parameters need estimation as well, they are naturally addressable under big data circumstances.
+			
+	\section{Conclusion}\label{sec:conclusion}
+		This paper proposes a series of collective anomaly detection techniques, which helps detect data manipulations in modern data pipelines and data centres. Different from existing algorithms designed for collective anomalies, our approach employs statistical distance as the similarity measurement. We explored several technical points involved in the design of the algorithm and performed a thorough experiment to test its efficiency. The comparison experiment also illustrated the advantages of our technique. It can be concluded that the our technique can efficiently discover anomalies within the data collections and the classifier is sensitive enough toward real world data manipulations. 
+		
+
+%\section*{Acknowledgment}
+
+
+	\bibliographystyle{IEEEtran}
+	
+	\bibliography{IEEEabrv,paper}
+
+%%	\newpage
+%	\onecolumn
+%	\appendix \label{sec:appendix}
+%	Here are the two equations for threshold calculation:
+%	\subsection{Estimation without $\alpha$}
+%		\begin{align}\label{equ:equal-weight}
+%			T &= \mathop{\arg\min}_{T} \int_{0}^{T}PDF_{a}(x)dx +
+%			\int_{T}^{\sup(D)}PDF_{n}(x)dx \nonumber\\
+%			& \approx \mathop{\arg\min}_{T}
+%			\int_{-\infty}^{T}
+%			\frac{e^{-\frac{(x - \mu_a)^2}{2\sigma_a^2}}}{\sqrt{2\pi} \sigma_a}dx
+%			+ \int_{T}^{+\infty}
+%			\frac{e^{-\frac{(x - \mu_n)^2}{2\sigma_n^2}}}{\sqrt{2\pi} \sigma_n}dx \nonumber\\
+%			& = \begin{cases}
+%				\displaystyle
+%				\frac{1}{\sigma_a^2 - \sigma_n^2}\left[(\sigma_a^2\mu_n - \sigma_n^2\mu_a) \pm \sigma_a\sigma_n\sqrt{(\mu_a - \mu_n)^2 + 2(\sigma_a^2 - \sigma_n^2)ln\frac{\sigma_a}{\sigma_n}}\right], & \sigma_a \ne \sigma_n\\
+%				\displaystyle \frac{\mu_n + \mu_a}{2}, & \sigma_a = \sigma_n
+%			\end{cases}
+%		\end{align}
+%		
+%		Note: when $\sigma_a \ne \sigma_n$, keep the one s.t. $\displaystyle \frac{T - \mu_a}{\sigma_a^3}e^{-\frac{(T - \mu_a)^2}{2\sigma_a^2}} < \frac{T - \mu_n}{\sigma_n^3}e^{-\frac{(T - \mu_n)^2}{2\sigma_n^2}}$
+%	
+%	\subsection{Estimation with $\alpha$}
+%		\begin{align}\label{equ:linear-weight}
+%			T & = \mathop{\arg\min}_{T} \alpha\int_{0}^{T}PDF_{a}(x)dx +
+%			(1-\alpha)\int_{T}^{\sup(D)}PDF_{n}(x)dx\nonumber\\
+%			& \approx \mathop{\arg\min}_{T}
+%			\alpha\int_{-\infty}^{T}
+%			\frac{e^{-\frac{(x - \mu_a)^2}{2\sigma_a^2}}}{\sqrt{2\pi} \sigma_a}dx
+%			+ 
+%			(1-\alpha)\int_{T}^{+\infty}
+%			\frac{e^{-\frac{(x - \mu_n)^2}{2\sigma_n^2}}}{\sqrt{2\pi} \sigma_n}dx\nonumber\\
+%			& = \begin{cases}
+%				\displaystyle
+%				\frac{1}{\sigma_a^2 - \sigma_n^2}\left[(\sigma_a^2\mu_n - \sigma_n^2\mu_a) \pm \sigma_a\sigma_n\sqrt{(\mu_a - \mu_n)^2 + 2(\sigma_a^2 - \sigma_n^2)ln\frac{(1 - \alpha)\sigma_a}{\alpha\sigma_n}}\right], & \sigma_a \ne \sigma_n\\
+%				\displaystyle
+%				\frac{\mu_n + \mu_a}{2} + \frac{k^2ln\frac{1 - \alpha}{\alpha}}{\mu_a - \mu_n}, & \sigma_a = \sigma_n = k
+%			\end{cases}
+%		\end{align}
+%		
+%		Note: when $\sigma_a \ne \sigma_n$, keep the one s.t. $\displaystyle \frac{\alpha (T - \mu_a)}{\sigma_a^3}e^{-\frac{(T - \mu_a)^2}{2\sigma_a^2}} < \frac{(1 - \alpha) (T - \mu_n)}{\sigma_n^3}e^{-\frac{(T - \mu_n)^2}{2\sigma_n^2}}$
+
+\end{document}
+
+
+In 2016, according to the research by Tricentis~\cite{softwareFailure}, software failures cost \$1.1 trillion US dollars in total and those occurred at 363 investigated companies affected 4.4 billion customers, causing the total lost time of more than 315.5 years. And it takes more than 45\% of total expense to eliminate those errors~\cite{pawar2016software}. System configuration problems, as a matter of fact, are also responsible for the disturbing situation. They take even dominant places in failures in large distributed clusters~\cite{xu2015systems}.

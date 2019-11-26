@@ -1,0 +1,149 @@
+\relax 
+\citation{bigDataStatistics}
+\citation{softwareFailure}
+\citation{pawar2016software}
+\citation{xu2015systems}
+\citation{saha2014data}
+\citation{rassam2014adaptive}
+\citation{herodotou2014scalable}
+\citation{schuster2015vc3}
+\citation{humanError}
+\citation{dataManipulation}
+\citation{SyriaHacker}
+\@writefile{toc}{\contentsline {section}{\numberline {I}Introduction}{1}}
+\citation{chandola2009anomaly}
+\citation{goldberger2000components}
+\citation{fujimaki2005approach}
+\citation{cao2014scalable}
+\citation{cao2017multi}
+\citation{masud2013classification}
+\citation{li2015discovery}
+\citation{shao2014prototype}
+\citation{zhang2017lshiforest}
+\citation{yin2016model}
+\citation{zhu2002statstream}
+\citation{caudell1993adaptive}
+\citation{chan2005modeling}
+\citation{budalakoti2006anomaly}
+\citation{ye2000markov}
+\citation{warrender1999detecting}
+\citation{pavlov2003sequence}
+\citation{yu2015glad}
+\citation{iresearch2016b2c}
+\citation{zhao2016on}
+\citation{yan2015report}
+\citation{netease2015research}
+\citation{simpleDetection}
+\@writefile{toc}{\contentsline {section}{\numberline {II}Related Work}{2}}
+\newlabel{sec:related-work}{{II}{2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {II-A}}Data Anomaly Detection}{2}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {II-B}}Real World Problem: Click Farming Detection}{2}}
+\newlabel{sec:related-realworld}{{\unhbox \voidb@x \hbox {II-B}}{2}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Example Cumulative Distribution Function of Original And Click Farmed Daily Transaction Data}}{3}}
+\newlabel{fig:example-ecdf}{{1}{3}}
+\@writefile{toc}{\contentsline {section}{\numberline {III}Preliminaries}{3}}
+\newlabel{sec:preliminaries}{{III}{3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-A}}Kullback-Leibler Divergence}{3}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {III-B}}Jensen-Shannon Divergence}{3}}
+\@writefile{toc}{\contentsline {section}{\numberline {IV}Statistical Detection}{3}}
+\newlabel{sec:algorithm-details}{{IV}{3}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces Basic Classification}}{4}}
+\newlabel{alg:static}{{1}{4}}
+\newlabel{line:population-estimation}{{4}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-A}}Divergence-Based Collective Anomaly Detection}{4}}
+\newlabel{sec:alg-basic}{{\unhbox \voidb@x \hbox {IV-A}}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-B}}Distribution Histogram}{4}}
+\newlabel{sec:alg-histogram}{{\unhbox \voidb@x \hbox {IV-B}}{4}}
+\newlabel{equ:step-size}{{6}{4}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Distribution of JSD values for everyday data collection. It can be approximately regarded as a gaussian distribution.}}{5}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-C}}Threshold}{5}}
+\newlabel{sec:alg-threshold}{{\unhbox \voidb@x \hbox {IV-C}}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Threshold can be determined either by a probability density value, or a radius from the centre. In the scenario shown in the figure, the threshold can be determined by the position between two means of the distribution, denoted as ``T'' here. This form of threshold can also be applied to other types of distributions even there is no intersection between these two.}}{5}}
+\newlabel{fig:example-threshold}{{3}{5}}
+\newlabel{equ:linear-weight}{{9}{5}}
+\newlabel{equ:linear-balanced}{{10}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {IV-D}}Dynamic DCAD}{6}}
+\newlabel{sec:alg-dynamic}{{\unhbox \voidb@x \hbox {IV-D}}{6}}
+\@writefile{toc}{\contentsline {section}{\numberline {V}Evaluation}{6}}
+\newlabel{sec:evaluation}{{V}{6}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces Dynamic DAD}}{6}}
+\newlabel{alg:dynamic}{{2}{6}}
+\newlabel{line:hist-1}{{2}{6}}
+\newlabel{line:hist-2}{{5}{6}}
+\newlabel{line:gaussian-1}{{16}{6}}
+\newlabel{line:gaussian-2}{{17}{6}}
+\newlabel{line:update-normal-evidence}{{20}{6}}
+\newlabel{line:update-anomalous-evidence}{{23}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-A}}Methodology}{6}}
+\newlabel{sec:exp-methodology}{{\unhbox \voidb@x \hbox {V-A}}{6}}
+\@writefile{lot}{\contentsline {table}{\numberline {I}{\ignorespaces User Payment Record Exmaple}}{6}}
+\newlabel{tab:user-payment-sample}{{I}{6}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Changing of the daily sales volume shows that some features of online sales has been changing all the time. Business transactions shall be checked with the dynamic algorithm.}}{7}}
+\newlabel{fig:daily-transaction-volume}{{4}{7}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces We selected 3 days randomly and drew sales distribution by counting hourly volume. Although sales volume has changed from day to day, the shape of the distribution remain almost alike.}}{7}}
+\newlabel{fig:sale-distribution-sample}{{5}{7}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces Example of 1st and 2nd Level Histogram}}{7}}
+\newlabel{fig:histogram-example}{{6}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-B}}Experiment on Raw Data}{7}}
+\newlabel{sec:exp-raw}{{\unhbox \voidb@x \hbox {V-B}}{7}}
+\@writefile{lot}{\contentsline {table}{\numberline {II}{\ignorespaces Classification Results on Raw Data}}{8}}
+\newlabel{tab:result-raw-1st}{{II}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces 1st level histogram of day 5, 113 and 287, each day in a column. Distributions after centralized and equalized click farming are in 1st and 3rd row correspondingly. And the original distributions are shown in 2nd row.}}{8}}
+\newlabel{fig:raw-hist-1st}{{7}{8}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-C}}Experiment on Synthetic Data}{8}}
+\newlabel{sec:exp-synthetic}{{\unhbox \voidb@x \hbox {V-C}}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces 2nd level histogram of day 5, 113 and 287, each day in a column. Distribution after centralized click farming in day 287 uses another time scale since it deviates a lot from others.}}{8}}
+\newlabel{fig:raw-hist-2nd}{{8}{8}}
+\@writefile{lof}{\contentsline {figure}{\numberline {9}{\ignorespaces This figure shows the JSD values of 1st and 2nd level histogram in each day in three different version: normal, centralized click farmed and equalized click farmed. Both (a) and (b) shows that centralized ones are usually larger than normal ones and most of them clearly distinguishable. In (a), 1st level histogram cannot tell anything different between normal ones and equalized ones. But in (b), 2nd level histograms map the equalized click farmers to the right side of normal ones.}}{8}}
+\newlabel{fig:raw-overview}{{9}{8}}
+\@writefile{lot}{\contentsline {table}{\numberline {III}{\ignorespaces 1st Level}}{9}}
+\newlabel{tab:syn-result-1st}{{III}{9}}
+\@writefile{lot}{\contentsline {table}{\numberline {IV}{\ignorespaces 2nd Level}}{9}}
+\newlabel{tab:syn-result-2nd}{{IV}{9}}
+\@writefile{lof}{\contentsline {figure}{\numberline {10}{\ignorespaces ROC curve of 1st and 2nd level classifier given different values of $\alpha $. The performance of the classifier does not change much for different error rates.}}{9}}
+\newlabel{fig:roc-alpha}{{10}{9}}
+\@writefile{lof}{\contentsline {figure}{\numberline {11}{\ignorespaces ROC curve of different magnitude of click farming. In real world scenarios, $\nu $ is normally larger than 1.}}{9}}
+\newlabel{fig:roc-magnitude}{{11}{9}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {\unhbox \voidb@x \hbox {V-D}}Threshold Optimization}{9}}
+\newlabel{sec:exp-threshold}{{\unhbox \voidb@x \hbox {V-D}}{9}}
+\bibstyle{IEEEtran}
+\bibdata{IEEEabrv,paper}
+\bibcite{bigDataStatistics}{1}
+\bibcite{saha2014data}{2}
+\bibcite{softwareFailure}{3}
+\bibcite{pawar2016software}{4}
+\bibcite{xu2015systems}{5}
+\bibcite{rassam2014adaptive}{6}
+\bibcite{herodotou2014scalable}{7}
+\bibcite{schuster2015vc3}{8}
+\bibcite{humanError}{9}
+\bibcite{dataManipulation}{10}
+\bibcite{SyriaHacker}{11}
+\bibcite{chandola2009anomaly}{12}
+\bibcite{goldberger2000components}{13}
+\bibcite{fujimaki2005approach}{14}
+\bibcite{cao2014scalable}{15}
+\bibcite{cao2017multi}{16}
+\bibcite{masud2013classification}{17}
+\bibcite{li2015discovery}{18}
+\bibcite{shao2014prototype}{19}
+\bibcite{zhang2017lshiforest}{20}
+\bibcite{yin2016model}{21}
+\bibcite{zhu2002statstream}{22}
+\bibcite{caudell1993adaptive}{23}
+\bibcite{chan2005modeling}{24}
+\bibcite{budalakoti2006anomaly}{25}
+\bibcite{ye2000markov}{26}
+\bibcite{warrender1999detecting}{27}
+\bibcite{pavlov2003sequence}{28}
+\@writefile{toc}{\contentsline {section}{\numberline {VI}Conclusion \& Future Work}{10}}
+\newlabel{sec:conclusion}{{VI}{10}}
+\@writefile{toc}{\contentsline {section}{References}{10}}
+\bibcite{yu2015glad}{29}
+\bibcite{iresearch2016b2c}{30}
+\bibcite{zhao2016on}{31}
+\bibcite{yan2015report}{32}
+\bibcite{netease2015research}{33}
+\bibcite{simpleDetection}{34}
+\@writefile{lot}{\contentsline {table}{\numberline {V}{\ignorespaces F1 Scores of Different Threshold Calculators}}{11}}
+\newlabel{tab:threshold-comparison}{{V}{11}}
