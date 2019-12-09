@@ -20,8 +20,9 @@
 \usepackage{cuted}
 \usepackage{rotating}
 \usepackage{caption}
+\usepackage{ulem}
 %
-\title{Statistical Detection of Collective Data Anomalies}
+\title{Statistical Detection of Collective Data Fraud}
 \date{}
 %
 %\author{%
@@ -60,10 +61,10 @@
 \maketitle
 %
 	\begin{abstract} 
-		Attackers infiltrate databases and software systems to not only steal chunks of data and hold them for ransom, but also alter certain parts, setting up traps harder to discover and causing damages unlikely to recover.
-		Without referring to data source, it is hard to detect a single record that is altered but still remain in correct value scopes. However, the change, especially to a subset of data, can be observed and detected in a collective scale. 
-		In this paper, we present a collective detection technique based on statistical divergence. \textcolor{red}{Statistical divergence detection was explored in multimedia applications. But it is still underdeveloped in big data era due to data irregularity.} The technique extracts distribution similarities among data collections, and then uses the statistical divergence to detect collective anomalies.
-		Our technique continuously evaluates metrics as evolving features and calculate adaptive threshold to meet the best mathematical expectation.
+		Statistical divergence is widely applied in multimedia processing, basically due to regularity and explainable features displayed in data. However, in a broader range of data realm, these advantages may not out-stand, and therefore a more general approach is required.
+		In data detection, statistical divergence can be used as an similarity measurement based on collective features.
+		In this paper, we present a collective detection technique based on statistical divergence. The technique extracts distribution similarities among data collections, and then uses the statistical divergence to detect collective anomalies.
+		Our technique continuously evaluates metrics as evolving features and calculates adaptive threshold to meet the best mathematical expectation.
 		To illustrate details of the technique and explore its efficiency, we case-studied a real world problem of click farming detection against malicious online sellers. The evaluation shows that these techniques provided efficient classifiers. They were also sufficiently sensitive to a much smaller magnitude of data alteration, compared with real world malicious behaviours. Thus, it is applicable in the real world. 
 	\end{abstract}
 
@@ -73,7 +74,9 @@
 % \end{keywords}
 %
 	\section{Introduction}
-		Major improvements in data acquisition, transmission and storage are to increase data availability and affordability. Currently, there are more than 2.7ZB data in the digital universe~\cite{bigDataStatistics} and the growing speed is doubling every two years.
+		Statistical divergence is widely applied in multimedia processing. Prevalent applications include multimedia event detection~\cite{amid2014unsupervised}, content classification~\cite{moreno2004kullback,park2005classification} and qualification~\cite{pheng2016kullback,goldberger2003efficient}. It has been attracting more attention since the dawn of big data era, basically due to regularity and interpretable features displayed in the data. However, in a broader range of data realm, these advantages may not out-stand (e.g. in online sales data records). It requires a more general approach.
+	
+		Currently, there are more than 2.7ZB data in the digital universe~\cite{bigDataStatistics} and the growing speed is doubling every two years.
 		It has already been hard and will be much harder in the future to harness the exploding volume of data that has resulted in many problems in data management and engineering, threatening trustworthiness and reliability of data flows inside working systems.
 		Data error rate in enterprises is approximately 1\% to 5\%, and for some, even above 30\%~\cite{saha2014data}. Those data anomalies may arise due to both internal and external reasons. 
 		
@@ -84,10 +87,9 @@
 		
 		It is hard to detect a single record that is alerted but still remain in correct value scopes, but if sufficient data records are altered to change a final decision, we can still detect malicious data manipulation behaviours.
 		According to our observation, typical manipulations on numerical data will lead to a drift or distortion of its original distribution. For measurable reshaping, we can enclose data collections with similar distribution patterns and filter out those strangely shaped ones. 
-		To address problems caused by data manipulation, we propose a novel technique which sorts out manipulated data collections from normal ones by adopting statistical divergence.
-		\textcolor{red}{Statistical divergence detection was explored in multimedia applications. But it is still underdeveloped in big data era due to data irregularity.}
+		To address problems caused by data manipulation, we proposed a novel technique which sorts out manipulated data collections from normal ones by adopting statistical divergence.
 		In this paper, we focus on a concrete data manipulation problem: click farming in online shops, and try to apply our technique to pick out those dishonest sellers.
-		Our techniques maps data collections to points in distribution spaces and reduce the problem to classical point anomaly detection.
+		Our technique maps data collections to points in distribution spaces and reduce the problem to classical point anomaly detection.
 		Optimizations estimate ground truth, mapping each data collection into a single real number within a definite interval. Then a Gaussian classifier can be applied to detect outliers derived from manipulated data. To automatically calculate adaptive threshold for the classifier, we keep two evidence sets for both normal points and anomalies, taking advantage of the property provided by statistical divergence.
 		In the dynamic environments, these evidence sets are modified after every data collection is checked, in which manner they act intuitively as slide windows and keep up to the evolving features in dynamic scenarios.
 		Our contribution includes: 1) A brief review on data anomaly detection and a study on the problem of click farming; 2) Detailed description of both basic and optimized framework of our technique, resolving several technical difficulties such as automated adaptive threshold; 3) Real world and synthetic data experiments that test efficiency of our technique and a comparison with a previous work on the same topic.
@@ -96,6 +98,8 @@
 		
 	\section{Related Work}\label{sec:related-work}
 		\subsection{Data Anomaly Detection}
+			Statistical divergence was applied mainly as classifiers on multimedia content~\cite{park2005classification}, especially as kernels in SVMs~\cite{moreno2004kullback}. As a similarity measurement, it can also be used in qualitative and quantitative analysis in image evaluation~\cite{pheng2016kullback,goldberger2003efficient}. \cite{amid2014unsupervised} adopted divergence to detect events in multimedia streams.
+		
 			Anomaly detection, also known as outlier detection, has been studied for a long time and discussed in diverse research domains, such as fraud detection, intrusion detection, system monitoring, fault detection and event detection in sensor networks.
 			Anomaly detection algorithms deal with input data in the form of points (or records), sequences, graphs and spatial and geographical relationships.~\cite{chandola2009anomaly} According to relationships within data records, outliers can be classified into \textit{point anomalies}, \textit{contextual (or conditional) anomalies} and \textit{collective anomalies}.~\cite{goldberger2000components}
 			
@@ -534,7 +538,7 @@
 		\subsection{Discussion}
 			MGoF's learning procedure of anomalous probability hypothesis is inefficient. To maintain a comprehensive knowledge of anomalies, MGoF has to reserve a single hypothesis entry for every type of them. But in reality, it is always the case that we face the heterogeneity of outliers. In the Koubei data set, there can be tens of anomalous distributions caused solely by centralized click farming. It takes a long time to discover every possible type of anomaly. Besides, if there happens to be more than $c_{th}$ anomalous distributions of the same type, later discovered collections will no longer declared to be anomalous any more.
 			
-			However, in SDD-R and SDD-E, that is not a problem since it can map and gather all anomalies together and draw a universal boundary between them and all normal collections. These techniques are suitable to all typical divergence metrics and consumes little computation power(except dynamic SDD-E). The only drawback is they require comprehensive estimation of target distributions. Although other parameters need estimation as well, they are naturally addressable under big data circumstances.
+			However, in SDD-R and SDD-E, that is not a problem since it can map and gather all anomalies together and draw a universal boundary between them and all normal collections. These techniques are suitable to all typical divergence metrics and consume little computation power(except dynamic SDD-E). The only drawback is that they require comprehensive estimation of target distributions. Although other parameters need estimation as well, they are naturally addressable under big data circumstances.
 			
 	\section{Conclusion}\label{sec:conclusion}
 		This paper proposes a series of collective anomaly detection techniques, which helps detect data manipulations in modern data pipelines and data centres. Different from existing algorithms designed for collective anomalies, our approach employs statistical distance as the similarity measurement. We explored several technical points involved in the design of the algorithm and performed a thorough experiment to test its efficiency. The comparison experiment also illustrated the advantages of our technique. It can be concluded that the our technique can efficiently discover anomalies within the data collections and the classifier is sensitive enough toward real world data manipulations. 

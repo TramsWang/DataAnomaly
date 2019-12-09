@@ -12,6 +12,7 @@
 \usepackage{ulem}
 \usepackage{multirow}
 \usepackage{multicol}
+\usepackage{cuted}
 
 \let\OLDthebibliography\thebibliography
 \renewcommand\thebibliography[1]{
@@ -45,7 +46,7 @@
 	\maketitle
 	
 	\begin{abstract}
-		Statistical divergence is widely applied in multimedia processing, basically due to regularity and explainable features displayed in data. However, in a broader range of data realm, these advantages may not out-stand, and therefore a more general approach is required. In data detection, statistical divergence can be used as an similarity measurement based on collective features.
+		Statistical divergence is widely applied in multimedia processing, basically due to regularity and interpretable features displayed in data. However, in a broader range of data realm, these advantages may not out-stand, and therefore a more general approach is required. In data detection, statistical divergence can be used as a similarity measurement based on collective features.
 		In this paper, we present a collective detection technique based on statistical divergence.
 		The technique extracts distribution similarities among data collections, and then uses the statistical divergence to detect collective anomalies.
 %		Our technique continuously evaluates metrics as evolving features and calculates adaptive threshold to meet the best mathematical expectation.
@@ -61,7 +62,9 @@
 		\label{sec:intro}
 		Statistical divergence is widely applied in multimedia processing. Prevalent applications include multimedia event detection~\cite{amid2014unsupervised}, content classification~\cite{moreno2004kullback,park2005classification} and qualification~\cite{pheng2016kullback,goldberger2003efficient}. It has been attracting more attention since the dawn of big data era, basically due to regularity and interpretable features displayed in the data. However, in a broader range of data realm, these advantages may not out-stand (e.g. in online sales data records). It requires a more general approach.
 		
-		Data manipulation from outside hackers composes another potential threat of data frauds. \textit{Data Manipulation} here, according to a NSA definition, refers to behaviours which ``change information contained in those systems, rather than stealing data and holding it for ransom''.
+		General data frauds can be caused by manipulation from outside hackers.
+%		Data manipulation from outside hackers composes another potential threat of data frauds.
+		\textit{Data Manipulation} here, according to a NSA definition, refers to behaviours which ``change information contained in those systems, rather than stealing data and holding it for ransom''.
 		In 2013, hackers from Syria put up fake reports via Associated Press' Twitter account and caused a 150-point drop in the Dow~\cite{SyriaHacker}.
 		
 		It is hard to detect a single record that is altered but still remains in correct value scopes, but if sufficient data records are altered to change a final decision, we can still detect malicious data manipulation behaviours.
@@ -93,8 +96,8 @@
 	
 		\subsection{Real World Problem: Click Farming Detection}\label{sec:related-realworld}
 			Click farming is the behaviour that online sellers use a large number of customer accounts to create fake transaction records and give high remarks on products.
-			There are two types of click farming behaviours: Centralized and Equalized.
-			Equalized click farming refers to scenarios where behaviours are well organised while centralized does not.
+			There are two types of click farming behaviours: centralized and equalized.
+			Equalized click farming refers to scenarios where behaviours are well organised while centralized one does not.
 			Current detection techniques for click farming mainly focus on user behaviours. Those techniques require platforms to keep records on user features. However, the detection can be easily bypassed by trained workers and some well programmed applications.
 			
 			Although it is hard to classify users as honest or malicious, we can still find clues from the sellers' aspect.
@@ -104,7 +107,8 @@
 	
 	\section{Statistical Detection}\label{sec:algorithm-details}
 		\subsection{Statistical Divergence Detection with Reference (SDD-R)}\label{sec:alg-opt-reference}
-			Statistical divergence only provides a distance between two or more distributions. In a set of data collections, we can only draw a complete graph where nodes denote data collections and edges refer to the symmetric divergence between two connected nodes. From the graph we can find some points that have apparently larger distances with most of other points and return them as anomalies. This may work if anomalous nodes do not compose a large proportion. However the procedure will be too complicated to work out with large amounts of data. If it is assured that data collections form only one cluster, some optimizations can be applied to reduce complexity.
+			Distortion or drift of certain distribution can be quantified by statistical divergence.
+			It provides a distance between two or more distributions. In a set of data collections, we can only draw a complete graph where nodes denote data collections and edges refer to the symmetric divergence between two compared nodes. From the graph we can find some points that have apparently larger distances with most of other points and return them as anomalies. This may work if anomalous nodes do not compose a large proportion. However the procedure will be too complicated to work out with large amounts of data. If it is assured that data collections form only one cluster, some optimizations can be applied to reduce complexity.
 			
 			Alternatively we can provide a frame of reference that generates absolute coordinates rather than the relative ones. This optimization is feasible if data collections form one single cluster in distribution space. This is true in most reality scenarios given that distribution is adopted to depict a macro property which comes out as one universal conclusion. In other words , if multiple distributions are used to describe subgroups of entire sample space, then a conclusive one can be obtained by averaging all these sub-distributions. Therefore, we can use an estimate cluster center as reference and test distances between the reference and each other data collections(Algorithm~\ref{alg:sdd-r}), yielding absolute distances.
 	
@@ -113,14 +117,15 @@
 				\label{alg:sdd-r}
 				\begin{algorithmic}[1]
 					\Require Data Collections $\mathbb{D} = \{D_1, \dots, D_n\}$
-					\Require Estimated anomalous probability $\alpha$
+					\Require Divergence metric $div$
+%					\Require Estimated anomalous probability $\alpha$
 					\Ensure Anomalous Data Collections
 					\For {$i \gets 1$ to $n$}
 					\State $P_i \gets$ the distribution of $D_i$
 					\EndFor
 					\State $P_R \gets \frac{1}{n}\sum_{i = 1}^n P_i$
 					\For {$i \gets 1$ to $n$}
-					\State $d_i \gets D(P_i||P_R)$
+					\State $d_i \gets div(P_i||P_R)$
 					\EndFor
 					\State $\mathcal{N}(\mu, \sigma) \gets$ Gaussian distribution estimated by $d_i$
 					\State \Return $\{D_i | \frac{d_i - \mu}{\sigma} > 3 \}$
@@ -131,7 +136,7 @@
 			Certainly, if stronger assumptions can be included to provide a more precise model, this component in the framework can be replaced to give better results.
 			For the simplicity of our proposal, we deem the distributions of divergences to be Gaussian.
 			
-			By this approach, time complexity can be reduced from quadratic to linear. Fig.~\ref{fig:raw-overview} in Section~\ref{sec:exp-raw} demonstrates the result of the above process. Red distribution refer to the distances calculated from normal data collections, blue and green ones are from click-farmed data collections. Clearly, distances of normal data collections assembles together around a small value while anomalous ones lay around a larger distance value.
+			By this approach, time complexity can be reduced from quadratic to linear. Fig.~\ref{fig:raw-overview} in Section~\ref{sec:exp-raw} demonstrates the result of the above process. Solid line refer to the distances calculated from normal data collections, dashed and dash-dotted ones are from click-farmed data collections. Clearly, distances of normal data collections assembles together around a small value while anomalous ones lay around a larger distance value.
 	
 		\subsection{Optimization: Statistical Divergence Detection with Evidence(SDD-E)}
 			It is possible to further optimize SDD-R if we can provide this algorithm with evidence(Algorithm~\ref{alg:sdd-e}).
@@ -142,30 +147,42 @@
 				\begin{algorithmic}[1]
 					\Require Evidence set with normal data collections $\mathbb{E}_N = \{N_1, \dots, N_n\}$
 					\Require Evidence set with anomalous data collections $\mathbb{E}_A = \{A_1, \dots, A_m\}$
+					\Require Divergence metric $div$
 					\Require Estimated anomalous probability $\alpha$
 					\Require New data collection $\mathbb{D} = \{D_1, \dots, D_l\}$
 					\Ensure Anomalous data collections in $\mathbb{D}$
-					\For{$i \gets 1$ to $n$}
-					\State $P_{N_i} \gets$ distribution of $D_{N_i}$\label{line:hist-1}
+					\For{each $N_i\in \mathbb{E}_N, A_j\in \mathbb{E}_A, D_k\in \mathbb{D}$}
+						\State $P_{N_i} \gets$ distribution of $N_i$\label{line:hist-1}
+						\State $P_{A_j} \gets$ distribution of $A_j$\label{line:hist-2}
+						\State $P_k \gets$ distribution of $D_k$
 					\EndFor
-					\For{$i \gets 1$ to $m$}
-					\State $P_{A_i} \gets$ distribution of $D_{A_i}$\label{line:hist-2}
-					\EndFor
+					
+%					\For{$i \gets 1$ to $n$}
+%					\State $P_{N_i} \gets$ distribution of $N_i$\label{line:hist-1}
+%					\EndFor
+%					\For{$i \gets 1$ to $m$}
+%					\State $P_{A_i} \gets$ distribution of $A_i$\label{line:hist-2}
+%					\EndFor
 					\State $P_R \gets \frac{1}{n}\sum_{i=1}^{n}P_{N_i}$
-					\For{$i \gets 1$ to $n$}
-					\State $d_{N_i} \gets D(P_{N_i}||P_R)$
+					\For{each $N_i\in \mathbb{E}_N, A_j\in \mathbb{E}_A$}
+						\State $d_{N_i} \gets div(P_{N_i}||P_R)$
+						\State $d_{A_j} \gets div(P_{A_j}||P_R)$
 					\EndFor
-					\For{$i \gets 1$ to $m$}
-					\State $d_{A_i} \gets D(P_{A_i}||P_R)$
-					\EndFor
+%					\For{$i \gets 1$ to $n$}
+%					\State $d_{N_i} \gets div(P_{N_i}||P_R)$
+%					\EndFor
+%					\For{$i \gets 1$ to $m$}
+%					\State $d_{A_i} \gets div(P_{A_i}||P_R)$
+%					\EndFor
 					\State $\mathcal{N}_N(\mu_N, \sigma_N) \gets$ normal distribution estimated from $\{d_{N_1}, \dots, d_{N_n}\}$
 					\State $\mathcal{N}_A(\mu_A, \sigma_A) \gets$  normal distribution estimated from $\{d_{A_1}, \dots, d_{A_m}\}$
 					\State $T \gets$ proper threshold derived from $\mathcal{N}_N$, $\mathcal{N}_A$ and $\alpha$
-					\For{$i \gets 1$ to $l$}
-					\State $P_i \gets$ distribution of $D_i$
-					\State $d_i \gets D(P_i||P_R)$
-					\EndFor
-					\State \Return $\{D_i|d_i > T\}$
+%					\For{$i \gets 1$ to $l$}
+%					\State $P_i \gets$ distribution of $D_i$
+%					\State $d_i \gets div(P_i||P_R)$
+%					\EndFor
+%					\State \Return $\{D_i|d_i > T\}$
+					\State \Return $\{D_i | div(P_i||P_R) > T\}$
 				\end{algorithmic}
 			\end{algorithm}
 	
@@ -178,6 +195,13 @@
 			This algorithm can be slightly modified to deal with concept drift(for example, trading trend changes over time for online shops as they are often in the process of expanding or dwindling) by turning the two evidence sets as sliding windows and adopting certain update strategies such as \textit{Least Recently Used}(LRU). Time complexity for this optimization is $O(n\cdot(|\mathbb{E}_N|+|\mathbb{E}_A|)\cdot T_D)$, where $T_D$ denotes time complexity of divergence calculation.
 	
 		\subsection{Threshold}\label{sec:alg-threshold}
+			\begin{figure}[t]
+				\centering
+				\includegraphics[width=\linewidth]{fig/ExampleThreshold.png}
+				\caption{Optimal threshold should minimize the size of shadow under curve.}
+				\label{fig:example-threshold}
+			\end{figure}
+			
 			One important factor in algorithm SDD-E is the value of threshold.
 %			A lower threshold rejects more instances, improving the sensitivity of anomalous data while increasing the number of false alarms. A higher threshold provide higher true negative rates yet neglecting more possible threats.
 			A naive but prevalent approach is to set a fixed value as the threshold(As is shown in Algorithm~\ref{alg:sdd-r}).
@@ -185,24 +209,42 @@
 			However, a fixed threshold requires specific analysis in the certain scenario, manual observations and tuning of parameters, which involves lots of human labour.
 %			The rule of ``$3 \sigma$'' declares all instances outside $[\mu - 3\sigma, \mu + 3\sigma]$ to be anomalous. It can be used to automatically determine a threshold. But as a rigid metric, it is merely an estimation of a suitable boundary considering average situations, which is far from optimality when concrete data is provided. It would be either lower than the optimum if anomalous data lies far away from the normal cluster, or higher than the optimum if the anomalies sit close to the cluster centre.
 			
-			Fortunately, applying divergence as the distance measurement among data collections provides a fine property. With a reference distribution, divergences of normal data collections form a quasi-Gaussian distribution. The same applies to those anomalous ones.
+%			Fortunately, applying divergence as the distance measurement among data collections provides a fine property. With a reference distribution, divergences of normal data collections form a quasi-Gaussian distribution. The same applies to those anomalous ones.
 	
-			\begin{figure}[!t]
-				\centering
-				\includegraphics[width=\linewidth]{fig/ExampleThreshold.png}
-				\caption{Optimal threshold should minimize the size of shadow under curve.}
-				\label{fig:example-threshold}
-			\end{figure}
-	
-			Moreover, as is verified in experiments, the meta-distribution of anomalous data collections lies in the right-hand-side to the normal one on the real line. As shown in Fig~\ref{fig:example-threshold}, the black curve displays the probability density function (PDF) fitting those divergences calculated from normal data collections; the blue curve displays the PDF derived from anomalous data collections. Threshold is chosen to minimize total errors(both false negative and false positive).
-			
-			Then the optimal threshold $T$ is calculated by minimizing total errors.
+%			Moreover, as is verified in experiments, the meta-distribution of anomalous data collections lies in the right-hand-side to the normal one on the real line. As shown in Fig~\ref{fig:example-threshold}, the black curve displays the probability density function (PDF) fitting those divergences calculated from normal data collections; the blue curve displays the PDF derived from anomalous data collections.
+			Threshold is chosen to minimize total errors(both false negative and false positive).
+%			Then the optimal threshold $T$ is calculated by minimizing total errors.
 			However, this is not accurate enough, it implicates an assumption that chances are the same for a new data collection to be either anomalous or not. If we can determine the probability for a new data collection to be anomalous in any segment of data sequence, the equation should be modified as minimizing expected errors, where we use $\alpha$ to denote anomaly probability.
+			Suppose: $PDF_normal(x) \sim \mathcal{N}(\mu_n, \sigma_n)$ and $PDF_anomalous(x) \sim \mathcal{N}(\mu_a, \sigma_a)$, then adaptive threshold can be calculated by E.q.(\ref{equ:linear-weight}).
 	
 			Moreover, with an estimated anomaly probability, SDD-R can be also optimized by ranking all data collections according to their divergence value and select first $n \cdot \alpha$ ones with highest values as anomalies.
+			
+			\begin{table*}
+				\footnotesize
+				\begin{align}\label{equ:linear-weight}
+				T & = \mathop{\arg\min}_{T} \alpha\int_{0}^{T}PDF_{a}(x)dx +
+				(1-\alpha)\int_{T}^{\sup(D)}PDF_{n}(x)dx\nonumber\\
+				& \approx \mathop{\arg\min}_{T}
+				\alpha\int_{-\infty}^{T}
+				\frac{e^{-\frac{(x - \mu_a)^2}{2\sigma_a^2}}}{\sqrt{2\pi} \sigma_a}dx
+				+ 
+				(1-\alpha)\int_{T}^{+\infty}
+				\frac{e^{-\frac{(x - \mu_n)^2}{2\sigma_n^2}}}{\sqrt{2\pi} \sigma_n}dx\nonumber\\
+				& = \begin{cases}
+				\displaystyle
+				\frac{1}{\sigma_a^2 - \sigma_n^2}\left[(\sigma_a^2\mu_n - \sigma_n^2\mu_a) \pm \sigma_a\sigma_n\sqrt{(\mu_a - \mu_n)^2 + 2(\sigma_a^2 - \sigma_n^2)ln\frac{(1 - \alpha)\sigma_a}{\alpha\sigma_n}}\right], & \sigma_a \ne \sigma_n\\
+				\displaystyle
+				\frac{\mu_n + \mu_a}{2} + \frac{k^2ln\frac{1 - \alpha}{\alpha}}{\mu_a - \mu_n}, & \sigma_a = \sigma_n = k
+				\end{cases}
+				\end{align}
+				
+				Note: when $\sigma_a \ne \sigma_n$, keep the root s.t. $\displaystyle \frac{\alpha (T - \mu_a)}{\sigma_a^3}e^{-\frac{(T - \mu_a)^2}{2\sigma_a^2}} < \frac{(1 - \alpha) (T - \mu_n)}{\sigma_n^3}e^{-\frac{(T - \mu_n)^2}{2\sigma_n^2}}$
+			\end{table*}
 	
 	\section{Evaluation}\label{sec:evaluation}
-		Our algorithm was implemented and interpreted in Python 3.5.2. All experiments were tested on Ubuntu 16.04. In the following experiments, we figured out properties of real world data and performance of our technique against anomalous data collections. We also made a comparison among variations of SDD algorithms and MGoF.\footnote{All resources and more detailed experiment results can be retrieved online: https://github.com/TramsWang/StatisticalAnomalyDetection}
+		Our algorithm was implemented and interpreted in Python 3.5.2. All experiments were tested on Ubuntu 16.04. In the following experiments, we figured out properties of real world data and performance of our technique against anomalous data collections. We also made a comparison among variations of SDD algorithms and MGoF.
+%		\footnote{All resources and more detailed experiment results can be retrieved online: https://github.com/TramsWang/StatisticalAnomalyDetection}
+		\footnote{All resources and more detailed experiment results can be viewed in supplemental material.}
 	
 		\subsection{Methodology}\label{sec:exp-methodology}
 			We adopted Koubei sellers' transaction records\footnote{https://tianchi.aliyun.com/competition/information.htm?raceId=231591} in experiments. It was provided by Alibaba Tian Chi big data competition where all records were collected from real world business scenarios.
@@ -276,7 +318,7 @@
 			When it came to 2nd level histograms, equalized click farming were also effectively discovered. It can be clearly seen in Fig.~\ref{fig:raw-overview} that distribution of divergence of both click farming types shows an obvious deviation from the normal one.
 			
 			The result showed that our technique outperformed MGoF in every real world case.
-			SDD-E provided best performance, yet it consumed the most computing power. Comparison among SDD-R revealed improvement of reference as well as the importance of threshold under this technique. It is also clear that dynamic SDD-E is capable of tracing the gradual shift of environment. MGoF turned out to be the worst since it always mark several false positive when $c_{th}$ had not been met and much more false negatives when similar errors occurred too many. 
+			SDD-E provided best performance, yet it consumed the most computing power. Comparison between SDD-R and MGoF revealed improvement of reference as well as the importance of threshold under this technique. It is also clear that dynamic SDD-E is capable of tracing the gradual shift of environment. MGoF turned out to be the worst since it always mark several false positive when $c_{th}$ had not been met and much more false negatives when similar errors occurred too many. 
 			
 			Parameter $\alpha$ improved total accuracy of dynamic SDD-E algorithm by 10-20\% as was supposed. It also increased its F1 by more than 20\%. $\alpha$ made a great difference in SDD-R as well, which illustrated that divergence sorted almost all collections in correct order according to the averaged reference. However, static SDD-E did not show the same improvement. Since environment drift took greater influence in the result. In comparison with $\alpha$, adaptive threshold given by evidence sets did not bring the most improvement. But this threshold can be applied together with other optimizations such as slide windows.
 	
@@ -302,7 +344,7 @@
 			\end{figure}
 	
 			From Fig.~\ref{fig:anomaly-magnitude} we can conclude that our algorithms are still the best, given that they are most sensitive toward tiny anomalous variations. However, static SDD-E did not rise until $\nu > 1$, this is because it suffered from fluctuation on the trade environment at the mean time. MGoF is not sensitive toward minor anomalies either.
-			For a relatively small magnitude of click farming, the classifiers of MGoF quickly degrade to be trivial. The rigid threshold could not automatically rise up and was thus far from to optimal. 
+			For a relatively small magnitude of click farming, the classifiers of MGoF quickly degrade to be trivial. The rigid threshold could not automatically rise up and was thus far from optimal. 
 	
 		\subsection{Discussion}
 			MGoF's learning procedure of anomalous probability hypothesis is inefficient. To maintain a comprehensive knowledge of anomalies, MGoF has to reserve a single hypothesis entry for every type of them. But in reality, it is always the case that we face the heterogeneity of outliers. In the Koubei data set, there can be tens of anomalous distributions caused solely by centralized click farming. It takes a long time to discover every possible type of anomaly. Besides, if there happens to be more than $c_{th}$ anomalous distributions of the same type, later discovered collections will no longer declared to be anomalous any more.
